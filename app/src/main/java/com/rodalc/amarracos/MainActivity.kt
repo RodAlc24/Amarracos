@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.rodalc.amarracos.ronda.PantallaJuego
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 class MainActivity : ComponentActivity() {
@@ -37,10 +38,10 @@ fun MyApp() {
 
     NavHost(navController, startDestination = "pantallaInicial") {
         composable("pantallaInicial") { PantallaInicio(navController) }
-        composable("pantallaJuego") { PantallaInicio(navController)}
-        composable("pantallaConteo") { PantallaInicio(navController)}
-        composable("pantallaAjustes") { PantallaInicio(navController)}
-        composable("pantallaCreditos") { PantallaInicio(navController)}
+        composable("pantallaJuego") { PantallaJuego(navController) }
+        composable("pantallaConteo") { PantallaInicio(navController) }
+        composable("pantallaAjustes") { PantallaVacia(navController) }
+        composable("pantallaCreditos") { PantallaVacia(navController) }
 
     }
 }

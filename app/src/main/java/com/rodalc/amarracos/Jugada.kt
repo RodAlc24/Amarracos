@@ -3,22 +3,22 @@ package com.rodalc.amarracos
 /**
  * Almacena quien ha ganado una ronda o si aún no se sabe
  */
-enum class Ganador { BUENOS, MALOS, POR_VER}
+enum class Ganador { BUENOS, MALOS, POR_VER }
 
 /**
  * Almacena los distintos tipos de rondas
  */
-enum class Ronda { GRANDE, CHICA, PARES, JUEGO, PUNTO}
+enum class Ronda { GRANDE, CHICA, PARES, JUEGO, PUNTO }
 
 /**
  * Almacena de que tipo son los pares
  */
-enum class Pares { PAR, MEDIAS, DUPLES, NADA, POR_VER}
+enum class Pares { PAR, MEDIAS, DUPLES, NADA, POR_VER }
 
 /**
  * Almacena de que tipo es el juego (o punto)
  */
-enum class Juego { LA_UNA, JUEGO, PUNTO, NADA, POR_VER}
+enum class Juego { LA_UNA, JUEGO, PUNTO, NADA, POR_VER }
 
 /**
  * Guarda la infrmación relacionada con una ronda de grande o chica
@@ -27,7 +27,7 @@ data class ResultadoRonda(
     var ronda: Ronda,
     var envite: Int = 0,
     var ganador: Ganador = Ganador.POR_VER,
-    )
+)
 
 /**
  * Guarda la información de una ronda de pares
@@ -37,7 +37,7 @@ data class ResultadoRondaPares(
     var envite: Int = 0,
     var ganador: Ganador = Ganador.POR_VER,
     var juegoA: Pares = Pares.POR_VER,
-    var JuegoB: Pares = Pares.POR_VER
+    var juegoB: Pares = Pares.POR_VER
 )
 
 /**
@@ -59,4 +59,18 @@ class Jugada {
     var chica: ResultadoRonda = ResultadoRonda(Ronda.CHICA)
     var pares: ResultadoRondaPares = ResultadoRondaPares()
     var juego: ResultadoRondaJuego = ResultadoRondaJuego()
+}
+
+data class Partida(
+    var nombrePareja1: String = "Buenos",
+    var nombrePareja2: String = "Malos",
+
+    var puntosPareja1: Int = 0,
+    var puntosPareja2: Int = 0,
+
+    var juegosPareja1: Int = 0,
+    var juegosPareja2: Int = 0,
+
+    var rondaActual: Jugada = Jugada()
+) {
 }

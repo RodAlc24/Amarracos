@@ -8,7 +8,7 @@ enum class Ganador { BUENOS, MALOS, POR_VER }
 /**
  * Almacena los distintos tipos de rondas
  */
-enum class Ronda { GRANDE, CHICA, PARES, JUEGO, PUNTO }
+enum class Ronda { MUS, GRANDE, CHICA, PARES, JUEGO, PUNTO }
 
 /**
  * Almacena de que tipo son los pares
@@ -59,6 +59,13 @@ class Jugada {
     var chica: ResultadoRonda = ResultadoRonda(Ronda.CHICA)
     var pares: ResultadoRondaPares = ResultadoRondaPares()
     var juego: ResultadoRondaJuego = ResultadoRondaJuego()
+
+    fun reiniciar() {
+        grande = ResultadoRonda(Ronda.GRANDE)
+        chica = ResultadoRonda(Ronda.CHICA)
+        pares = ResultadoRondaPares()
+        juego = ResultadoRondaJuego()
+    }
 }
 
 data class Partida(
@@ -73,4 +80,9 @@ data class Partida(
 
     var rondaActual: Jugada = Jugada()
 ) {
+    fun reiniciar() {
+        rondaActual.reiniciar()
+        puntosPareja1 = 0
+        puntosPareja2 = 0
+    }
 }

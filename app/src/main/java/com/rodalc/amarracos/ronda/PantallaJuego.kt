@@ -1,9 +1,11 @@
 package com.rodalc.amarracos.ronda
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,11 +36,16 @@ fun PantallaJuego(navController: NavController) {
             juego.value.nombrePareja1,
             juego.value.juegosPareja1
         )
-        when (ronda.value) {
-            Ronda.MUS -> Mus(juego) { ronda.value = it }
-            Ronda.GRANDE -> GrandeChica(Ronda.GRANDE, juego) { ronda.value = it }
-            else -> GrandeChica(Ronda.CHICA, juego) { ronda.value = it }
+        Column {
+            Text(text = ronda.value.toString())
+
+            when (ronda.value) {
+                Ronda.MUS -> Mus(juego) { ronda.value = it }
+                Ronda.GRANDE -> GrandeChica(Ronda.GRANDE, juego) { ronda.value = it }
+                else -> GrandeChica(Ronda.CHICA, juego) { ronda.value = it }
+            }
         }
+
         MarcadorPuntos(
             juego.value.puntosPareja2,
             juego.value.nombrePareja2,

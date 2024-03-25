@@ -1,10 +1,13 @@
 package com.rodalc.amarracos.ronda
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -25,6 +28,27 @@ import androidx.compose.ui.unit.dp
 import com.rodalc.amarracos.Ganador
 import com.rodalc.amarracos.Partida
 import com.rodalc.amarracos.Ronda
+
+@Composable
+fun MarcadorPuntos(puntos: Int, pareja: String, juegos: Int) {
+    Column(
+        modifier = Modifier.padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "$pareja: $juegos")
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .background(Color.LightGray)
+        ) {
+            Text(
+                text = puntos.toString(),
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
+}
 
 @Composable
 fun Envite(

@@ -38,8 +38,7 @@ fun MyApp() {
 
     NavHost(navController, startDestination = "pantallaInicial") {
         composable("pantallaInicial") { PantallaInicio(navController) }
-        composable("pantallaJuego") { PantallaJuego(navController) }
-        composable("pantallaConteo") { PantallaInicio(navController) }
+        composable("pantallaJuego") { PantallaJuego() }
         composable("pantallaAjustes") { PantallaVacia(navController) }
         composable("pantallaCreditos") { PantallaVacia(navController) }
 

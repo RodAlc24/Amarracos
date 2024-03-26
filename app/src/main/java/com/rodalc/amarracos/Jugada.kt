@@ -66,6 +66,42 @@ class Jugada {
         pares = ResultadoRondaPares()
         juego = ResultadoRondaJuego()
     }
+
+    fun getEnvite(ronda: Ronda): Int {
+        return when (ronda) {
+            Ronda.GRANDE -> grande.envite
+            Ronda.CHICA -> chica.envite
+            Ronda.PARES -> pares.envite
+            else -> juego.envite
+        }
+    }
+
+    fun setEnvite(ronda: Ronda, envite: Int) {
+        when (ronda) {
+            Ronda.GRANDE -> grande.envite = envite
+            Ronda.CHICA -> chica.envite = envite
+            Ronda.PARES -> pares.envite = envite
+            else -> juego.envite = envite
+        }
+    }
+
+    fun updateEnvite(ronda: Ronda, envite: Int) {
+        when (ronda) {
+            Ronda.GRANDE -> grande.envite += envite
+            Ronda.CHICA -> chica.envite += envite
+            Ronda.PARES -> pares.envite += envite
+            else -> juego.envite += envite
+        }
+    }
+
+    fun setGanador(ronda: Ronda, ganador: Ganador) {
+        when (ronda) {
+            Ronda.GRANDE -> grande.ganador = ganador
+            Ronda.CHICA -> chica.ganador = ganador
+            Ronda.PARES -> pares.ganador = ganador
+            else -> juego.ganador = ganador
+        }
+    }
 }
 
 data class Partida(

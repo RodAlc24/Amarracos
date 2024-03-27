@@ -1,4 +1,4 @@
-package com.rodalc.amarracos.ronda
+package com.rodalc.amarracos.mus
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,8 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.rodalc.amarracos.Partida
-import com.rodalc.amarracos.Ronda
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun MarcadorPuntos(puntos: Int, pareja: String, juegos: Int) {
@@ -29,12 +28,13 @@ fun MarcadorPuntos(puntos: Int, pareja: String, juegos: Int) {
         Text(text = "$pareja: $juegos")
         Box(
             modifier = Modifier
-                .size(120.dp)
+                .size(150.dp)
                 .background(Color.LightGray)
         ) {
             Text(
                 text = puntos.toString(),
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
+                fontSize = 50.sp
             )
         }
     }

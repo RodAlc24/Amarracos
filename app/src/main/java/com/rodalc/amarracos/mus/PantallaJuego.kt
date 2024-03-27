@@ -1,4 +1,4 @@
-package com.rodalc.amarracos.ronda
+package com.rodalc.amarracos.mus
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -18,9 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.rodalc.amarracos.Ganador
-import com.rodalc.amarracos.Partida
-import com.rodalc.amarracos.Ronda
 
 @Preview(showBackground = true, widthDp = 640, heightDp = 360)
 @Composable
@@ -66,8 +64,13 @@ fun PantallaJuego() {
             Envites(juego, ronda.value)
             Spacer(Modifier.fillMaxHeight(.15f))
 
-            if (botones.value) BototesJuego(juego, ronda, { ordago.value = it }, {botones.value = it }, {envite.value = it})
-            if (envite.value) Envite(juego, ronda, {botones.value = it}, {envite.value = it})
+            if (botones.value) BototesJuego(
+                juego,
+                ronda,
+                { ordago.value = it },
+                { botones.value = it },
+                { envite.value = it })
+            if (envite.value) Envite(juego, ronda, { botones.value = it }, { envite.value = it })
 
             Spacer(Modifier.fillMaxHeight(.15f))
         }
@@ -169,19 +172,41 @@ fun Envite(
     botones: (Boolean) -> Unit,
     envite: (Boolean) -> Unit
 ) {
-    Button(onClick = {
-        juego.value.rondaActual.updateEnvite(ronda.value, 5)
-        botones(true)
-        envite(false)
-        ronda.value = when(ronda.value) {
-            Ronda.GRANDE -> Ronda.CHICA
-            Ronda.CHICA -> Ronda.PARES
-            Ronda.PARES -> Ronda.JUEGO
-            else -> Ronda.GRANDE
+    val piedras = remember { mutableIntStateOf(0) }
+
+    Row {
+        Button(onClick = { piedras.intValue -= 1 }) {
+            Text(text = "-1")
         }
-    }) {
-        Text(text = "envidar 5")
-
+        Button(onClick = { piedras.intValue += 1 }) {
+            Text(text = "+1")
+        }
+        Button(onClick = { piedras.intValue += 5 }) {
+            Text(text = "+5")
+        }
     }
+    Row {
+        Text(text = piedras.intValue.toString())
+        Button(onClick = {
+            when (juego.value.rondaActual.getGanador(ronda.value)) {
+                Ganador.POR_VER -> juego.value.rondaActual.updateEnvite(
+                    ronda.value,
+                    piedras.intValue
+                )
 
+                Ganador.BUENOS -> juego.value.puntosPareja1 += piedras.intValue
+                Ganador.MALOS -> juego.value.puntosPareja2 += piedras.intValue
+            }
+            botones(true)
+            envite(false)
+            ronda.value = when (ronda.value) {
+                Ronda.GRANDE -> Ronda.CHICA
+                Ronda.CHICA -> Ronda.PARES
+                Ronda.PARES -> Ronda.JUEGO
+                else -> Ronda.GRANDE
+            }
+        }) {
+            Text(text = "Aceptar")
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package com.rodalc.amarracos
+package com.rodalc.amarracos.mus
 
 /**
  * Almacena quien ha ganado una ronda o si aún no se sabe
@@ -102,6 +102,17 @@ class Jugada {
             else -> juego.ganador = ganador
         }
     }
+
+    fun getGanador(ronda: Ronda): Ganador {
+        val ganador = when (ronda) {
+            Ronda.GRANDE -> grande.ganador
+            Ronda.CHICA -> chica.ganador
+            Ronda.PARES -> pares.ganador
+            else -> juego.ganador
+        }
+        return ganador
+    }
+
 }
 
 data class Partida(

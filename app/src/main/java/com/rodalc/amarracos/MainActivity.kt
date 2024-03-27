@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.rodalc.amarracos.ronda.PantallaJuego
+import com.rodalc.amarracos.mus.PantallaJuego
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 class MainActivity : ComponentActivity() {

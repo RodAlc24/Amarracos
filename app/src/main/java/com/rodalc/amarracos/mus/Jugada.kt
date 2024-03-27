@@ -8,7 +8,7 @@ enum class Ganador { BUENOS, MALOS, POR_VER }
 /**
  * Almacena los distintos tipos de rondas
  */
-enum class Ronda { MUS, GRANDE, CHICA, PARES, JUEGO, PUNTO }
+enum class Ronda { GRANDE, CHICA, PARES, JUEGO, CONTEO }
 
 /**
  * Almacena de que tipo son los pares

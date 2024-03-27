@@ -28,6 +28,7 @@ fun PantallaJuego() {
     val ordago = remember { mutableStateOf(false) }
     val botones = remember { mutableStateOf(true) }
     val envite = remember { mutableStateOf(false) }
+    val ganan = remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -104,14 +105,16 @@ fun PantallaJuego() {
         }
     }
 
-    if (juego.value.puntosPareja1 > 30) {
-        juego.value.reiniciar()
-        juego.value.juegosPareja1 += 1
+    if (juego.value.puntosPareja1 >= 30) {
+        Dialog(onDismissRequest = {}) {
+            Ganan(juego, ronda, Ganador.BUENOS)
+        }
     }
 
-    if (juego.value.puntosPareja2 > 30) {
-        juego.value.reiniciar()
-        juego.value.juegosPareja2 += 1
+    if (juego.value.puntosPareja2 >= 30) {
+        Dialog(onDismissRequest = {}) {
+            Ganan(juego, ronda, Ganador.MALOS)
+        }
     }
 }
 
@@ -172,7 +175,8 @@ fun Envite(
     botones: (Boolean) -> Unit,
     envite: (Boolean) -> Unit
 ) {
-    val piedras = remember { mutableIntStateOf(0) }
+    val piedras =
+        remember { mutableIntStateOf(if (juego.value.rondaActual.getGanador(ronda.value) == Ganador.POR_VER) 2 else 1) }
 
     Row {
         Button(onClick = { piedras.intValue -= 1 }) {
@@ -185,28 +189,25 @@ fun Envite(
             Text(text = "+5")
         }
     }
-    Row {
-        Text(text = piedras.intValue.toString())
-        Button(onClick = {
-            when (juego.value.rondaActual.getGanador(ronda.value)) {
-                Ganador.POR_VER -> juego.value.rondaActual.updateEnvite(
-                    ronda.value,
-                    piedras.intValue
-                )
+    Button(onClick = {
+        when (juego.value.rondaActual.getGanador(ronda.value)) {
+            Ganador.POR_VER -> juego.value.rondaActual.updateEnvite(
+                ronda.value,
+                piedras.intValue
+            )
 
-                Ganador.BUENOS -> juego.value.puntosPareja1 += piedras.intValue
-                Ganador.MALOS -> juego.value.puntosPareja2 += piedras.intValue
-            }
-            botones(true)
-            envite(false)
-            ronda.value = when (ronda.value) {
-                Ronda.GRANDE -> Ronda.CHICA
-                Ronda.CHICA -> Ronda.PARES
-                Ronda.PARES -> Ronda.JUEGO
-                else -> Ronda.GRANDE
-            }
-        }) {
-            Text(text = "Aceptar")
+            Ganador.BUENOS -> juego.value.puntosPareja1 += piedras.intValue
+            Ganador.MALOS -> juego.value.puntosPareja2 += piedras.intValue
         }
+        botones(true)
+        envite(false)
+        ronda.value = when (ronda.value) {
+            Ronda.GRANDE -> Ronda.CHICA
+            Ronda.CHICA -> Ronda.PARES
+            Ronda.PARES -> Ronda.JUEGO
+            else -> Ronda.GRANDE
+        }
+    }) {
+        Text(text = "Se ven " + piedras.intValue)
     }
 }

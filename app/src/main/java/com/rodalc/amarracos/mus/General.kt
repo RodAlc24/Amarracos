@@ -41,6 +41,42 @@ fun MarcadorPuntos(puntos: Int, pareja: String, juegos: Int) {
 }
 
 @Composable
+fun Ganan(
+    juego: MutableState<Partida>,
+    ronda: MutableState<Ronda>,
+    ganador: Ganador
+) {
+    val nombre =
+        if (ganador == Ganador.BUENOS) juego.value.nombrePareja1 else juego.value.nombrePareja2
+    Box(modifier = Modifier) {
+        Surface(
+            modifier = Modifier.align(Alignment.Center),
+            shape = RoundedCornerShape(16.dp),
+            color = Color.White
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(text = "Gana: $nombre")
+                Button(
+                    onClick = {
+                        ronda.value = Ronda.GRANDE
+                        juego.value.reiniciar()
+                        juego.value =
+                            if (ganador == Ganador.BUENOS)
+                                juego.value.copy(juegosPareja1 = juego.value.juegosPareja1 + 1)
+                            else
+                                juego.value.copy(juegosPareja2 = juego.value.juegosPareja2 + 1)
+                    },
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(text = "Aceptar")
+                }
+            }
+        }
+    }
+
+}
+
+@Composable
 fun Ordago(juego: MutableState<Partida>, ronda: MutableState<Ronda>, dialog: (Boolean) -> Unit) {
     Box(modifier = Modifier) {
         Surface(

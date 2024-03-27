@@ -15,6 +15,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -149,3 +151,94 @@ fun CajaEnvite(value: Int, focus: Boolean) {
 
 }
 
+@Composable
+fun Conteo(juego: MutableState<Partida>, salir: (Ronda) -> Unit) {
+    val ronda = remember { mutableStateOf(Ronda.GRANDE) }
+    if (juego.value.rondaActual.getGanador(ronda.value) != Ganador.POR_VER && ronda.value == Ronda.GRANDE) ronda.value =
+        Ronda.CHICA
+    if (juego.value.rondaActual.getGanador(ronda.value) != Ganador.POR_VER && ronda.value == Ronda.CHICA) ronda.value =
+        Ronda.PARES
+    if (juego.value.rondaActual.getGanador(ronda.value) != Ganador.POR_VER && ronda.value == Ronda.PARES) ronda.value =
+        Ronda.JUEGO
+    if (juego.value.rondaActual.getGanador(ronda.value) != Ganador.POR_VER && ronda.value == Ronda.JUEGO) ronda.value =
+        Ronda.CONTEO
+
+    Envites(juego, ronda.value)
+    when (ronda.value) {
+        Ronda.GRANDE -> {
+            Button(onClick = {
+                juego.value =
+                    juego.value.copy(puntosPareja1 = juego.value.puntosPareja1 + juego.value.rondaActual.grande.envite)
+                ronda.value = Ronda.CHICA
+            }) {
+                Text(text = "Buenos")
+            }
+
+            Button(onClick = {
+                juego.value =
+                    juego.value.copy(puntosPareja2 = juego.value.puntosPareja2 + juego.value.rondaActual.grande.envite)
+                ronda.value = Ronda.CHICA
+            }) {
+                Text(text = "Malos")
+            }
+        }
+
+        Ronda.CHICA -> {
+            Button(onClick = {
+                juego.value =
+                    juego.value.copy(puntosPareja1 = juego.value.puntosPareja1 + juego.value.rondaActual.chica.envite)
+                ronda.value = Ronda.PARES
+            }) {
+                Text(text = "Buenos")
+            }
+            Button(onClick = {
+                juego.value =
+                    juego.value.copy(puntosPareja2 = juego.value.puntosPareja2 + juego.value.rondaActual.chica.envite)
+                ronda.value = Ronda.PARES
+            }) {
+                Text(text = "Malos")
+            }
+        }
+
+        Ronda.PARES -> {
+            Button(onClick = {
+                juego.value =
+                    juego.value.copy(puntosPareja1 = juego.value.puntosPareja1 + juego.value.rondaActual.pares.envite)
+                ronda.value = Ronda.JUEGO
+            }) {
+                Text(text = "Buenos")
+            }
+            Button(onClick = {
+                juego.value =
+                    juego.value.copy(puntosPareja2 = juego.value.puntosPareja2 + juego.value.rondaActual.pares.envite)
+                ronda.value = Ronda.JUEGO
+            }) {
+                Text(text = "Malos")
+            }
+        }
+
+        Ronda.JUEGO -> {
+            Button(onClick = {
+                juego.value =
+                    juego.value.copy(puntosPareja1 = juego.value.puntosPareja1 + juego.value.rondaActual.juego.envite)
+                ronda.value = Ronda.CONTEO
+            }) {
+                Text(text = "Buenos")
+            }
+            Button(onClick = {
+                juego.value =
+                    juego.value.copy(puntosPareja2 = juego.value.puntosPareja2 + juego.value.rondaActual.juego.envite)
+                ronda.value = Ronda.CONTEO
+            }) {
+                Text(text = "Malos")
+            }
+        }
+
+        else -> {
+            juego.value.rondaActual.reiniciar()
+            salir(Ronda.GRANDE)
+        }
+    }
+
+
+}

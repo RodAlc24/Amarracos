@@ -28,7 +28,6 @@ fun PantallaJuego() {
     val ordago = remember { mutableStateOf(false) }
     val botones = remember { mutableStateOf(true) }
     val envite = remember { mutableStateOf(false) }
-    val ganan = remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -62,7 +61,12 @@ fun PantallaJuego() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.fillMaxHeight(.15f))
-            Envites(juego, ronda.value)
+            if (ronda.value == Ronda.CONTEO) Conteo(juego) {
+                ronda.value = it
+                botones.value = true
+            } else {
+                Envites(juego, ronda.value)
+            }
             Spacer(Modifier.fillMaxHeight(.15f))
 
             if (botones.value) BototesJuego(
@@ -96,6 +100,8 @@ fun PantallaJuego() {
                 { envite.value = it })
         }
     }
+
+    if (ronda.value == Ronda.CONTEO) botones.value = false
 
     if (ordago.value) {
         Dialog(onDismissRequest = {
@@ -141,6 +147,7 @@ fun BototesJuego(
             Ronda.GRANDE -> ronda.value = Ronda.CHICA
             Ronda.CHICA -> ronda.value = Ronda.PARES
             Ronda.PARES -> ronda.value = Ronda.JUEGO
+            Ronda.JUEGO -> ronda.value = Ronda.CONTEO
             else -> ronda.value = Ronda.GRANDE
         }
     }) {
@@ -205,6 +212,7 @@ fun Envite(
             Ronda.GRANDE -> Ronda.CHICA
             Ronda.CHICA -> Ronda.PARES
             Ronda.PARES -> Ronda.JUEGO
+            Ronda.JUEGO -> Ronda.CONTEO
             else -> Ronda.GRANDE
         }
     }) {

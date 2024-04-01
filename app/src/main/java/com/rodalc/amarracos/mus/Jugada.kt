@@ -85,15 +85,6 @@ class Jugada {
         }
     }
 
-    fun updateEnvite(ronda: Ronda, envite: Int) {
-        when (ronda) {
-            Ronda.GRANDE -> grande.envite += envite
-            Ronda.CHICA -> chica.envite += envite
-            Ronda.PARES -> pares.envite += envite
-            else -> juego.envite += envite
-        }
-    }
-
     fun setGanador(ronda: Ronda, ganador: Ganador) {
         when (ronda) {
             Ronda.GRANDE -> grande.ganador = ganador
@@ -125,7 +116,8 @@ data class Partida(
     var juegosPareja1: Int = 0,
     var juegosPareja2: Int = 0,
 
-    var rondaActual: Jugada = Jugada()
+    var rondaActual: Jugada = Jugada(),
+    var aux: Int = 0
 ) {
     fun reiniciar() {
         rondaActual.reiniciar()

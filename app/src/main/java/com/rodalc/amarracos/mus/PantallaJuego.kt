@@ -142,7 +142,7 @@ fun BototesJuego(
     val alPaso = if (ronda.value == Ronda.GRANDE || ronda.value == Ronda.CHICA) 1 else 0
 
     Button(onClick = {
-        juego.value.rondaActual.updateEnvite(ronda.value, alPaso)
+        juego.value.rondaActual.setEnvite(ronda.value, alPaso)
         when (ronda.value) {
             Ronda.GRANDE -> ronda.value = Ronda.CHICA
             Ronda.CHICA -> ronda.value = Ronda.PARES
@@ -198,7 +198,7 @@ fun Envite(
     }
     Button(onClick = {
         when (juego.value.rondaActual.getGanador(ronda.value)) {
-            Ganador.POR_VER -> juego.value.rondaActual.updateEnvite(
+            Ganador.POR_VER -> juego.value.rondaActual.setEnvite(
                 ronda.value,
                 piedras.intValue
             )

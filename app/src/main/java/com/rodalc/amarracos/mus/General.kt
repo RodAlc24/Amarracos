@@ -1,6 +1,7 @@
 package com.rodalc.amarracos.mus
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 
 @Composable
 fun MarcadorPuntos(puntos: Int, pareja: String, juegos: Int) {
@@ -154,14 +157,17 @@ fun CajaEnvite(value: Int, focus: Boolean) {
 
 @Composable
 fun Conteo(juego: MutableState<Partida>, salir: (Ronda) -> Unit) {
+    var dialogPares by remember { mutableStateOf(false) }
+    var dialogJuego by remember { mutableStateOf(false) }
     var ronda by remember { mutableStateOf(Ronda.GRANDE) }
+    var botones by remember { mutableStateOf(true) }
+
     if (juego.value.rondaActual.getGanador(ronda) != Ganador.POR_VER && ronda == Ronda.GRANDE) ronda =
         Ronda.CHICA
     if (juego.value.rondaActual.getGanador(ronda) != Ganador.POR_VER && ronda == Ronda.CHICA) ronda =
         Ronda.PARES
 
     Envites(juego, ronda)
-    val botones = remember { mutableStateOf(false) }
     when (ronda) {
         Ronda.GRANDE -> {
             Button(onClick = {
@@ -199,33 +205,26 @@ fun Conteo(juego: MutableState<Partida>, salir: (Ronda) -> Unit) {
         }
 
         Ronda.PARES -> {
-            botones.value = juego.value.rondaActual.pares.ganador == Ganador.POR_VER
+            botones = juego.value.rondaActual.pares.ganador == Ganador.POR_VER
+            dialogPares = !botones
 
-            if (botones.value) {
+            if (botones) {
                 Button(onClick = {
                     juego.value.rondaActual.pares.ganador = Ganador.BUENOS
-                    botones.value = false
+                    botones = false
                 }) {
                     Text(text = "Buenos")
                 }
                 Button(onClick = {
                     juego.value.rondaActual.pares.ganador = Ganador.MALOS
-                    botones.value = false
+                    botones = false
                 }) {
                     Text(text = "Malos")
                 }
-            } else {
                 Button(onClick = {
-                    juego.value =
-                        if (juego.value.rondaActual.getGanador(ronda) == Ganador.BUENOS) {
-                            juego.value.copy(puntosPareja1 = juego.value.puntosPareja1 + 1)
-                        } else {
-                            juego.value.copy(puntosPareja2 = juego.value.puntosPareja2 + 1)
-                        }
                     ronda = Ronda.JUEGO
-
                 }) {
-                    Text(text = "pares")
+                    Text(text = "Nadie")
                 }
             }
         }
@@ -250,6 +249,113 @@ fun Conteo(juego: MutableState<Partida>, salir: (Ronda) -> Unit) {
         else -> {
             juego.value.rondaActual.reiniciar()
             salir(Ronda.GRANDE)
+        }
+    }
+    if (dialogPares) {
+        Dialog(onDismissRequest = {}) {
+            PuntosPares(juego) {
+                dialogPares = false
+                ronda = Ronda.JUEGO
+            }
+        }
+    }
+}
+
+@Composable
+fun PuntosPares(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
+    var pares1: Pares by remember { mutableStateOf(Pares.NADA) }
+    var pares2: Pares by remember { mutableStateOf(Pares.NADA) }
+
+    Box(modifier = Modifier) {
+        Surface(
+            modifier = Modifier.align(Alignment.Center),
+            shape = RoundedCornerShape(16.dp),
+            color = Color.White
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    modifier = Modifier.padding(10.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Pares")
+                        RadioButton(
+                            selected = pares1 == Pares.PAR,
+                            onClick = { pares1 = Pares.PAR })
+                        RadioButton(
+                            selected = pares2 == Pares.PAR,
+                            onClick = { pares2 = Pares.PAR })
+                    }
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Medias")
+                        RadioButton(
+                            selected = pares1 == Pares.MEDIAS,
+                            onClick = { pares1 = Pares.MEDIAS })
+                        RadioButton(
+                            selected = pares2 == Pares.MEDIAS,
+                            onClick = { pares2 = Pares.MEDIAS })
+                    }
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Duples")
+                        RadioButton(
+                            selected = pares1 == Pares.DUPLES,
+                            onClick = { pares1 = Pares.DUPLES })
+                        RadioButton(
+                            selected = pares2 == Pares.DUPLES,
+                            onClick = { pares2 = Pares.DUPLES })
+                    }
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Nada")
+                        RadioButton(
+                            selected = pares1 == Pares.NADA,
+                            onClick = { pares1 = Pares.NADA })
+                        RadioButton(
+                            selected = pares2 == Pares.NADA,
+                            onClick = { pares2 = Pares.NADA })
+                    }
+                }
+                Button(
+                    enabled = pares1 != Pares.NADA || pares2 != Pares.NADA,
+                    onClick = {
+                        var totales = juego.value.rondaActual.pares.envite;
+                        totales += when (pares1) {
+                            Pares.PAR -> 1
+                            Pares.MEDIAS -> 2
+                            Pares.DUPLES -> 3
+                            else -> 0
+                        }
+                        totales += when (pares2) {
+                            Pares.PAR -> 1
+                            Pares.MEDIAS -> 2
+                            Pares.DUPLES -> 3
+                            else -> 0
+                        }
+                        if (juego.value.rondaActual.pares.ganador == Ganador.BUENOS) {
+                            juego.value =
+                                juego.value.copy(puntosPareja1 = juego.value.puntosPareja1 + totales)
+                        } else {
+                            juego.value =
+                                juego.value.copy(puntosPareja2 = juego.value.puntosPareja2 + totales)
+                        }
+                        dialog(false)
+                    }) {
+                    Text(text = "Ok")
+                }
+            }
         }
     }
 }

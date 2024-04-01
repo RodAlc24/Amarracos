@@ -18,7 +18,7 @@ enum class Pares { PAR, MEDIAS, DUPLES, NADA, POR_VER }
 /**
  * Almacena de que tipo es el juego (o punto)
  */
-enum class Juego { LA_UNA, JUEGO, PUNTO, NADA, POR_VER }
+enum class Juego { LA_UNA, JUEGO, NADA, POR_VER }
 
 /**
  * Guarda la infrmación relacionada con una ronda de grande o chica

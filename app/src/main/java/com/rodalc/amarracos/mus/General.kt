@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -230,19 +231,22 @@ fun Conteo(juego: MutableState<Partida>, salir: (Ronda) -> Unit) {
         }
 
         Ronda.JUEGO -> {
-            Button(onClick = {
-                juego.value =
-                    juego.value.copy(puntosPareja1 = juego.value.puntosPareja1 + juego.value.rondaActual.juego.envite)
-                ronda = Ronda.CONTEO
-            }) {
-                Text(text = "Buenos")
-            }
-            Button(onClick = {
-                juego.value =
-                    juego.value.copy(puntosPareja2 = juego.value.puntosPareja2 + juego.value.rondaActual.juego.envite)
-                ronda = Ronda.CONTEO
-            }) {
-                Text(text = "Malos")
+            botones = juego.value.rondaActual.juego.ganador == Ganador.POR_VER
+            dialogJuego = !botones
+
+            if (botones) {
+                Button(onClick = {
+                    juego.value.rondaActual.juego.ganador = Ganador.BUENOS
+                    botones = false
+                }) {
+                    Text(text = "Buenos")
+                }
+                Button(onClick = {
+                    juego.value.rondaActual.juego.ganador = Ganador.MALOS
+                    botones = false
+                }) {
+                    Text(text = "Malos")
+                }
             }
         }
 
@@ -256,6 +260,14 @@ fun Conteo(juego: MutableState<Partida>, salir: (Ronda) -> Unit) {
             PuntosPares(juego) {
                 dialogPares = false
                 ronda = Ronda.JUEGO
+            }
+        }
+    }
+    if (dialogJuego) {
+        Dialog(onDismissRequest = {}) {
+            PuntosJuego(juego) {
+                dialogPares = false
+                ronda = Ronda.CONTEO
             }
         }
     }
@@ -331,7 +343,7 @@ fun PuntosPares(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
                 Button(
                     enabled = pares1 != Pares.NADA || pares2 != Pares.NADA,
                     onClick = {
-                        var totales = juego.value.rondaActual.pares.envite;
+                        var totales = juego.value.rondaActual.pares.envite
                         totales += when (pares1) {
                             Pares.PAR -> 1
                             Pares.MEDIAS -> 2
@@ -345,6 +357,104 @@ fun PuntosPares(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
                             else -> 0
                         }
                         if (juego.value.rondaActual.pares.ganador == Ganador.BUENOS) {
+                            juego.value =
+                                juego.value.copy(puntosPareja1 = juego.value.puntosPareja1 + totales)
+                        } else {
+                            juego.value =
+                                juego.value.copy(puntosPareja2 = juego.value.puntosPareja2 + totales)
+                        }
+                        dialog(false)
+                    }) {
+                    Text(text = "Ok")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PuntosJuego(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
+    var juego1: Juego by remember { mutableStateOf(Juego.NADA) }
+    var juego2: Juego by remember { mutableStateOf(Juego.NADA) }
+    var punto: Boolean by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier) {
+        Surface(
+            modifier = Modifier.align(Alignment.Center),
+            shape = RoundedCornerShape(16.dp),
+            color = Color.White
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    modifier = Modifier.padding(10.dp),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Juego")
+                        RadioButton(
+                            enabled = !punto,
+                            selected = juego1 == Juego.JUEGO,
+                            onClick = { juego1 = Juego.JUEGO })
+                        RadioButton(
+                            enabled = !punto,
+                            selected = juego2 == Juego.JUEGO,
+                            onClick = { juego2 = Juego.JUEGO })
+                    }
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "31")
+                        RadioButton(
+                            enabled = !punto,
+                            selected = juego1 == Juego.LA_UNA,
+                            onClick = { juego1 = Juego.LA_UNA })
+                        RadioButton(
+                            enabled = !punto,
+                            selected = juego2 == Juego.LA_UNA,
+                            onClick = { juego2 = Juego.LA_UNA })
+                    }
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Nada")
+                        RadioButton(
+                            enabled = !punto,
+                            selected = juego1 == Juego.NADA,
+                            onClick = { juego1 = Juego.NADA })
+                        RadioButton(
+                            enabled = !punto,
+                            selected = juego2 == Juego.NADA,
+                            onClick = { juego2 = Juego.NADA })
+                    }
+                }
+
+                Checkbox(checked = punto, onCheckedChange = { punto = !punto })
+
+                Button(
+                    enabled = punto || juego1 != Juego.NADA || juego2 != Juego.NADA,
+                    onClick = {
+                        var totales = juego.value.rondaActual.juego.envite
+                        totales += when (juego1) {
+                            Juego.JUEGO -> 2
+                            Juego.LA_UNA -> 3
+                            else -> 0
+                        }
+                        totales += when (juego2) {
+                            Juego.JUEGO -> 2
+                            Juego.LA_UNA -> 3
+                            else -> 0
+                        }
+
+                        totales = if (punto) 1 else totales
+
+                        if (juego.value.rondaActual.juego.ganador == Ganador.BUENOS) {
                             juego.value =
                                 juego.value.copy(puntosPareja1 = juego.value.puntosPareja1 + totales)
                         } else {

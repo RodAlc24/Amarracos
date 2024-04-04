@@ -365,7 +365,7 @@ fun PuntosPares(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
                         }
                         dialog(false)
                     }) {
-                    Text(text = "Ok")
+                    Text(text = "Aceptar")
                 }
             }
         }
@@ -435,7 +435,14 @@ fun PuntosJuego(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
                     }
                 }
 
-                Checkbox(checked = punto, onCheckedChange = { punto = !punto })
+                Row(
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Punto: ")
+                    Checkbox(checked = punto, onCheckedChange = { punto = !punto })
+
+                }
 
                 Button(
                     enabled = punto || juego1 != Juego.NADA || juego2 != Juego.NADA,
@@ -463,7 +470,7 @@ fun PuntosJuego(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
                         }
                         dialog(false)
                     }) {
-                    Text(text = "Ok")
+                    Text(text = "Aceptar")
                 }
             }
         }

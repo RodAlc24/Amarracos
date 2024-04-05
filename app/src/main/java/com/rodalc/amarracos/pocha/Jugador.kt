@@ -13,3 +13,9 @@ data class Jugador(
         private val id = AtomicInteger(0)
     }
 }
+
+enum class Ronda {
+    NOMBRES,
+    APUESTAS,
+    CONTEO
+}

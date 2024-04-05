@@ -34,131 +34,6 @@ import kotlin.math.abs
 fun PantallaPocha() {
     var state by remember { mutableStateOf(Ronda.NOMBRES) }
     var jugadores by remember { mutableStateOf(listOf(Jugador(), Jugador())) }
-
-    when (state) {
-        Ronda.NOMBRES -> PochaInicio(jugadores = jugadores) {
-            jugadores = it
-            state = Ronda.APUESTAS
-        }
-
-        Ronda.APUESTAS -> PochaApuesta(jugadores = jugadores) {
-            jugadores = it
-            state = Ronda.CONTEO
-        }
-
-        Ronda.CONTEO -> PochaResultados(jugadores = jugadores) {
-            jugadores = it
-            state = Ronda.APUESTAS
-        }
-    }
-}
-
-@Composable
-fun PochaInicio(jugadores: List<Jugador>, salir: (List<Jugador>) -> Unit) {
-    var stateJugadores by remember { mutableStateOf(jugadores) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Text(text = "Número de jugadores: ${stateJugadores.size}")
-        Row {
-            Button(
-                onClick = {
-                    stateJugadores = stateJugadores.dropLast(1)
-                },
-                enabled = stateJugadores.size > 2
-            ) {
-                Text(text = "-")
-            }
-            Spacer(modifier = Modifier.width(10.dp))
-            Button(onClick = {
-                stateJugadores += Jugador()
-            }) {
-                Text(text = "+")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-        ) {
-            for (jugador in stateJugadores) {
-                val nombreState = remember { mutableStateOf(jugador.nombre) }
-                TextField(
-                    value = nombreState.value,
-                    onValueChange = { nuevoNombre ->
-                        nombreState.value = nuevoNombre
-                        jugador.nombre = nuevoNombre
-                    },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(onClick = {
-            salir(stateJugadores)
-        }) {
-            Text("Aceptar")
-        }
-    }
-}
-
-@Composable
-fun PochaApuesta(jugadores: List<Jugador>, salir: (List<Jugador>) -> Unit) {
-    val stateJugadores by remember { mutableStateOf(jugadores) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Text(text = "Ronda de apuestas")
-        Spacer(modifier = Modifier.height(10.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-        ) {
-            for (jugador in stateJugadores) {
-                var apuestaState by remember { mutableIntStateOf(jugador.apuesta) }
-                FilaJugador(
-                    texto = "${jugador.nombre}: ${jugador.punots}",
-                    valor = apuestaState
-                ) {
-                    apuestaState = it
-                    jugador.apuesta = apuestaState
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Button(onClick = {
-            salir(stateJugadores)
-        }) {
-            Text("Aceptar")
-        }
-    }
-}
-
-@Composable
-fun PochaResultados(jugadores: List<Jugador>, salir: (List<Jugador>) -> Unit) {
-    val stateJugadores by remember { mutableStateOf(jugadores) }
     var oros by remember { mutableStateOf(false) }
 
     Column(
@@ -168,54 +43,97 @@ fun PochaResultados(jugadores: List<Jugador>, salir: (List<Jugador>) -> Unit) {
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Text(text = "Ronda de resultados")
-
+        val texto = when (state) {
+            Ronda.NOMBRES -> "Número de jugadores: ${jugadores.size}"
+            Ronda.APUESTAS -> "Ronda de apuestas"
+            Ronda.CONTEO -> "Ronda de resultados"
+        }
+        Text(text = texto)
+        if (state == Ronda.NOMBRES) {
+            Row {
+                Button(
+                    onClick = {
+                        jugadores = jugadores.dropLast(1)
+                    },
+                    enabled = jugadores.size > 2
+                ) {
+                    Text(text = "-")
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Button(onClick = {
+                    jugadores += Jugador()
+                }) {
+                    Text(text = "+")
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(10.dp))
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
-            for (jugador in stateJugadores) {
-                var victoriaState by remember { mutableIntStateOf(jugador.victoria) }
-                FilaJugador(
-                    texto = "${jugador.nombre}: ${jugador.punots} (${jugador.apuesta})",
-                    valor = victoriaState
-                ) {
-                    victoriaState = it
-                    jugador.victoria = victoriaState
+            for (jugador in jugadores) {
+                if (state == Ronda.NOMBRES) {
+                    val nombreState = remember { mutableStateOf(jugador.nombre) }
+                    TextField(
+                        value = nombreState.value,
+                        onValueChange = { nuevoNombre ->
+                            nombreState.value = nuevoNombre
+                            jugador.nombre = nuevoNombre
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                    )
+                } else {
+                    var valorState by remember { mutableIntStateOf(0) }
+                    valorState = if (state == Ronda.APUESTAS) jugador.apuesta else jugador.victoria
+                    val textoFila =
+                        if (state == Ronda.APUESTAS) "${jugador.nombre}: ${jugador.punots}" else "${jugador.nombre}: ${jugador.punots} (${jugador.apuesta})"
+
+                    FilaJugador(
+                        texto = textoFila,
+                        valor = valorState
+                    ) {
+                        valorState = it
+                        if (state == Ronda.APUESTAS)
+                            jugador.apuesta = valorState
+                        else
+                            jugador.victoria = valorState
+                    }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
             }
         }
-        Spacer(modifier = Modifier.height(10.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(text = "Duplica: ")
-            Spacer(modifier = Modifier.width(10.dp))
-            Switch(checked = oros, onCheckedChange = { oros = it })
+        if (state == Ronda.CONTEO) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(text = "Duplica: ")
+                Spacer(modifier = Modifier.width(10.dp))
+                Switch(checked = oros, onCheckedChange = { oros = it })
+            }
         }
         Button(onClick = {
-            for (jugador in stateJugadores) {
-                var incremento = if (jugador.apuesta == jugador.victoria) {
-                    10 + 5 * jugador.apuesta
-                } else {
-                    -5 * abs(jugador.apuesta - jugador.victoria)
+            state = when (state) {
+                Ronda.NOMBRES -> Ronda.APUESTAS
+                Ronda.APUESTAS -> Ronda.CONTEO
+                Ronda.CONTEO -> {
+                    for (jugador in jugadores) {
+                        val incremento = if (jugador.apuesta == jugador.victoria) {
+                            10 + 5 * jugador.apuesta
+                        } else {
+                            -5 * abs(jugador.apuesta - jugador.victoria)
+                        }
+                        jugador.punots += if (oros) 2 * incremento else incremento
+                        jugador.apuesta = 0
+                        jugador.victoria = 0
+                    }
+                    Ronda.APUESTAS
                 }
-                if (oros) incremento *= 2
-
-                jugador.punots += incremento
-                jugador.apuesta = 0
-                jugador.victoria = 0
             }
-            salir(stateJugadores)
-        }
-        ) {
+        }) {
             Text("Aceptar")
         }
     }

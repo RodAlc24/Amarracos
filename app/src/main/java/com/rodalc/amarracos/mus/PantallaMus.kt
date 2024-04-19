@@ -1,7 +1,5 @@
 package com.rodalc.amarracos.mus
 
-import android.app.Activity
-import android.content.pm.ActivityInfo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -31,10 +28,6 @@ fun PantallaMus() {
     val ordago = remember { mutableStateOf(false) }
     val botones = remember { mutableStateOf(true) }
     val envite = remember { mutableStateOf(false) }
-
-    val activity = (LocalContext.current as Activity)
-    activity.requestedOrientation =
-        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE // TODO: Support portrait
 
     Row(
         modifier = Modifier

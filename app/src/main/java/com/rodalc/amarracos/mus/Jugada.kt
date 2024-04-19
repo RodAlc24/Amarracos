@@ -1,27 +1,27 @@
 package com.rodalc.amarracos.mus
 
 /**
- * Almacena quien ha ganado una ronda o si aún no se sabe
+ * Almacena quien ha ganado una ronda o si aún no se sabe.
  */
 enum class Ganador { BUENOS, MALOS, POR_VER }
 
 /**
- * Almacena los distintos tipos de rondas
+ * Almacena los distintos tipos de rondas.
  */
 enum class Ronda { GRANDE, CHICA, PARES, JUEGO, CONTEO }
 
 /**
- * Almacena de que tipo son los pares
+ * Almacena de que tipo son los pares.
  */
 enum class Pares { PAR, MEDIAS, DUPLES, NADA, POR_VER }
 
 /**
- * Almacena de que tipo es el juego (o punto)
+ * Almacena de que tipo es el juego (o punto).
  */
 enum class Juego { LA_UNA, JUEGO, NADA, POR_VER }
 
 /**
- * Guarda la infrmación relacionada con una ronda de grande o chica
+ * Guarda la infrmación relacionada con una ronda de grande o chica.
  */
 data class ResultadoRonda(
     var ronda: Ronda,
@@ -30,7 +30,7 @@ data class ResultadoRonda(
 )
 
 /**
- * Guarda la información de una ronda de pares
+ * Guarda la información de una ronda de pares.
  */
 data class ResultadoRondaPares(
     val ronda: Ronda = Ronda.PARES,
@@ -41,7 +41,7 @@ data class ResultadoRondaPares(
 )
 
 /**
- * Guarda la información de una ronda de juego (o punto)
+ * Guarda la información de una ronda de juego (o punto).
  */
 data class ResultadoRondaJuego(
     val ronda: Ronda = Ronda.JUEGO,
@@ -52,7 +52,7 @@ data class ResultadoRondaJuego(
 )
 
 /**
- * Guarda la información de una jugada entera (grande, chica, pares y juego)
+ * Guarda la información de una jugada entera (grande, chica, pares y juego).
  */
 class Jugada {
     var grande: ResultadoRonda = ResultadoRonda(Ronda.GRANDE)
@@ -60,6 +60,9 @@ class Jugada {
     var pares: ResultadoRondaPares = ResultadoRondaPares()
     var juego: ResultadoRondaJuego = ResultadoRondaJuego()
 
+    /**
+     * Reinicia todos los datos excepto los nombres y los juegos (ronda nueva).
+     */
     fun reiniciar() {
         grande = ResultadoRonda(Ronda.GRANDE)
         chica = ResultadoRonda(Ronda.CHICA)
@@ -67,6 +70,12 @@ class Jugada {
         juego = ResultadoRondaJuego()
     }
 
+    /**
+     * Devuelve el envite de la ronda solicitada.
+     *
+     * @param ronda La ronda de la que se quiere obtener el envite
+     * @return El valor del envite en esa ronda
+     */
     fun getEnvite(ronda: Ronda): Int {
         return when (ronda) {
             Ronda.GRANDE -> grande.envite
@@ -76,6 +85,12 @@ class Jugada {
         }
     }
 
+    /**
+     * Cambia el envite de una ronda.
+     *
+     * @param ronda La ronda de la que se va a poner el envite
+     * @param envite El valor del envite
+     */
     fun setEnvite(ronda: Ronda, envite: Int) {
         when (ronda) {
             Ronda.GRANDE -> grande.envite = envite
@@ -85,6 +100,12 @@ class Jugada {
         }
     }
 
+    /**
+     * Asigna un ganador a una ronda.
+     *
+     * @param ronda La ronda seleccionada
+     * @param ganador El ganador de esa ronda
+     */
     fun setGanador(ronda: Ronda, ganador: Ganador) {
         when (ronda) {
             Ronda.GRANDE -> grande.ganador = ganador
@@ -94,6 +115,12 @@ class Jugada {
         }
     }
 
+    /**
+     * Devuelve el ganador de una ronda solicitada.
+     *
+     * @param ronda La ronda de la que se quiere el ganador
+     * @return El ganador de esa ronda
+     */
     fun getGanador(ronda: Ronda): Ganador {
         val ganador = when (ronda) {
             Ronda.GRANDE -> grande.ganador
@@ -106,6 +133,9 @@ class Jugada {
 
 }
 
+/**
+ * Clase para almacenar toda la información de una ronda.
+ */
 data class Partida(
     var nombrePareja1: String = "Buenos",
     var nombrePareja2: String = "Malos",

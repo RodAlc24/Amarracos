@@ -1,6 +1,7 @@
 package com.rodalc.amarracos.pocha
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,9 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -20,18 +23,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rodalc.amarracos.storage.loadPocha
-import com.rodalc.amarracos.storage.savePocha
+import androidx.compose.ui.window.Dialog
+import com.rodalc.amarracos.storage.StateSaver
 import kotlin.math.abs
 
 /**
@@ -47,6 +52,48 @@ fun PantallaPocha() {
     var jugadores by rememberSaveable { mutableStateOf(listOf(Jugador(1), Jugador(2))) }
     var duplica by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
+    var showRecoever by remember { mutableStateOf(StateSaver.fileExist(context)) }
+
+    if (showRecoever) {
+        Dialog(onDismissRequest = { }) {
+            Box(modifier = Modifier) {
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(10.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color.White
+                ) {
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "¿Recuperar la última partida?")
+                        Row(
+                            modifier = Modifier.padding(10.dp),
+                            horizontalArrangement = Arrangement.SpaceAround
+                        ) {
+                            Button(onClick = {
+                                jugadores = StateSaver.loadPocha(context)
+                                showRecoever = false
+                                state = Ronda.APUESTAS
+
+                            }) {
+                                Text(text = "Sí")
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Button(onClick = {
+                                StateSaver.deleteFile(context)
+                                showRecoever = false
+                            }) {
+                                Text(text = "No")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -88,13 +135,17 @@ fun PantallaPocha() {
         ) {
             for (jugador in jugadores) {
                 if (state == Ronda.NOMBRES) {
-                    val nombreState = rememberSaveable { mutableStateOf(jugador.nombre) }
+                    var nombreState by rememberSaveable { mutableStateOf(jugador.nombre) }
                     TextField(
-                        value = nombreState.value,
-                        onValueChange = { nuevoNombre ->
-                            nombreState.value = nuevoNombre
-                            jugador.nombre = nuevoNombre
+                        modifier = Modifier.fillMaxWidth(),
+                        value = nombreState,
+                        onValueChange = {
+                            if (it.length <= 20) {
+                                nombreState = it
+                                jugador.nombre = nombreState
+                            } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
                         },
+                        maxLines = 1,
                         label = { Text("Jugador ${jugador.id}") },
                         keyboardOptions = KeyboardOptions(
                             imeAction = if (jugadores.last() == jugador) ImeAction.Done else ImeAction.Next
@@ -154,17 +205,12 @@ fun PantallaPocha() {
                         jugador.victoria = 0
                     }
                     duplica = false
+                    StateSaver.savePocha(context, jugadores)
                     Ronda.APUESTAS
                 }
             }
         }) {
             Text("Aceptar")
-        }
-        Button(onClick = { savePocha(context, jugadores) }) {
-            Text(text = "guardar")
-        }
-        Button(onClick = { jugadores = loadPocha(context) ?: jugadores }) {
-            Text(text = "cargar")
         }
     }
 }

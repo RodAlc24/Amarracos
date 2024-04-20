@@ -4,3 +4,5 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.9.0" apply false
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10" apply false
 }
+val defaultVersionCode by extra(2)
+val defaultVersionName by extra("0.1")

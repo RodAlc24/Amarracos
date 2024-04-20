@@ -12,8 +12,8 @@ android {
         applicationId = "com.rodalc.amarracos"
         minSdk = 28
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = rootProject.extra["defaultVersionCode"] as Int
+        versionName = rootProject.extra["defaultVersionName"] as String
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

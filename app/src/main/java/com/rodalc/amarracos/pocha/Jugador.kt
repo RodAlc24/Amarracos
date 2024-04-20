@@ -1,6 +1,9 @@
 package com.rodalc.amarracos.pocha
 
+import kotlinx.serialization.Serializable
 
+
+@Serializable
 data class Jugador(
     val id: Int,
     var nombre: String = "",

@@ -25,10 +25,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rodalc.amarracos.storage.loadPocha
+import com.rodalc.amarracos.storage.savePocha
 import kotlin.math.abs
 
 /**
@@ -43,6 +46,7 @@ fun PantallaPocha() {
     var state by rememberSaveable { mutableStateOf(Ronda.NOMBRES) }
     var jugadores by rememberSaveable { mutableStateOf(listOf(Jugador(1), Jugador(2))) }
     var duplica by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -155,6 +159,12 @@ fun PantallaPocha() {
             }
         }) {
             Text("Aceptar")
+        }
+        Button(onClick = { savePocha(context, jugadores) }) {
+            Text(text = "guardar")
+        }
+        Button(onClick = { jugadores = loadPocha(context) ?: jugadores }) {
+            Text(text = "cargar")
         }
     }
 }

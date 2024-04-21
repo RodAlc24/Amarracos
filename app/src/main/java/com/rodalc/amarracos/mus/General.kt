@@ -59,7 +59,6 @@ fun Ganan(
         Surface(
             modifier = Modifier.align(Alignment.Center),
             shape = RoundedCornerShape(16.dp),
-            color = Color.White
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(text = "Gana: $nombre")
@@ -89,7 +88,6 @@ fun Ordago(juego: MutableState<Partida>, ronda: MutableState<Ronda>, dialog: (Bo
         Surface(
             modifier = Modifier.align(Alignment.Center),
             shape = RoundedCornerShape(16.dp),
-            color = Color.White
         ) {
             Row(modifier = Modifier.padding(16.dp)) {
                 Button(
@@ -282,7 +280,6 @@ fun PuntosPares(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
         Surface(
             modifier = Modifier.align(Alignment.Center),
             shape = RoundedCornerShape(16.dp),
-            color = Color.White
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -382,7 +379,6 @@ fun PuntosJuego(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
         Surface(
             modifier = Modifier.align(Alignment.Center),
             shape = RoundedCornerShape(16.dp),
-            color = Color.White
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally

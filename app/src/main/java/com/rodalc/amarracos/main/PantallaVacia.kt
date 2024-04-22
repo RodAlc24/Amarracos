@@ -1,4 +1,4 @@
-package com.rodalc.amarracos
+package com.rodalc.amarracos.main
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text

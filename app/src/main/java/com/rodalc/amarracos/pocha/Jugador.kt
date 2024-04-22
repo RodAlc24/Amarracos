@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class Jugador(
     val id: Int,
     var nombre: String = "",
-    var punots: Int = 0,
+    var puntos: Int = 0,
     var apuesta: Int = 0,
     var victoria: Int = 0,
 ) {

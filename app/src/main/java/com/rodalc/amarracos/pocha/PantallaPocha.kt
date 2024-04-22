@@ -1,5 +1,6 @@
 package com.rodalc.amarracos.pocha
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.rodalc.amarracos.storage.StateSaver
+import com.rodalc.amarracos.storage.UndoStack
 import kotlin.math.abs
 
 /**
@@ -52,6 +54,11 @@ fun PantallaPocha() {
     var duplica by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     var showRecoever by remember { mutableStateOf(StateSaver.fileExist(context)) }
+    val undoStack by remember { mutableStateOf(UndoStack<List<Jugador>>()) }
+
+    BackHandler(enabled = state != Ronda.NOMBRES) {
+        state = Ronda.NOMBRES
+    }
 
     if (showRecoever) {
         Dialog(onDismissRequest = { }) {
@@ -154,7 +161,7 @@ fun PantallaPocha() {
                     valorState = if (state == Ronda.APUESTAS) jugador.apuesta else jugador.victoria
                     val textoFila = jugador.nombre
                     val puntos =
-                        if (state == Ronda.APUESTAS) "${jugador.punots}" else "(${jugador.apuesta}) ${jugador.punots}"
+                        if (state == Ronda.APUESTAS) "${jugador.puntos}" else "(${jugador.apuesta}) ${jugador.puntos}"
 
                     FilaJugador(
                         texto = textoFila,
@@ -181,34 +188,59 @@ fun PantallaPocha() {
                 Switch(checked = duplica, onCheckedChange = { duplica = it })
             }
         }
-        Button(onClick = {
-            state = when (state) {
-                Ronda.NOMBRES -> {
-                    for (jugador in jugadores) {
-                        if (jugador.nombre == "") jugador.nombre = "Jugador ${jugador.id}"
-                    }
-                    Ronda.APUESTAS
-                }
-
-                Ronda.APUESTAS -> Ronda.CONTEO
-                Ronda.CONTEO -> {
-                    for (jugador in jugadores) {
-                        val incremento = if (jugador.apuesta == jugador.victoria) {
-                            10 + 5 * jugador.apuesta
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (state != Ronda.NOMBRES) {
+                Button(
+                    modifier = Modifier.padding(10.dp),
+                    enabled = (state == Ronda.CONTEO || undoStack.size() > 0),
+                    onClick = {
+                        if (state == Ronda.CONTEO) {
+                            state = Ronda.APUESTAS
                         } else {
-                            -5 * abs(jugador.apuesta - jugador.victoria)
+                            jugadores = undoStack.pop()!!
+                            state = Ronda.CONTEO
                         }
-                        jugador.punots += if (duplica) 2 * incremento else incremento
-                        jugador.apuesta = 0
-                        jugador.victoria = 0
-                    }
-                    duplica = false
-                    StateSaver.savePocha(context, jugadores)
-                    Ronda.APUESTAS
+
+                    }) {
+                    Text(text = "Volver")
                 }
+                Spacer(modifier = Modifier.weight(1f))
             }
-        }) {
-            Text("Aceptar")
+            Button(
+                modifier = Modifier.padding(10.dp),
+                onClick = {
+                    state = when (state) {
+                        Ronda.NOMBRES -> {
+                            for (jugador in jugadores) {
+                                if (jugador.nombre == "") jugador.nombre = "Jugador ${jugador.id}"
+                            }
+                            Ronda.APUESTAS
+                        }
+
+                        Ronda.APUESTAS -> Ronda.CONTEO
+                        Ronda.CONTEO -> {
+                            undoStack.push(jugadores.map { it.copy() })
+                            for (jugador in jugadores) {
+                                val incremento = if (jugador.apuesta == jugador.victoria) {
+                                    10 + 5 * jugador.apuesta
+                                } else {
+                                    -5 * abs(jugador.apuesta - jugador.victoria)
+                                }
+                                jugador.puntos += if (duplica) 2 * incremento else incremento
+                                jugador.apuesta = 0
+                                jugador.victoria = 0
+                            }
+                            duplica = false
+                            StateSaver.savePocha(context, jugadores)
+                            Ronda.APUESTAS
+                        }
+                    }
+                }) {
+                Text("Aceptar")
+            }
         }
     }
 }

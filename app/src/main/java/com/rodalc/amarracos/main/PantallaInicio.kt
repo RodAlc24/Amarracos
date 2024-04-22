@@ -1,4 +1,4 @@
-package com.rodalc.amarracos
+package com.rodalc.amarracos.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

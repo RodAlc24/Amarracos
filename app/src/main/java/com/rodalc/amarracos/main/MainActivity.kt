@@ -1,4 +1,4 @@
-package com.rodalc.amarracos
+package com.rodalc.amarracos.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

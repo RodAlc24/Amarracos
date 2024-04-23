@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 
+// PANTALLA AUXILIAR, VA A SER APISONADA
 @Composable
 fun PantallaVacia(navController: NavController) {
     Button(onClick = { navController.navigate("pantallaInicial") }) {

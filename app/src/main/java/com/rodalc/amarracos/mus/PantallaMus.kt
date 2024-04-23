@@ -20,7 +20,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
-@Preview(showBackground = true, widthDp = 640, heightDp = 360)
+/**
+ * Gestiona la pantalla del mus.
+ */
+@Preview(
+    showBackground = true,
+    device = "spec:parent=pixel,orientation=landscape", backgroundColor = 0xFFFFFFFF
+)
 @Composable
 fun PantallaMus() {
     val juego = remember { mutableStateOf(Partida()) }
@@ -124,6 +130,9 @@ fun PantallaMus() {
     }
 }
 
+/**
+ * Se encarga de mostrar los botones de las distintas rondas.
+ */
 @Composable
 fun BototesJuego(
     juego: MutableState<Partida>,
@@ -158,6 +167,9 @@ fun BototesJuego(
     }
 }
 
+/**
+ * Muestra los botones del envite no visto.
+ */
 @Composable
 fun BotonesEnviteNoVisto(
     juego: MutableState<Partida>,
@@ -175,6 +187,9 @@ fun BotonesEnviteNoVisto(
     }
 }
 
+/**
+ * Gestiona los envites.
+ */
 @Composable
 fun Envite(
     juego: MutableState<Partida>,

@@ -16,6 +16,9 @@ import com.rodalc.amarracos.mus.PantallaMus
 import com.rodalc.amarracos.pocha.PantallaPocha
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
+/**
+ * Punto de inicio de la aplicación
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +36,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+/**
+ * Función que gestiona el controlador para la navegación entre pantallas.
+ */
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
@@ -47,7 +54,13 @@ fun MyApp() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 640, heightDp = 360)
+/**
+ * Función auxiliar para Preview
+ */
+@Preview(
+    showBackground = true,
+    device = "id:pixel", backgroundColor = 0xFFFFFFFF
+)
 @Composable
 fun GreetingPreview() {
     AmarracosTheme {

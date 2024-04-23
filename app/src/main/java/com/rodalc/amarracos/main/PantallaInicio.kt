@@ -21,6 +21,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
+/**
+ * Primera pantalla de la aplicación, contiene el menú para navegar por ella.
+ *
+ * @param navController El controlador usado para cambiar entre pantallas.
+ */
 @Composable
 fun PantallaInicio(navController: NavController) {
 
@@ -30,6 +35,7 @@ fun PantallaInicio(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.weight(1f))
+
         Box(
             modifier = Modifier
         ) {
@@ -37,7 +43,6 @@ fun PantallaInicio(navController: NavController) {
                 text = "Amarracos",
                 fontSize = 21.sp,
                 textAlign = TextAlign.Center
-
             )
         }
         Spacer(modifier = Modifier.weight(1f))
@@ -77,7 +82,13 @@ fun PantallaInicio(navController: NavController) {
     }
 }
 
-@Preview(showBackground = true, widthDp = 640, heightDp = 360)
+/**
+ * Función auxiliar para Preview
+ */
+@Preview(
+    showBackground = true,
+    device = "id:pixel", backgroundColor = 0xFFFFFFFF
+)
 @Composable
 fun InicioPreview() {
     val navController = rememberNavController()

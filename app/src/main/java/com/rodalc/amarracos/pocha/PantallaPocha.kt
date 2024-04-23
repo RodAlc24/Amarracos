@@ -200,7 +200,7 @@ fun PantallaPocha() {
                         if (state == Ronda.CONTEO) {
                             state = Ronda.APUESTAS
                         } else {
-                            jugadores = undoStack.pop()!!
+                            jugadores = undoStack.pop() ?: jugadores
                             state = Ronda.CONTEO
                         }
 

@@ -29,6 +29,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
+/**
+ * Muestra un recuadro con puntos.
+ *
+ * @param puntos Los puntos.
+ * @param pareja El nombre de la pareja.
+ * @param juegos Los juegos ganados por la pareja.
+ */
 @Composable
 fun MarcadorPuntos(puntos: Int, pareja: String, juegos: Int) {
     Column {
@@ -47,6 +54,13 @@ fun MarcadorPuntos(puntos: Int, pareja: String, juegos: Int) {
     }
 }
 
+/**
+ * Mesaje a mostrar cuando una pareja alcanza el máximo de puntos.
+ *
+ * @param juego La partida.
+ * @param ronda La ronda.
+ * @param ganador El ganador de la partida.
+ */
 @Composable
 fun Ganan(
     juego: MutableState<Partida>,
@@ -79,9 +93,15 @@ fun Ganan(
             }
         }
     }
-
 }
 
+/**
+ * Mensaje a mostrar durante un órdago visto.
+ *
+ * @param juego La partida.
+ * @param ronda La ronda.
+ * @param dialog Una lambda.
+ */
 @Composable
 fun Ordago(juego: MutableState<Partida>, ronda: MutableState<Ronda>, dialog: (Boolean) -> Unit) {
     Box(modifier = Modifier) {
@@ -120,6 +140,12 @@ fun Ordago(juego: MutableState<Partida>, ronda: MutableState<Ronda>, dialog: (Bo
     }
 }
 
+/**
+ * Muestra la cuadrícula de envites.
+ *
+ * @param juego La partida.
+ * @param ronda La ronda actual (para resaltarla)
+ */
 @Composable
 fun Envites(juego: MutableState<Partida>, ronda: Ronda) {
     Column {
@@ -139,6 +165,12 @@ fun Envites(juego: MutableState<Partida>, ronda: Ronda) {
     }
 }
 
+/**
+ * La caja de texto con el valor de los envites.
+ *
+ * @param value El valor del envite.
+ * @param focus Si está resaltada o no.
+ */
 @Composable
 fun CajaEnvite(value: Int, focus: Boolean) {
     Box(
@@ -154,6 +186,12 @@ fun CajaEnvite(value: Int, focus: Boolean) {
 
 }
 
+/**
+ * Función para realizar el conteo de puntos tras la ronda.
+ *
+ * @param juego La partida.
+ * @param salir Una lambda para finalizar.
+ */
 @Composable
 fun Conteo(juego: MutableState<Partida>, salir: (Ronda) -> Unit) {
     var dialogPares by remember { mutableStateOf(false) }
@@ -271,6 +309,12 @@ fun Conteo(juego: MutableState<Partida>, salir: (Ronda) -> Unit) {
     }
 }
 
+/**
+ * Funcionalidad específica para contar los puntos de pares.
+ *
+ * @param juego La partida.
+ * @param dialog Un lambda para salir.
+ */
 @Composable
 fun PuntosPares(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
     var pares1: Pares by remember { mutableStateOf(Pares.NADA) }
@@ -369,6 +413,12 @@ fun PuntosPares(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
     }
 }
 
+/**
+ * Funcionalidad específica para contar los puntos de juego.
+ *
+ * @param juego La partida.
+ * @param dialog Un lambda para salir.
+ */
 @Composable
 fun PuntosJuego(juego: MutableState<Partida>, dialog: (Boolean) -> Unit) {
     var juego1: Juego by remember { mutableStateOf(Juego.NADA) }

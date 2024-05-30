@@ -4,6 +4,7 @@ import com.rodalc.amarracos.pocha.Ronda.APUESTAS
 import com.rodalc.amarracos.pocha.Ronda.CONTEO
 import com.rodalc.amarracos.pocha.Ronda.NOMBRES
 import kotlinx.serialization.Serializable
+import kotlin.math.abs
 
 
 /**
@@ -25,6 +26,15 @@ data class Jugador(
     var apuesta: Int = 0,
     var victoria: Int = 0,
 ) {
+    fun actualizarPuntuacion(duplica: Boolean) {
+        val incremento = if (this.apuesta == this.victoria) 10 + 5 * this.apuesta else -5 * abs(this.apuesta - this.victoria)
+        puntos += (if (duplica) 2 else 1) * incremento
+        this.apuesta = 0
+        this.victoria = 0
+    }
+    override fun toString(): String {
+        return if (nombre == "") "Jugador ${this.id}" else this.nombre
+    }
 }
 
 /**

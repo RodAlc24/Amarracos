@@ -1,5 +1,7 @@
 package com.rodalc.amarracos.pocha
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -40,206 +44,38 @@ import com.rodalc.amarracos.storage.StateSaver
 import com.rodalc.amarracos.storage.UndoStack
 import kotlin.math.abs
 
-/**
- * Gestiona toda la pantalla para el conteo de la pocha.
- */
-@Preview(
-    showBackground = true,
-    device = "spec:width=411dp,height=891dp,orientation=landscape"
-)
 @Composable
-fun PantallaPocha() {
-    var state by rememberSaveable { mutableStateOf(Ronda.NOMBRES) }
-    var jugadores by rememberSaveable { mutableStateOf(listOf(Jugador(1), Jugador(2))) }
-    var duplica by rememberSaveable { mutableStateOf(false) }
-    val context = LocalContext.current
-    var showRecoever by remember { mutableStateOf(StateSaver.fileExist(context)) }
-    val undoStack by remember { mutableStateOf(UndoStack<List<Jugador>>()) }
-
-    BackHandler(enabled = state != Ronda.NOMBRES) {
-        state = Ronda.NOMBRES
-    }
-
-    if (showRecoever) {
-        Dialog(onDismissRequest = { }) {
-            Box(modifier = Modifier) {
-                Surface(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(10.dp),
-                    shape = RoundedCornerShape(16.dp),
-                ) {
-                    Column(
-                        modifier = Modifier.padding(10.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = "¿Recuperar la última partida?")
-                        Row(
-                            modifier = Modifier.padding(10.dp),
-                            horizontalArrangement = Arrangement.SpaceAround
-                        ) {
-                            Button(onClick = {
-                                jugadores = StateSaver.loadPocha(context)
-                                showRecoever = false
-                                state = Ronda.APUESTAS
-
-                            }) {
-                                Text(text = "Sí")
-                            }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Button(onClick = {
-                                StateSaver.deleteFile(context)
-                                showRecoever = false
-                            }) {
-                                Text(text = "No")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val texto = when (state) {
-            Ronda.NOMBRES -> "Número de jugadores: ${jugadores.size}"
-            Ronda.APUESTAS -> "Ronda de apuestas"
-            Ronda.CONTEO -> "Ronda de resultados"
-        }
-        Text(text = texto)
-        if (state == Ronda.NOMBRES) {
-            Row {
-                Button(
-                    onClick = {
-                        jugadores = jugadores.dropLast(1)
-                    },
-                    enabled = jugadores.size > 2
-                ) {
-                    Text(text = "-")
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Button(onClick = {
-                    jugadores += Jugador(jugadores.size + 1)
-                }) {
-                    Text(text = "+")
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-        ) {
-            for (jugador in jugadores) {
-                if (state == Ronda.NOMBRES) {
-                    var nombreState by rememberSaveable { mutableStateOf(jugador.nombre) }
-                    TextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = nombreState,
-                        onValueChange = {
-                            if (it.length <= 20) {
-                                nombreState = it
-                                jugador.nombre = nombreState
-                            } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
-                        },
-                        maxLines = 1,
-                        label = { Text("Jugador ${jugador.id}") },
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = if (jugadores.last() == jugador) ImeAction.Done else ImeAction.Next
-                        )
-                    )
-                } else {
-                    var valorState by rememberSaveable { mutableIntStateOf(0) }
-                    valorState = if (state == Ronda.APUESTAS) jugador.apuesta else jugador.victoria
-                    val textoFila = jugador.nombre
-                    val puntos =
-                        if (state == Ronda.APUESTAS) "${jugador.puntos}" else "(${jugador.apuesta}) ${jugador.puntos}"
-
-                    FilaJugador(
-                        texto = textoFila,
-                        puntos = puntos,
-                        valor = valorState
-                    ) {
-                        valorState = it
-                        if (state == Ronda.APUESTAS)
-                            jugador.apuesta = valorState
-                        else
-                            jugador.victoria = valorState
-                    }
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-        }
-        if (state == Ronda.CONTEO) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+fun RecuperarDatos(recuperar: (Boolean) -> Unit) {
+    Dialog(onDismissRequest = { }) {
+        Box(modifier = Modifier) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(10.dp),
+                shape = RoundedCornerShape(16.dp),
             ) {
-                Text(text = "Duplica: ")
-                Spacer(modifier = Modifier.width(10.dp))
-                Switch(checked = duplica, onCheckedChange = { duplica = it })
-            }
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            if (state != Ronda.NOMBRES) {
-                Button(
+                Column(
                     modifier = Modifier.padding(10.dp),
-                    enabled = (state == Ronda.CONTEO || undoStack.size() > 0),
-                    onClick = {
-                        if (state == Ronda.CONTEO) {
-                            state = Ronda.APUESTAS
-                        } else {
-                            jugadores = undoStack.pop() ?: jugadores
-                            state = Ronda.CONTEO
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "¿Recuperar la última partida?")
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Button(onClick = {
+                            recuperar(true)
+                        }) {
+                            Text(text = "Sí")
                         }
-
-                    }) {
-                    Text(text = "Volver")
-                }
-                Spacer(modifier = Modifier.weight(1f))
-            }
-            Button(
-                modifier = Modifier.padding(10.dp),
-                onClick = {
-                    state = when (state) {
-                        Ronda.NOMBRES -> {
-                            for (jugador in jugadores) {
-                                if (jugador.nombre == "") jugador.nombre = "Jugador ${jugador.id}"
-                            }
-                            Ronda.APUESTAS
-                        }
-
-                        Ronda.APUESTAS -> Ronda.CONTEO
-                        Ronda.CONTEO -> {
-                            undoStack.push(jugadores.map { it.copy() })
-                            for (jugador in jugadores) {
-                                val incremento = if (jugador.apuesta == jugador.victoria) {
-                                    10 + 5 * jugador.apuesta
-                                } else {
-                                    -5 * abs(jugador.apuesta - jugador.victoria)
-                                }
-                                jugador.puntos += if (duplica) 2 * incremento else incremento
-                                jugador.apuesta = 0
-                                jugador.victoria = 0
-                            }
-                            duplica = false
-                            StateSaver.savePocha(context, jugadores)
-                            Ronda.APUESTAS
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(onClick = {
+                            recuperar(false)
+                        }) {
+                            Text(text = "No")
                         }
                     }
-                }) {
-                Text("Aceptar")
+                }
             }
         }
     }
@@ -254,6 +90,7 @@ fun PantallaPocha() {
  */
 @Composable
 fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> Unit) {
+    var valorState by rememberSaveable { mutableIntStateOf(valor) }
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
@@ -273,21 +110,224 @@ fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> U
         )
         Button(
             onClick = {
-                modificar(valor - 1)
+                valorState -= 1
+                modificar(valorState)
             },
-            enabled = valor > 0
+            enabled = valorState > 0
         ) {
             Text("-")
         }
         Text(
-            text = valor.toString(),
+            text = valorState.toString(),
             modifier = Modifier.padding(10.dp)
         )
         Button(onClick = {
-            modificar(valor + 1)
+            valorState += 1
+            modificar(valorState)
         }
         ) {
             Text("+")
+        }
+    }
+}
+
+/**
+ * Gestiona toda la pantalla para el conteo de la pocha.
+ */
+@Preview(
+    showBackground = true,
+    device = "spec:width=411dp,height=891dp,orientation=landscape"
+)
+@Composable
+fun PantallaPocha() {
+    var state by rememberSaveable { mutableStateOf(Ronda.NOMBRES) }
+    var jugadores by remember { mutableStateOf(Pocha.getJugadores()) }
+    var duplica by rememberSaveable { mutableStateOf(false) }
+
+    when (state) {
+        Ronda.NOMBRES -> {
+            Plantilla(
+                header = {
+                    Text(text = "Jugadores ${jugadores.size}")
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row {
+                        Button(
+                            onClick = {
+                                jugadores = jugadores.dropLast(1).toMutableList()
+                            },
+                            enabled = jugadores.size > 2
+                        ) {
+                            Text(text = "-")
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(onClick = {
+                            jugadores = (jugadores + Jugador(jugadores.size)).toMutableList()
+                        }) {
+                            Text(text = "+")
+                        }
+                    }
+                },
+                lineJugador = {
+                    FilaNombre(
+                        jugador = it,
+                        numJugadores = jugadores.size,
+                        context = LocalContext.current
+                    )
+                },
+                nextRound = {
+                    Pocha.setJugadores(jugadores)
+                    state = Ronda.APUESTAS
+                },
+                undo = {},
+                undoEnabled = false,
+                jugadores = jugadores
+            )
+        }
+
+        Ronda.APUESTAS -> {
+            Plantilla(
+                header = {
+                    Text(text = "Ronda de apuestas")
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(text = "Duplicar puntuación")
+                        Spacer(modifier = Modifier.weight(1f))
+                        Switch(checked = duplica, onCheckedChange = { duplica = it })
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                },
+                lineJugador = { jugador ->
+                    FilaJugador(
+                        texto = jugador.toString(),
+                        puntos = jugador.puntos.toString(),
+                        valor = jugador.apuesta
+                    ) {
+                        jugador.apuesta = it
+                    }
+                },
+                nextRound = {
+                    state = Ronda.CONTEO
+                },
+                undo = {
+                    Pocha.popState()
+                    jugadores = Pocha.getJugadores()
+                    state = Ronda.CONTEO
+                },
+                undoEnabled = Pocha.canUndo(),
+                jugadores = jugadores
+            )
+        }
+
+        Ronda.CONTEO -> {
+            Plantilla(
+                header = {
+                    Text(text = "Ronda de apuestas")
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(text = "Duplicar puntuación")
+                        Spacer(modifier = Modifier.weight(1f))
+                        Switch(checked = duplica, onCheckedChange = { duplica = it })
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                },
+                lineJugador = { jugador ->
+                    FilaJugador(
+                        texto = "$jugador (${jugador.apuesta})",
+                        puntos = jugador.puntos.toString(),
+                        valor = jugador.victoria
+                    ) {
+                        jugador.victoria = it
+                    }
+                },
+                nextRound = {
+                    Pocha.pushState()
+                    Pocha.actualizarPuntuacion(duplica)
+                    duplica = false
+                    state = Ronda.APUESTAS
+                },
+                undo = { state = Ronda.APUESTAS },
+                undoEnabled = true,
+                jugadores = jugadores
+            )
+
+        }
+    }
+
+}
+
+@Composable
+fun FilaNombre(jugador: Jugador, numJugadores: Int, context: Context) {
+    var nombreState by rememberSaveable { mutableStateOf(jugador.nombre) }
+    TextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = nombreState,
+        onValueChange = {
+            if (it.length <= 20) {
+                nombreState = it
+                jugador.nombre = nombreState
+            } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
+        },
+        maxLines = 1,
+        label = { Text("Jugador ${jugador.id}") },
+        keyboardOptions = KeyboardOptions(
+            imeAction = if (jugador.id + 1 == numJugadores) ImeAction.Done else ImeAction.Next
+        )
+    )
+}
+
+@Composable
+fun Plantilla(
+    header: @Composable () -> Unit,
+    lineJugador: @Composable (Jugador) -> Unit,
+    nextRound: () -> Unit,
+    undo: () -> Unit,
+    undoEnabled: Boolean,
+    jugadores: List<Jugador>
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        header()
+        Spacer(modifier = Modifier.height(10.dp))
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) {
+            items(jugadores) { jugador ->
+                lineJugador(jugador)
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(
+                modifier = Modifier.padding(10.dp),
+                enabled = (undoEnabled),
+                onClick = { undo() }) {
+                Text(text = "Volver")
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                modifier = Modifier.padding(10.dp),
+                onClick = { nextRound() }
+            ) {
+                Text("Aceptar")
+            }
         }
     }
 }

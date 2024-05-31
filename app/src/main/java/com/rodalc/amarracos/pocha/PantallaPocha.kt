@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.rodalc.amarracos.main.ToastRateLimiter
 
@@ -57,14 +58,17 @@ fun PantallaPocha() {
         RecuperarDatos(context) {
             state = it
             canLoad = false
-            jugadores = Pocha.getJugadores()
         }
     } else {
+        jugadores = Pocha.getJugadores()
         when (state) {
             Ronda.NOMBRES -> {
                 Plantilla(
                     header = {
-                        Text(text = "Jugadores ${jugadores.size}")
+                        Text(
+                            text = "Jugadores ${jugadores.size}",
+                            fontSize = 20.sp
+                        )
                         Spacer(modifier = Modifier.height(10.dp))
                         Row {
                             Button(
@@ -98,7 +102,10 @@ fun PantallaPocha() {
             Ronda.APUESTAS -> {
                 Plantilla(
                     header = {
-                        Text(text = "Ronda de apuestas")
+                        Text(
+                            text = "Ronda de apuestas",
+                            fontSize = 20.sp
+                        )
                         Spacer(modifier = Modifier.height(10.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -136,7 +143,10 @@ fun PantallaPocha() {
             Ronda.CONTEO -> {
                 Plantilla(
                     header = {
-                        Text(text = "Ronda de resultados")
+                        Text(
+                            text = "Ronda de resultados",
+                            fontSize = 20.sp
+                        )
                         Spacer(modifier = Modifier.height(10.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,

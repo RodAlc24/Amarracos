@@ -6,7 +6,7 @@ package com.rodalc.amarracos.storage
  * @param maxCapacity La capacidad máxima de la pila. Si es 0, la pila no tiene límite de tamaño.
  * @property T El tipo de elementos que la pila puede contener.
  */
-class UndoStack<T> public constructor(private val maxCapacity: Int = 0) {
+class UndoStack<T>(private val maxCapacity: Int = 0) {
     private var stack: MutableList<T> = mutableListOf()
 
     /**

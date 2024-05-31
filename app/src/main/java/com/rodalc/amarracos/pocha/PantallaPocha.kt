@@ -36,98 +36,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-
-@Composable
-fun RecuperarDatos(context: Context, onClick: (Ronda) -> Unit) {
-    Dialog(onDismissRequest = { }) {
-        Box(modifier = Modifier) {
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(10.dp),
-                shape = RoundedCornerShape(16.dp),
-            ) {
-                Column(
-                    modifier = Modifier.padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "¿Recuperar la última partida?")
-                    Row(
-                        modifier = Modifier.padding(10.dp),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Button(onClick = {
-                            Pocha.load(context)
-                            onClick(Ronda.APUESTAS)
-                        }) {
-                            Text(text = "Sí")
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Button(onClick = {
-                            Pocha.discardBackup(context)
-                            onClick(Ronda.NOMBRES)
-                        }) {
-                            Text(text = "No")
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+import com.rodalc.amarracos.main.ToastRateLimiter
 
 /**
- * Crea una fila con la información de un jugador, además de unos botones de - y + para aumentar y disminuir el valor correspondiente.
- *
- * @param texto El texto que se muestra a la izquierda, suele ser el nombre y los puntos.
- * @param valor La cantidad que se quiere modificar, ya sean las apuestas o las victorias.
- * @param modificar Recibe como parámetro el nuevo valor de la variable recibida.
- */
-@Composable
-fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> Unit) {
-    var valorState by rememberSaveable { mutableIntStateOf(valor) }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = texto,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .weight(1f) // Allocate space for the text
-                .clipToBounds()
-        )
-        Text(
-            text = puntos,
-            modifier = Modifier.padding(10.dp)
-        )
-        Button(
-            onClick = {
-                valorState -= 1
-                modificar(valorState)
-            },
-            enabled = valorState > 0
-        ) {
-            Text("-")
-        }
-        Text(
-            text = valorState.toString(),
-            modifier = Modifier.padding(10.dp)
-        )
-        Button(onClick = {
-            valorState += 1
-            modificar(valorState)
-        }
-        ) {
-            Text("+")
-        }
-    }
-}
-
-/**
- * Gestiona toda la pantalla para el conteo de la pocha.
+ * Gestiona toda la pantalla para el juego de la pocha.
  */
 @Preview(
     showBackground = true,
@@ -156,23 +68,17 @@ fun PantallaPocha() {
                         Spacer(modifier = Modifier.height(10.dp))
                         Row {
                             Button(
-                                onClick = {
-                                    jugadores = jugadores.dropLast(1).toMutableList()
-                                },
+                                onClick = { jugadores = jugadores.dropLast(1).toMutableList() },
                                 enabled = jugadores.size > 2
-                            ) {
-                                Text(text = "-")
-                            }
+                            ) { Text(text = "-") }
                             Spacer(modifier = Modifier.width(10.dp))
                             Button(onClick = {
                                 jugadores = (jugadores + Jugador(jugadores.size)).toMutableList()
-                            }) {
-                                Text(text = "+")
-                            }
+                            }) { Text(text = "+") }
                         }
                     },
                     lineJugador = {
-                        FilaNombre(
+                        FilaJugadorNombres(
                             jugador = it,
                             numJugadores = jugadores.size,
                             context = context
@@ -263,15 +169,68 @@ fun PantallaPocha() {
                     undoEnabled = true,
                     jugadores = jugadores
                 )
-
             }
         }
     }
-
 }
 
+/**
+ * Crea una fila con la información de un jugador, además de unos botones de - y + para aumentar y disminuir el valor correspondiente.
+ *
+ * @param texto El texto que se muestra a la izquierda, suele ser el nombre.
+ * @param puntos Los puntos (totales) del jugador.
+ * @param valor La cantidad que se quiere modificar, ya sean las apuestas o las victorias.
+ * @param modificar Recibe como parámetro el nuevo valor de la variable recibida.
+ */
 @Composable
-fun FilaNombre(jugador: Jugador, numJugadores: Int, context: Context) {
+fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> Unit) {
+    var valorState by rememberSaveable { mutableIntStateOf(valor) }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = texto,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .weight(1f) // Allocate space for the text
+                .clipToBounds()
+        )
+        Text(
+            text = puntos,
+            modifier = Modifier.padding(10.dp)
+        )
+        Button(
+            onClick = {
+                valorState -= 1
+                modificar(valorState)
+            },
+            enabled = valorState > 0
+        ) { Text("-") }
+        Text(
+            text = valorState.toString(),
+            modifier = Modifier.padding(10.dp)
+        )
+        Button(onClick = {
+            valorState += 1
+            modificar(valorState)
+        }
+        ) { Text("+") }
+    }
+}
+
+
+/**
+ * Fila para poner los nombres de cada jugador.
+ *
+ * @param jugador El jugador en cuestión
+ * @param numJugadores El número total de jugadores, útil para saber cuál es el último
+ * @param context El contexto actual
+ */
+@Composable
+fun FilaJugadorNombres(jugador: Jugador, numJugadores: Int, context: Context) {
     var nombreState by rememberSaveable { mutableStateOf(jugador.nombre) }
     TextField(
         modifier = Modifier.fillMaxWidth(),
@@ -284,12 +243,20 @@ fun FilaNombre(jugador: Jugador, numJugadores: Int, context: Context) {
         },
         maxLines = 1,
         label = { Text("Jugador ${jugador.id}") },
-        keyboardOptions = KeyboardOptions(
-            imeAction = if (jugador.id + 1 == numJugadores) ImeAction.Done else ImeAction.Next
-        )
+        keyboardOptions = KeyboardOptions(imeAction = if (jugador.id + 1 == numJugadores) ImeAction.Done else ImeAction.Next)
     )
 }
 
+/**
+ * Plantilla para la pantalla de la pocha.
+ *
+ * @param header El encabezado de la pantalla (un título...)
+ * @param lineJugador La fila en la que se representará cada uno de los jugadores
+ * @param nextRound Se llamará al cambiar de ronda
+ * @param undo Se llamará pulsando el botón "volver"
+ * @param undoEnabled Indica si se activa el botón "volver"
+ * @param jugadores La lista con los jugadores de la partida
+ */
 @Composable
 fun Plantilla(
     header: @Composable () -> Unit,
@@ -334,6 +301,47 @@ fun Plantilla(
                 onClick = { nextRound() }
             ) {
                 Text("Aceptar")
+            }
+        }
+    }
+}
+
+/**
+ * Dyalog mostrado al principio para preguntar si se quieren recuperar los datos de la partida anterior.
+ *
+ * @param context El contexto actual
+ * @param atExit Se invoca al finalizar (al elegir una opción)
+ */
+@Composable
+fun RecuperarDatos(context: Context, atExit: (Ronda) -> Unit) {
+    Dialog(onDismissRequest = { }) {
+        Box(modifier = Modifier) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(10.dp),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                Column(
+                    modifier = Modifier.padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "¿Recuperar la última partida?")
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Button(onClick = {
+                            Pocha.load(context)
+                            atExit(Ronda.APUESTAS)
+                        }) { Text(text = "Sí") }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(onClick = {
+                            Pocha.discardBackup(context)
+                            atExit(Ronda.NOMBRES)
+                        }) { Text(text = "No") }
+                    }
+                }
             }
         }
     }

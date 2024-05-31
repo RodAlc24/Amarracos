@@ -26,12 +26,28 @@ data class Jugador(
     var apuesta: Int = 0,
     var victoria: Int = 0,
 ) {
+    /**
+     * Actualiza la puntuación del jugador.
+     *
+     * Si el número de victorias coincide con el apostado, a la puntuación se le suma 10 + 5 * la apuesta.
+     * Si no coinciden, se le resta 5 por la diferencia entre apostados y victorias.
+     * Además, es posible diplicar los puntos.
+     *
+     * @param duplica Si la ronda dupllica puntos o no
+     */
     fun actualizarPuntuacion(duplica: Boolean) {
-        val incremento = if (this.apuesta == this.victoria) 10 + 5 * this.apuesta else -5 * abs(this.apuesta - this.victoria)
+        val incremento =
+            if (this.apuesta == this.victoria) 10 + 5 * this.apuesta else -5 * abs(this.apuesta - this.victoria)
         puntos += (if (duplica) 2 else 1) * incremento
         this.apuesta = 0
         this.victoria = 0
     }
+
+    /**
+     * Devuelve el nombre del jugador o "jugador id" si no tiene nombre.
+     *
+     * @return El nombre del jugador o "jugador id" si no tiene nombre
+     */
     override fun toString(): String {
         return if (nombre == "") "Jugador ${this.id}" else this.nombre
     }

@@ -56,7 +56,7 @@ object StateSaver {
      * @param context El contexto de la aplicación o actividad.
      * @return La lista de jugadores cargados, o una lista vacía si el archivo no existe o hay un error al leerlo.
      */
-    fun loadPocha(context: Context): List<Jugador> {
+    fun loadPocha(context: Context): List<Jugador>? {
         var jugadores: List<Jugador>? = null
 
         try {
@@ -73,6 +73,6 @@ object StateSaver {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        return jugadores ?: listOf(Jugador(1), Jugador(2))
+        return jugadores
     }
 }

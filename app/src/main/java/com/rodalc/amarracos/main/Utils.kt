@@ -1,4 +1,4 @@
-package com.rodalc.amarracos.pocha
+package com.rodalc.amarracos.main
 
 import android.content.Context
 import android.widget.Toast

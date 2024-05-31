@@ -15,7 +15,6 @@
         <activity
             android:name=".main.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.Amarracos">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

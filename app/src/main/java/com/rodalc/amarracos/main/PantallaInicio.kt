@@ -1,5 +1,6 @@
 package com.rodalc.amarracos.main
 
+import android.graphics.fonts.Font
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
+import com.rodalc.amarracos.ui.theme.Playfair
 
 /**
  * Primera pantalla de la aplicación, contiene el menú para navegar por ella.
@@ -41,7 +44,8 @@ fun PantallaInicio(navController: NavController) {
         ) {
             Text(
                 text = "Amarracos",
-                fontSize = 21.sp,
+                fontFamily = Playfair,
+                fontSize = 60.sp,
                 textAlign = TextAlign.Center
             )
         }
@@ -73,7 +77,7 @@ fun PantallaInicio(navController: NavController) {
                 Button(onClick = { navController.navigate("pantallaCreditos") }) {
                     Text("Créditos")
                 }
-                Button(onClick = { navController.navigate("pantallaAjustes") }) {
+                Button(enabled = false, onClick = { navController.navigate("pantallaAjustes") }) {
                     Text("Ajustes")
                 }
             }

@@ -48,8 +48,8 @@ fun MyApp() {
         composable("pantallaInicial") { PantallaInicio(navController) }
         composable("pantallaMus") { PantallaMus() }
         composable("pantallaPocha") { PantallaPocha() }
-        composable("pantallaAjustes") { PantallaVacia(navController) }
-        composable("pantallaCreditos") { PantallaVacia(navController) }
+        composable("pantallaAjustes") { PantallaVacia() }
+        composable("pantallaCreditos") { PantallaVacia() }
 
     }
 }

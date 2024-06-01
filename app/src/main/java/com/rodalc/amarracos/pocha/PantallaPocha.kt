@@ -15,7 +15,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -57,10 +61,10 @@ fun PantallaPocha() {
     if (canLoad) {
         RecuperarDatos(context) {
             state = it
+            jugadores = Pocha.getJugadores()
             canLoad = false
         }
     } else {
-        jugadores = Pocha.getJugadores()
         when (state) {
             Ronda.NOMBRES -> {
                 Plantilla(
@@ -136,7 +140,7 @@ fun PantallaPocha() {
                         state = Ronda.CONTEO
                     },
                     undoEnabled = Pocha.canUndo(),
-                    jugadores = jugadores
+                    jugadores = Pocha.getJugadores()
                 )
             }
 
@@ -177,7 +181,7 @@ fun PantallaPocha() {
                     },
                     undo = { state = Ronda.APUESTAS },
                     undoEnabled = true,
-                    jugadores = jugadores
+                    jugadores = Pocha.getJugadores()
                 )
             }
         }
@@ -218,7 +222,7 @@ fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> U
                 modificar(valorState)
             },
             enabled = valorState > 0
-        ) { Text("-") }
+        ) { Icon(Icons.Rounded.Remove, contentDescription = "Remove") }
         Text(
             text = valorState.toString(),
             modifier = Modifier.padding(10.dp)
@@ -227,7 +231,7 @@ fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> U
             valorState += 1
             modificar(valorState)
         }
-        ) { Text("+") }
+        ) { Icon(Icons.Rounded.Add, contentDescription = "Add") }
     }
 }
 

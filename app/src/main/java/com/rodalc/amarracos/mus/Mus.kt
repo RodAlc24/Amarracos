@@ -38,5 +38,10 @@ object Mus {
         this.envites = envites
     }
 
+    fun resolverEnvite(ronda: RondasMus, pareja: Pareja) {
+        pareja.puntos += this.envites.getEnvite(ronda)
+        this.envites.setEnvite(ronda, 0)
+    }
+
 
 }

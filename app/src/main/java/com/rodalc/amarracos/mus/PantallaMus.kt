@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Remove
@@ -24,10 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,6 +49,7 @@ import com.rodalc.amarracos.main.ToastRateLimiter
 fun PantallaMus() {
     var showConfig by rememberSaveable { mutableStateOf(true) }
     val context = LocalContext.current
+
     if (showConfig) {
         PantallaConfiguracion(context) { showConfig = it }
     } else {
@@ -128,6 +130,9 @@ fun PantallaConfiguracion(
 
 @Composable
 fun PlantillaMus() {
+    val viewModel = MusViewModel()
+    var rondaEnvites by rememberSaveable { mutableStateOf(true) }
+
     // TODO: If landscape ... else ...
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
@@ -135,18 +140,18 @@ fun PlantillaMus() {
         modifier = Modifier.fillMaxSize()
     ) {
         Spacer(modifier = Modifier.weight(1f))
-        ColumnaParejaLandscape(pareja = Mus.getBuenos())
+        ColumnaParejaLandscape(buenos = true, viewModel) { rondaEnvites = !rondaEnvites }
         Spacer(modifier = Modifier.weight(1f))
-        ColumnaEnvites()
+        ColumnaEnvites(viewModel, rondaEnvites) { rondaEnvites = !rondaEnvites }
         Spacer(modifier = Modifier.weight(1f))
-        ColumnaParejaLandscape(pareja = Mus.getMalos())
+        ColumnaParejaLandscape(buenos = false, viewModel) { rondaEnvites = !rondaEnvites }
         Spacer(modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun ColumnaParejaLandscape(pareja: Pareja) {
-    var puntos by rememberSaveable { mutableIntStateOf(pareja.puntos) }
+fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: () -> Unit) {
+    val pareja by if (buenos) viewModel.buenos.collectAsState() else viewModel.malos.collectAsState()
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -166,15 +171,24 @@ fun ColumnaParejaLandscape(pareja: Pareja) {
             fontSize = 80.sp
         )
         Row {
-            TextButton(onClick = {
-                puntos -= 1
-                pareja.puntos = puntos
-            }) {
+            TextButton(
+                onClick = {
+                    if (buenos) {
+                        viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos - 1))
+                    } else {
+                        viewModel.updateMalos(pareja.copy(puntos = pareja.puntos - 1))
+                    }
+                },
+                enabled = pareja.puntos > 0
+            ) {
                 Icon(Icons.Rounded.Remove, contentDescription = "Remove")
             }
             TextButton(onClick = {
-                puntos += 1
-                pareja.puntos = puntos
+                if (buenos) {
+                    viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
+                } else {
+                    viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
+                }
             }) {
                 Icon(Icons.Rounded.Add, contentDescription = "Add")
             }
@@ -188,7 +202,11 @@ fun ColumnaParejaLandscape(pareja: Pareja) {
 }
 
 @Composable
-fun ColumnaEnvites() {
+fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEmbites: () -> Unit) {
+    val buenos by viewModel.buenos.collectAsState()
+    val malos by viewModel.malos.collectAsState()
+    val envites by viewModel.envites.collectAsState()
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -196,11 +214,35 @@ fun ColumnaEnvites() {
             .padding(10.dp)
             .fillMaxWidth(.35f)
     ) {
-        FilaEnvite(envite = Mus.getEnvites().grande) { Mus.getEnvites().grande = it }
-        FilaEnvite(envite = Mus.getEnvites().chica) { Mus.getEnvites().chica = it }
-        FilaEnvite(envite = Mus.getEnvites().pares) { Mus.getEnvites().pares = it }
-        FilaEnvite(envite = Mus.getEnvites().juego) { Mus.getEnvites().juego = it }
-        Button(onClick = { /*TODO*/ }) {
+        FilaEnvite(rondaEnvites, envites.grande, viewModel) {
+            viewModel.updateEnvites(
+                envites.copy(
+                    grande = it
+                )
+            )
+        }
+        FilaEnvite(rondaEnvites, envites.chica, viewModel) {
+            viewModel.updateEnvites(
+                envites.copy(
+                    chica = it
+                )
+            )
+        }
+        FilaEnvite(rondaEnvites, envites.pares, viewModel) {
+            viewModel.updateEnvites(
+                envites.copy(
+                    pares = it
+                )
+            )
+        }
+        FilaEnvite(rondaEnvites, envites.juego, viewModel) {
+            viewModel.updateEnvites(
+                envites.copy(
+                    juego = it
+                )
+            )
+        }
+        Button(onClick = { changeRondaEmbites() }) {
             Icon(Icons.Rounded.Done, contentDescription = "Done")
         }
 
@@ -208,8 +250,15 @@ fun ColumnaEnvites() {
 }
 
 @Composable
-fun FilaEnvite(envite: Int, setValue: (Int) -> Unit) {
-    var temp by remember { mutableIntStateOf(envite) }
+fun FilaEnvite(
+    rondaEnvites: Boolean,
+    envite: Int,
+    viewModel: MusViewModel,
+    updateEnvite: (Int) -> Unit
+) {
+    val buenos by viewModel.buenos.collectAsState()
+    val malos by viewModel.malos.collectAsState()
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -219,28 +268,46 @@ fun FilaEnvite(envite: Int, setValue: (Int) -> Unit) {
     ) {
         TextButton(
             onClick = {
-                temp -= 1
-                setValue(temp)
+                if (rondaEnvites) {
+                    updateEnvite(envite - 1)
+                } else {
+                    viewModel.updateBuenos(buenos.copy(puntos = buenos.puntos + envite))
+                    updateEnvite(0)
+                }
             },
-            enabled = temp > 0
+            enabled = !rondaEnvites || envite > 0
         ) {
-            Icon(Icons.Rounded.Remove, contentDescription = "Remove")
+            if (rondaEnvites) {
+                Icon(Icons.Rounded.Remove, contentDescription = "Remove")
+            } else {
+                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Buenos")
+            }
         }
         Text(
-            text = temp.toString(),
+            text = envite.toString(),
             fontSize = 20.sp,
             modifier = Modifier
-                .clickable(onClick = {
-                    temp += 2
-                    setValue(temp)
-                })
+                .clickable(
+                    onClick = {
+                        updateEnvite(envite + 2)
+                    },
+                    enabled = rondaEnvites
+                )
                 .padding(10.dp)
         )
         TextButton(onClick = {
-            temp += 1
-            setValue(temp)
+            if (rondaEnvites) {
+                updateEnvite(envite + 1)
+            } else {
+                viewModel.updateMalos(malos.copy(puntos = malos.puntos + envite))
+                updateEnvite(0)
+            }
         }) {
-            Icon(Icons.Rounded.Add, contentDescription = "Add")
+            if (rondaEnvites) {
+                Icon(Icons.Rounded.Add, contentDescription = "Add")
+            } else {
+                Icon(Icons.AutoMirrored.Rounded.ArrowForward, contentDescription = "Add")
+            }
         }
     }
 }

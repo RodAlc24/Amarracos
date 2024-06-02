@@ -131,7 +131,29 @@ fun PantallaConfiguracion(
 @Composable
 fun PlantillaMus() {
     val viewModel = MusViewModel()
+    val buenos by viewModel.buenos.collectAsState()
+    val malos by viewModel.malos.collectAsState()
+    val puntos by viewModel.puntos.collectAsState()
+
     var rondaEnvites by rememberSaveable { mutableStateOf(true) }
+
+    val finRonda = { gannBuenos: Boolean ->
+        rondaEnvites = true
+        viewModel.updateEnvites(Envites())
+        if (gannBuenos) {
+            viewModel.updateBuenos(buenos.copy(puntos = 0, victorias = buenos.victorias + 1))
+            viewModel.updateMalos(malos.copy(puntos = 0))
+        } else {
+            viewModel.updateMalos(malos.copy(puntos = 0, victorias = malos.victorias + 1))
+            viewModel.updateBuenos(buenos.copy(puntos = 0))
+        }
+    }
+
+    if (buenos.puntos >= puntos) {
+        finRonda(true)
+    } else if (malos.puntos >= puntos) {
+        finRonda(false)
+    }
 
     // TODO: If landscape ... else ...
     Row(
@@ -140,11 +162,11 @@ fun PlantillaMus() {
         modifier = Modifier.fillMaxSize()
     ) {
         Spacer(modifier = Modifier.weight(1f))
-        ColumnaParejaLandscape(buenos = true, viewModel) { rondaEnvites = !rondaEnvites }
+        ColumnaParejaLandscape(buenos = true, viewModel) { finRonda(true) }
         Spacer(modifier = Modifier.weight(1f))
         ColumnaEnvites(viewModel, rondaEnvites) { rondaEnvites = !rondaEnvites }
         Spacer(modifier = Modifier.weight(1f))
-        ColumnaParejaLandscape(buenos = false, viewModel) { rondaEnvites = !rondaEnvites }
+        ColumnaParejaLandscape(buenos = false, viewModel) { finRonda(false) }
         Spacer(modifier = Modifier.weight(1f))
     }
 }
@@ -194,7 +216,9 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
             }
         }
         Spacer(modifier = Modifier.weight(1f))
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = {
+            onOrdago()
+        }) {
             Text("Órdago")
         }
         Spacer(modifier = Modifier.weight(5f))

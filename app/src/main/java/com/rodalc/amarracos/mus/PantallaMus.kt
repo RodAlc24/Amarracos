@@ -1,6 +1,9 @@
 package com.rodalc.amarracos.mus
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.ActivityInfo
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,10 +39,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.rodalc.amarracos.main.ToastRateLimiter
 
 @Preview(
@@ -50,6 +57,28 @@ import com.rodalc.amarracos.main.ToastRateLimiter
 fun PantallaMus() {
     var showConfig by rememberSaveable { mutableStateOf(true) }
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val activity = context as ComponentActivity
+        val lifecycleObserver = object : DefaultLifecycleObserver {
+            @SuppressLint("SourceLockedOrientationActivity")
+            override fun onCreate(owner: LifecycleOwner) {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            }
+
+            override fun onDestroy(owner: LifecycleOwner) {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
+    }
 
     if (showConfig) {
         PantallaConfiguracion(context) { showConfig = it }
@@ -156,7 +185,6 @@ fun PlantillaMus() {
         finRonda(false)
     }
 
-    // TODO: If landscape ... else ...
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically,
@@ -217,11 +245,8 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
             }
         }
         Spacer(modifier = Modifier.weight(1f))
-        Button(onClick = {
-            onOrdago()
-        }) {
-            Text("Órdago")
-        }
+        Button(onClick = { onOrdago() }
+        ) { Text("Órdago") }
         Spacer(modifier = Modifier.weight(5f))
     }
 }
@@ -250,39 +275,21 @@ fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEm
             .fillMaxWidth(.35f)
     ) {
         FilaEnvite(rondaEnvites, envites.grande, viewModel) {
-            viewModel.updateEnvites(
-                envites.copy(
-                    grande = it
-                )
-            )
+            viewModel.updateEnvites(envites.copy(grande = it))
         }
         FilaEnvite(rondaEnvites, envites.chica, viewModel) {
-            viewModel.updateEnvites(
-                envites.copy(
-                    chica = it
-                )
-            )
+            viewModel.updateEnvites(envites.copy(chica = it))
         }
         FilaEnvite(rondaEnvites, envites.pares, viewModel) {
-            viewModel.updateEnvites(
-                envites.copy(
-                    pares = it
-                )
-            )
+            viewModel.updateEnvites(envites.copy(pares = it))
         }
         FilaEnvite(rondaEnvites, envites.juego, viewModel) {
-            viewModel.updateEnvites(
-                envites.copy(
-                    juego = it
-                )
-            )
+            viewModel.updateEnvites(envites.copy(juego = it))
         }
         if (rondaEnvites && !envites.vacio()) {
             Button(
                 onClick = { changeRondaEmbites() },
-            ) {
-                Icon(Icons.Rounded.Done, contentDescription = "Done")
-            }
+            ) { Icon(Icons.Rounded.Done, contentDescription = "Done") }
         } else {
             Button(
                 onClick = {
@@ -290,9 +297,7 @@ fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEm
                     Mus.popState()
                     viewModel.update()
                 }, enabled = canUndo
-            ) {
-                Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo")
-            }
+            ) { Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo") }
         }
     }
 }
@@ -337,9 +342,7 @@ fun FilaEnvite(
             fontSize = 20.sp,
             modifier = Modifier
                 .clickable(
-                    onClick = {
-                        updateEnvite(envite + 2)
-                    },
+                    onClick = { updateEnvite(envite + 2) },
                     enabled = rondaEnvites
                 )
                 .padding(10.dp)

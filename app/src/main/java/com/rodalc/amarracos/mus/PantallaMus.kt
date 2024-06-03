@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.automirrored.rounded.Undo
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Remove
@@ -227,9 +228,19 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
 
 @Composable
 fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEmbites: () -> Unit) {
-    val buenos by viewModel.buenos.collectAsState()
-    val malos by viewModel.malos.collectAsState()
     val envites by viewModel.envites.collectAsState()
+    var canUndo by rememberSaveable { mutableStateOf(Mus.canUndo()) }
+    canUndo = Mus.canUndo()
+
+    if (rondaEnvites) {
+        if (canUndo && !envites.vacio()) {
+            Mus.deleteStack()
+        }
+    } else {
+        if (envites.vacio()) {
+            changeRondaEmbites()
+        }
+    }
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -266,10 +277,23 @@ fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEm
                 )
             )
         }
-        Button(onClick = { changeRondaEmbites() }) {
-            Icon(Icons.Rounded.Done, contentDescription = "Done")
+        if (rondaEnvites && !envites.vacio()) {
+            Button(
+                onClick = { changeRondaEmbites() },
+            ) {
+                Icon(Icons.Rounded.Done, contentDescription = "Done")
+            }
+        } else {
+            Button(
+                onClick = {
+                    if (rondaEnvites) changeRondaEmbites()
+                    Mus.popState()
+                    viewModel.update()
+                }, enabled = canUndo
+            ) {
+                Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo")
+            }
         }
-
     }
 }
 
@@ -295,11 +319,12 @@ fun FilaEnvite(
                 if (rondaEnvites) {
                     updateEnvite(envite - 1)
                 } else {
+                    Mus.pushState()
                     viewModel.updateBuenos(buenos.copy(puntos = buenos.puntos + envite))
                     updateEnvite(0)
                 }
             },
-            enabled = !rondaEnvites || envite > 0
+            enabled = envite > 0
         ) {
             if (rondaEnvites) {
                 Icon(Icons.Rounded.Remove, contentDescription = "Remove")
@@ -323,10 +348,11 @@ fun FilaEnvite(
             if (rondaEnvites) {
                 updateEnvite(envite + 1)
             } else {
+                Mus.pushState()
                 viewModel.updateMalos(malos.copy(puntos = malos.puntos + envite))
                 updateEnvite(0)
             }
-        }) {
+        }, enabled = rondaEnvites || envite != 0) {
             if (rondaEnvites) {
                 Icon(Icons.Rounded.Add, contentDescription = "Add")
             } else {

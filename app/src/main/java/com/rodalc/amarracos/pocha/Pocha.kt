@@ -41,7 +41,7 @@ object Pocha {
      * Almacena en el stack el estado actual de la partida.
      */
     fun pushState() {
-        stack.push(this.jugadores.map { it.copy() })
+        this.stack.push(this.jugadores.map { it.copy() })
     }
 
     /**
@@ -49,7 +49,7 @@ object Pocha {
      * Si hay un error (no hay nada que recuperar, por ejemplo) no hace nada.
      */
     fun popState() {
-        this.jugadores = stack.pop()?.toMutableList() ?: this.jugadores
+        this.jugadores = this.stack.pop()?.toMutableList() ?: this.jugadores
     }
 
     /**

@@ -28,8 +28,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            versionNameSuffix = "beta"
+            versionNameSuffix = rootProject.extra["releaseVersionSuffix"] as String
             signingConfig = signingConfigs.getByName("debug")
+        }
+        getByName("debug") {
+            versionNameSuffix = rootProject.extra["debugVersionSuffix"] as String
         }
     }
     compileOptions {

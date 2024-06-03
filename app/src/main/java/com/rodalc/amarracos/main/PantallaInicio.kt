@@ -12,7 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,6 +50,18 @@ fun PantallaInicio(navController: NavController) {
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
+                Modifier
+                    .padding(10.dp)
+                    .clickable(onClick = { showCreditos = true })
+            ) {
+                Icon(Icons.Outlined.Info, contentDescription = "Info")
+            }
+        }
         Spacer(modifier = Modifier.weight(1f))
 
         Box(
@@ -78,19 +93,6 @@ fun PantallaInicio(navController: NavController) {
                     Text("Pocha")
                 }
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(onClick = { showCreditos = true }) {
-                    Text("Créditos")
-                }
-                Button(enabled = false, onClick = { }) {
-                    Text("Ajustes")
-                }
-            }
         }
     }
 
@@ -113,7 +115,7 @@ fun Creditos(state: (Boolean) -> Unit) {
             Surface(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .padding(10.dp),
+                    .padding(5.dp),
                 shape = RoundedCornerShape(16.dp),
             ) {
                 Column(

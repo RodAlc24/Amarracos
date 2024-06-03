@@ -6,3 +6,5 @@ plugins {
 }
 val defaultVersionCode by extra(3)
 val defaultVersionName by extra("0.4")
+val releaseVersionSuffix by extra("-beta-release")
+val debugVersionSuffix by extra("-beta-debug")

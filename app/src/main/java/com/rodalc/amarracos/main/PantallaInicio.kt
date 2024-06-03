@@ -108,6 +108,7 @@ fun PantallaInicio(navController: NavController) {
  */
 @Composable
 fun Creditos(state: (Boolean) -> Unit) {
+    val version = "v0.5-beta-release"
     val url = "https://github.com/RodAlc24/Amarracos"
     val context = LocalContext.current
     Dialog(onDismissRequest = { state(false) }) {
@@ -121,6 +122,7 @@ fun Creditos(state: (Boolean) -> Unit) {
                 Column(
                     modifier = Modifier.padding(10.dp)
                 ) {
+                    Text(text = version)
                     Text(text = "Amarracos está bajo la licencia MIT. Tanto la licencia como el código se encuentran publicados en GitHub:")
                     Text(text = url,
                         modifier = Modifier.clickable {

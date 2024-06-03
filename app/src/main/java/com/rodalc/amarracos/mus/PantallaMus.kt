@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -26,6 +28,7 @@ import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -44,6 +47,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.rodalc.amarracos.main.ToastRateLimiter
@@ -57,6 +61,7 @@ import com.rodalc.amarracos.main.ToastRateLimiter
 fun PantallaMus() {
     var showConfig by rememberSaveable { mutableStateOf(true) }
     val context = LocalContext.current
+    var canLoad by rememberSaveable { mutableStateOf(Mus.canLoadState(context)) }
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
@@ -80,11 +85,19 @@ fun PantallaMus() {
         }
     }
 
-    if (showConfig) {
-        PantallaConfiguracion(context) { showConfig = it }
+    if (canLoad) {
+        RecuperarDatos(context = context) {
+            showConfig = it
+            canLoad = false
+        }
     } else {
-        PlantillaMus()
+        if (showConfig) {
+            PantallaConfiguracion(context) { showConfig = it }
+        } else {
+            PlantillaMus()
+        }
     }
+
 }
 
 @Composable
@@ -149,6 +162,7 @@ fun PantallaConfiguracion(
                 Mus.getBuenos().nombre = if (buenos == "") "Buenos" else buenos
                 Mus.getMalos().nombre = if (malos == "") "Malos" else malos
                 Mus.setPuntos(if (puntos30) 30 else 40)
+                Mus.saveState(context)
                 show(false)
             },
             modifier = Modifier.padding(20.dp)
@@ -202,6 +216,7 @@ fun PlantillaMus() {
 
 @Composable
 fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: () -> Unit) {
+    val context = LocalContext.current
     val pareja by if (buenos) viewModel.buenos.collectAsState() else viewModel.malos.collectAsState()
 
     Column(
@@ -229,6 +244,7 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
                     } else {
                         viewModel.updateMalos(pareja.copy(puntos = pareja.puntos - 1))
                     }
+                    Mus.saveState(context)
                 },
                 enabled = pareja.puntos > 0
             ) {
@@ -240,12 +256,16 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
                 } else {
                     viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
                 }
+                Mus.saveState(context)
             }) {
                 Icon(Icons.Rounded.Add, contentDescription = "Add")
             }
         }
         Spacer(modifier = Modifier.weight(1f))
-        Button(onClick = { onOrdago() }
+        Button(onClick = {
+            onOrdago()
+            Mus.saveState(context)
+        }
         ) { Text("Órdago") }
         Spacer(modifier = Modifier.weight(5f))
     }
@@ -253,6 +273,7 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
 
 @Composable
 fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEmbites: () -> Unit) {
+    val context = LocalContext.current
     val envites by viewModel.envites.collectAsState()
     var canUndo by rememberSaveable { mutableStateOf(Mus.canUndo()) }
     canUndo = Mus.canUndo()
@@ -296,6 +317,7 @@ fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEm
                     if (rondaEnvites) changeRondaEmbites()
                     Mus.popState()
                     viewModel.update()
+                    Mus.saveState(context)
                 }, enabled = canUndo
             ) { Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo") }
         }
@@ -309,6 +331,7 @@ fun FilaEnvite(
     viewModel: MusViewModel,
     updateEnvite: (Int) -> Unit
 ) {
+    val context = LocalContext.current
     val buenos by viewModel.buenos.collectAsState()
     val malos by viewModel.malos.collectAsState()
 
@@ -328,6 +351,7 @@ fun FilaEnvite(
                     viewModel.updateBuenos(buenos.copy(puntos = buenos.puntos + envite))
                     updateEnvite(0)
                 }
+                Mus.saveState(context)
             },
             enabled = envite > 0
         ) {
@@ -342,7 +366,10 @@ fun FilaEnvite(
             fontSize = 20.sp,
             modifier = Modifier
                 .clickable(
-                    onClick = { updateEnvite(envite + 2) },
+                    onClick = {
+                        updateEnvite(envite + 2)
+                        Mus.saveState(context)
+                    },
                     enabled = rondaEnvites
                 )
                 .padding(10.dp)
@@ -355,11 +382,54 @@ fun FilaEnvite(
                 viewModel.updateMalos(malos.copy(puntos = malos.puntos + envite))
                 updateEnvite(0)
             }
+            Mus.saveState(context)
         }, enabled = rondaEnvites || envite != 0) {
             if (rondaEnvites) {
                 Icon(Icons.Rounded.Add, contentDescription = "Add")
             } else {
                 Icon(Icons.AutoMirrored.Rounded.ArrowForward, contentDescription = "Add")
+            }
+        }
+    }
+}
+
+/**
+ * Dyalog mostrado al principio para preguntar si se quieren recuperar los datos de la partida anterior.
+ *
+ * @param context El contexto actual
+ * @param showConfig Si se debe mostrar la pantalla de configuración o no
+ */
+@Composable
+fun RecuperarDatos(context: Context, showConfig: (Boolean) -> Unit) {
+    Dialog(onDismissRequest = { }) {
+        Box(modifier = Modifier) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(10.dp),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                Column(
+                    modifier = Modifier.padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "¿Recuperar la última partida?")
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Button(onClick = {
+                            Mus.loadState((context))
+                            showConfig(false)
+                        }) { Text(text = "Sí") }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(onClick = {
+                            Mus.discardBackup(context)
+                            Mus.reset()
+                            showConfig(true)
+                        }) { Text(text = "No") }
+                    }
+                }
             }
         }
     }

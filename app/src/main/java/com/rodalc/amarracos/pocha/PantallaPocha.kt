@@ -55,7 +55,7 @@ fun PantallaPocha() {
     val context = LocalContext.current
     var state by rememberSaveable { mutableStateOf(Ronda.NOMBRES) }
     var duplica by rememberSaveable { mutableStateOf(false) }
-    var canLoad by rememberSaveable { mutableStateOf(Pocha.canLoad(context)) }
+    var canLoad by rememberSaveable { mutableStateOf(Pocha.canLoadState(context)) }
     var jugadores by remember { mutableStateOf(Pocha.getJugadores()) }
 
     if (canLoad) {
@@ -94,7 +94,7 @@ fun PantallaPocha() {
                     },
                     nextRound = {
                         Pocha.setJugadores(jugadores)
-                        Pocha.save(context)
+                        Pocha.saveState(context)
                         state = Ronda.APUESTAS
                     },
                     undo = {},
@@ -176,7 +176,7 @@ fun PantallaPocha() {
                         Pocha.pushState()
                         Pocha.actualizarPuntuacion(duplica)
                         duplica = false
-                        Pocha.save(context)
+                        Pocha.saveState(context)
                         state = Ronda.APUESTAS
                     },
                     undo = { state = Ronda.APUESTAS },
@@ -346,7 +346,7 @@ fun RecuperarDatos(context: Context, atExit: (Ronda) -> Unit) {
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
                         Button(onClick = {
-                            Pocha.load(context)
+                            Pocha.loadState(context)
                             atExit(Ronda.APUESTAS)
                         }) { Text(text = "Sí") }
                         Spacer(modifier = Modifier.width(10.dp))

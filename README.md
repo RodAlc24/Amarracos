@@ -4,4 +4,9 @@ Contador de puntos para el [mus](https://www.nhfournier.es/como-jugar/mus/) (y l
 
 ![Logo](images/LogoCompleto.png "Amarracos")
 
-⚠️ En desarrollo ⚠️
+Próximamente en Google Play
+
+## Colaboradores
+
+- [DarthChungo](https://github.com/DarthChungo)
+- [silimotion](https://github.com/silimotion)

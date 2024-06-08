@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -62,38 +63,22 @@ fun PantallaInicio(navController: NavController) {
                 Icon(Icons.Outlined.Info, contentDescription = "Info")
             }
         }
-        Spacer(modifier = Modifier.weight(1f))
-
-        Box(
-            modifier = Modifier
-        ) {
-            Text(
-                text = "Amarracos",
-                fontFamily = Playfair,
-                fontSize = 60.sp,
-                textAlign = TextAlign.Center
-            )
+        Spacer(modifier = Modifier.weight(0.3f))
+        Text(
+            text = "Amarracos",
+            fontFamily = Playfair,
+            fontSize = 60.sp,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.weight(0.6f))
+        Button(onClick = { navController.navigate("pantallaMus") }) {
+            Text("Mus")
         }
-        Spacer(modifier = Modifier.weight(1f))
-
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(onClick = { navController.navigate("pantallaMus") }) {
-                    Text("Mus")
-                }
-                Button(onClick = { navController.navigate("pantallaPocha") }) {
-                    Text("Pocha")
-                }
-            }
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(onClick = { navController.navigate("pantallaPocha") }) {
+            Text("Pocha")
         }
+        Spacer(modifier = Modifier.weight(0.1f))
     }
 
     if (showCreditos) {
@@ -108,7 +93,7 @@ fun PantallaInicio(navController: NavController) {
  */
 @Composable
 fun Creditos(state: (Boolean) -> Unit) {
-    val version = "v0.5-beta-release"
+    val version = "v0.6-beta-release"
     val url = "https://github.com/RodAlc24/Amarracos"
     val context = LocalContext.current
     Dialog(onDismissRequest = { state(false) }) {

@@ -30,6 +30,7 @@ android {
             )
             versionNameSuffix = rootProject.extra["releaseVersionSuffix"] as String
             signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = false
         }
         getByName("debug") {
             versionNameSuffix = rootProject.extra["debugVersionSuffix"] as String

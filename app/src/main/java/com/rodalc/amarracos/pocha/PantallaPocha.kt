@@ -113,12 +113,11 @@ fun PantallaPocha() {
                         Spacer(modifier = Modifier.height(10.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(0.9f)
                         ) {
-                            Spacer(modifier = Modifier.height(10.dp))
                             Text(text = "Duplicar puntuación")
                             Spacer(modifier = Modifier.weight(1f))
                             Switch(checked = duplica, onCheckedChange = { duplica = it })
-                            Spacer(modifier = Modifier.height(10.dp))
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                     },
@@ -154,12 +153,11 @@ fun PantallaPocha() {
                         Spacer(modifier = Modifier.height(10.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(0.9f)
                         ) {
-                            Spacer(modifier = Modifier.height(10.dp))
                             Text(text = "Duplicar puntuación")
                             Spacer(modifier = Modifier.weight(1f))
                             Switch(checked = duplica, onCheckedChange = { duplica = it })
-                            Spacer(modifier = Modifier.height(10.dp))
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                     },
@@ -200,7 +198,7 @@ fun PantallaPocha() {
 fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> Unit) {
     var valorState by rememberSaveable { mutableIntStateOf(valor) }
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(0.9f),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -247,7 +245,7 @@ fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> U
 fun FilaJugadorNombres(jugador: Jugador, numJugadores: Int, context: Context) {
     var nombreState by rememberSaveable { mutableStateOf(jugador.nombre) }
     TextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(0.8f),
         value = nombreState,
         onValueChange = {
             if (it.length <= 20) {
@@ -287,9 +285,11 @@ fun Plantilla(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(20.dp))
         header()
         Spacer(modifier = Modifier.height(10.dp))
         LazyColumn(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)

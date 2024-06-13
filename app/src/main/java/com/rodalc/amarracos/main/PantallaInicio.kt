@@ -93,7 +93,7 @@ fun PantallaInicio(navController: NavController) {
  */
 @Composable
 fun Creditos(state: (Boolean) -> Unit) {
-    val version = "v0.6-beta-release"
+    val version = "v6 (1.0-release)"
     val url = "https://github.com/RodAlc24/Amarracos"
     val context = LocalContext.current
     Dialog(onDismissRequest = { state(false) }) {

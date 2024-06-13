@@ -263,6 +263,7 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
         }
         Spacer(modifier = Modifier.weight(1f))
         Button(onClick = {
+            Mus.pushState()
             onOrdago()
             Mus.saveState(context)
         }
@@ -314,11 +315,15 @@ fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEm
         } else {
             Button(
                 onClick = {
-                    if (rondaEnvites) changeRondaEmbites()
-                    Mus.popState()
-                    viewModel.update()
-                    Mus.saveState(context)
-                }, enabled = canUndo
+                    if (canUndo) {
+                        if (rondaEnvites) changeRondaEmbites()
+                        Mus.popState()
+                        viewModel.update()
+                        Mus.saveState(context)
+                    } else {
+                        changeRondaEmbites()
+                    }
+                }, enabled = canUndo || !envites.vacio()
             ) { Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo") }
         }
     }

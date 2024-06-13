@@ -18,10 +18,15 @@ object Pocha : StateSaver("pocha.json") {
     private var jugadores = mutableListOf(Jugador(0), Jugador(1))
 
     /**
+     * Si duplica la ronda actual o no.
+     */
+    private var duplica = false
+
+    /**
      * Stack para poder deshacer acciones.
      * @see UndoStack
      */
-    private var stack = UndoStack<List<Jugador>>()
+    private var stack = UndoStack<UndoMus>()
 
     /**
      * Devuelve la lista actual de jugadores.
@@ -42,10 +47,29 @@ object Pocha : StateSaver("pocha.json") {
     }
 
     /**
+     * Devuelve si duplica o no la ronda actual.
+     *
+     * @return Si duplica la ronda actual
+     */
+    fun getDuplica(): Boolean {
+        return this.duplica
+    }
+
+    /**
+     * Indica si duplica o no la ronda actual.
+     *
+     * @param duplica Si duplica la ronda actual
+     */
+    fun setDuplica(duplica: Boolean) {
+        this.duplica = duplica
+    }
+
+    /**
      * Almacena en el stack el estado actual de la partida.
      */
     fun pushState() {
-        this.stack.push(this.jugadores.map { it.copy() })
+        val temp = UndoMus(this.duplica, this.jugadores.map { it.copy() })
+        this.stack.push(temp)
     }
 
     /**
@@ -53,7 +77,9 @@ object Pocha : StateSaver("pocha.json") {
      * Si hay un error (no hay nada que recuperar, por ejemplo) no hace nada.
      */
     fun popState() {
-        this.jugadores = this.stack.pop()?.toMutableList() ?: this.jugadores
+        val temp = this.stack.pop() ?: UndoMus(this.duplica, this.jugadores)
+        this.jugadores = temp.jugadores.toMutableList()
+        this.duplica = temp.duplica
     }
 
     /**
@@ -64,6 +90,11 @@ object Pocha : StateSaver("pocha.json") {
     fun canUndo(): Boolean {
         return this.stack.size() > 0
     }
+
+    private data class UndoMus(
+        val duplica: Boolean,
+        val jugadores: List<Jugador>
+    )
 
     /**
      * Almacena en disco el estado de la partida (excepto el stack)

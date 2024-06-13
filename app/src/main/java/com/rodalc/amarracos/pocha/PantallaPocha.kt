@@ -54,7 +54,7 @@ import com.rodalc.amarracos.main.ToastRateLimiter
 fun PantallaPocha() {
     val context = LocalContext.current
     var state by rememberSaveable { mutableStateOf(Ronda.NOMBRES) }
-    var duplica by rememberSaveable { mutableStateOf(false) }
+    var duplica by rememberSaveable { mutableStateOf(Pocha.getDuplica()) }
     var canLoad by rememberSaveable { mutableStateOf(Pocha.canLoadState(context)) }
     var jugadores by remember { mutableStateOf(Pocha.getJugadores()) }
 
@@ -136,6 +136,7 @@ fun PantallaPocha() {
                     undo = {
                         Pocha.popState()
                         jugadores = Pocha.getJugadores()
+                        duplica = Pocha.getDuplica()
                         state = Ronda.CONTEO
                     },
                     undoEnabled = Pocha.canUndo(),
@@ -171,6 +172,7 @@ fun PantallaPocha() {
                         }
                     },
                     nextRound = {
+                        Pocha.setDuplica(duplica)
                         Pocha.pushState()
                         Pocha.actualizarPuntuacion(duplica)
                         duplica = false

@@ -3,6 +3,7 @@ package com.rodalc.amarracos.mus
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +53,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.rodalc.amarracos.main.ToastRateLimiter
+import com.rodalc.amarracos.storage.DataStoreManager
 
 @Preview(
     device = "spec:width=411dp,height=891dp,orientation=landscape",
@@ -82,6 +85,23 @@ fun PantallaMus() {
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
+    }
+
+    // Keep screen on. Only if user has selected it
+    val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Keys.KEEP_SCREEN_ON)
+        .collectAsState(initial = true)
+    if (screenState) {
+        val activity = context as? ComponentActivity
+
+        SideEffect {
+            activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+
+        DisposableEffect(Unit) {
+            onDispose {
+                activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }
         }
     }
 

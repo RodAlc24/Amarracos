@@ -1,6 +1,8 @@
 package com.rodalc.amarracos.pocha
 
 import android.content.Context
+import android.view.WindowManager
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +27,9 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.rodalc.amarracos.main.ToastRateLimiter
+import com.rodalc.amarracos.storage.DataStoreManager
 
 /**
  * Gestiona toda la pantalla para el juego de la pocha.
@@ -57,6 +63,23 @@ fun PantallaPocha() {
     var duplica by rememberSaveable { mutableStateOf(Pocha.getDuplica()) }
     var canLoad by rememberSaveable { mutableStateOf(Pocha.canLoadState(context)) }
     var jugadores by remember { mutableStateOf(Pocha.getJugadores()) }
+
+    // Keep screen on. Only if user has selected it
+    val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Keys.KEEP_SCREEN_ON)
+        .collectAsState(initial = true)
+    if (screenState) {
+        val activity = context as? ComponentActivity
+
+        SideEffect {
+            activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+
+        DisposableEffect(Unit) {
+            onDispose {
+                activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            }
+        }
+    }
 
     if (canLoad) {
         RecuperarDatos(context) {

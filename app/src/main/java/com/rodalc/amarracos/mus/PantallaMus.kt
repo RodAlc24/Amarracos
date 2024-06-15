@@ -39,6 +39,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,6 +55,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.storage.DataStoreManager
+import kotlinx.coroutines.async
 
 @Preview(
     device = "spec:width=411dp,height=891dp,orientation=landscape",
@@ -89,7 +91,7 @@ fun PantallaMus() {
     }
 
     // Keep screen on. Only if user has selected it
-    val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Keys.KEEP_SCREEN_ON)
+    val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
         .collectAsState(initial = true)
     if (screenState) {
         val activity = context as? ComponentActivity
@@ -127,7 +129,9 @@ fun PantallaConfiguracion(
 ) {
     var buenos by rememberSaveable { mutableStateOf("") }
     var malos by rememberSaveable { mutableStateOf("") }
-    var puntos30 by rememberSaveable { mutableStateOf(true) }
+    val puntos30 by DataStoreManager.readDataStore(context, DataStoreManager.Key.MUS_A_30)
+        .collectAsState(initial = true)
+    val coreutineScope = rememberCoroutineScope()
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -171,10 +175,26 @@ fun PantallaConfiguracion(
             Text(text = "Puntos")
             Spacer(modifier = Modifier.width(10.dp))
             Text(text = "30:")
-            RadioButton(selected = puntos30, onClick = { puntos30 = true })
+            RadioButton(selected = puntos30, onClick = {
+                coreutineScope.async {
+                    DataStoreManager.setDataStore(
+                        context,
+                        DataStoreManager.Key.MUS_A_30,
+                        true
+                    )
+                }
+            })
             Spacer(modifier = Modifier.width(10.dp))
             Text(text = "40:")
-            RadioButton(selected = !puntos30, onClick = { puntos30 = false })
+            RadioButton(selected = !puntos30, onClick = {
+                coreutineScope.async {
+                    DataStoreManager.setDataStore(
+                        context,
+                        DataStoreManager.Key.MUS_A_30,
+                        false
+                    )
+                }
+            })
         }
         Spacer(modifier = Modifier.weight(0.2f))
         Button(

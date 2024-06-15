@@ -40,7 +40,7 @@ fun PantallaAjustes() {
     val context = LocalContext.current
     val url = "https://github.com/RodAlc24/Amarracos"
 
-    val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Keys.KEEP_SCREEN_ON)
+    val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
         .collectAsState(initial = true)
 
     val coreutineScope = rememberCoroutineScope()
@@ -65,7 +65,7 @@ fun PantallaAjustes() {
                         coreutineScope.async {
                             DataStoreManager.setDataStore(
                                 context,
-                                DataStoreManager.Keys.KEEP_SCREEN_ON,
+                                DataStoreManager.Key.KEEP_SCREEN_ON,
                                 it
                             )
                         }

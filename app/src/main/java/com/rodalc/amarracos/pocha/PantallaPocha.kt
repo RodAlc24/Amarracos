@@ -65,7 +65,7 @@ fun PantallaPocha() {
     var jugadores by remember { mutableStateOf(Pocha.getJugadores()) }
 
     // Keep screen on. Only if user has selected it
-    val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Keys.KEEP_SCREEN_ON)
+    val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
         .collectAsState(initial = true)
     if (screenState) {
         val activity = context as? ComponentActivity

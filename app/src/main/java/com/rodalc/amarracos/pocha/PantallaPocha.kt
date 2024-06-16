@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -187,8 +188,8 @@ fun PantallaPocha() {
                     },
                     lineJugador = { jugador ->
                         FilaJugador(
-                            texto = "$jugador (${jugador.apuesta})",
-                            puntos = jugador.puntos.toString(),
+                            texto = jugador.toString(),
+                            puntos = "(${jugador.apuesta}) ${jugador.puntos}",
                             valor = jugador.victoria
                         ) {
                             jugador.victoria = it
@@ -239,7 +240,7 @@ fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> U
             text = puntos,
             modifier = Modifier.padding(10.dp)
         )
-        Button(
+        FilledIconButton(
             onClick = {
                 valorState -= 1
                 modificar(valorState)
@@ -250,7 +251,7 @@ fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> U
             text = valorState.toString(),
             modifier = Modifier.padding(10.dp)
         )
-        Button(onClick = {
+        FilledIconButton(onClick = {
             valorState += 1
             modificar(valorState)
         }

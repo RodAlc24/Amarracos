@@ -28,6 +28,8 @@ import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -197,7 +199,7 @@ fun PantallaConfiguracion(
             })
         }
         Spacer(modifier = Modifier.weight(0.2f))
-        Button(
+        OutlinedButton(
             onClick = {
                 Mus.getBuenos().nombre = if (buenos == "") "Buenos" else buenos
                 Mus.getMalos().nombre = if (malos == "") "Malos" else malos
@@ -274,10 +276,20 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
         Spacer(modifier = Modifier.weight(1f))
         Text(
             text = pareja.puntos.toString(),
-            fontSize = 80.sp
+            fontSize = 80.sp,
+            modifier = Modifier.clickable(
+                onClick = {
+                    if (buenos) {
+                        viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 5))
+                    } else {
+                        viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 5))
+                    }
+                    Mus.saveState(context)
+                }
+            )
         )
         Row {
-            TextButton(
+            IconButton(
                 onClick = {
                     if (buenos) {
                         viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos - 1))
@@ -290,7 +302,7 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
             ) {
                 Icon(Icons.Rounded.Remove, contentDescription = "Remove")
             }
-            TextButton(onClick = {
+            IconButton(onClick = {
                 if (buenos) {
                     viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
                 } else {
@@ -302,7 +314,7 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
             }
         }
         Spacer(modifier = Modifier.weight(1f))
-        Button(onClick = {
+        OutlinedButton(onClick = {
             Mus.pushState()
             onOrdago()
             Mus.saveState(context)
@@ -412,7 +424,7 @@ fun FilaEnvite(
             modifier = Modifier
                 .clickable(
                     onClick = {
-                        updateEnvite(envite + 2)
+                        updateEnvite(envite + 5)
                         Mus.saveState(context)
                     },
                     enabled = rondaEnvites

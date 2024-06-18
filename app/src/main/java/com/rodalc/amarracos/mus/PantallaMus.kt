@@ -224,8 +224,8 @@ fun PlantillaMus() {
     var rondaEnvites by rememberSaveable { mutableStateOf(true) }
 
     val finRonda = { gannBuenos: Boolean ->
-        rondaEnvites = true
         viewModel.updateEnvites(Envites())
+        rondaEnvites = true
         if (gannBuenos) {
             viewModel.updateBuenos(buenos.copy(puntos = 0, victorias = buenos.victorias + 1))
             viewModel.updateMalos(malos.copy(puntos = 0))
@@ -279,6 +279,7 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
             fontSize = 80.sp,
             modifier = Modifier.clickable(
                 onClick = {
+                    if (pareja.puntos + 5 >= Mus.getPuntos()) Mus.pushState()
                     if (buenos) {
                         viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 5))
                     } else {
@@ -303,6 +304,7 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
                 Icon(Icons.Rounded.Remove, contentDescription = "Remove")
             }
             IconButton(onClick = {
+                if (pareja.puntos + 1 >= Mus.getPuntos()) Mus.pushState()
                 if (buenos) {
                     viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
                 } else {
@@ -331,15 +333,7 @@ fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEm
     var canUndo by rememberSaveable { mutableStateOf(Mus.canUndo()) }
     canUndo = Mus.canUndo()
 
-    if (rondaEnvites) {
-        if (canUndo && !envites.vacio()) {
-            Mus.deleteStack()
-        }
-    } else {
-        if (envites.vacio()) {
-            changeRondaEmbites()
-        }
-    }
+    if (!rondaEnvites && envites.vacio()) changeRondaEmbites()
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -402,6 +396,7 @@ fun FilaEnvite(
         TextButton(
             onClick = {
                 if (rondaEnvites) {
+                    Mus.deleteStack()
                     updateEnvite(envite - 1)
                 } else {
                     Mus.pushState()
@@ -424,6 +419,7 @@ fun FilaEnvite(
             modifier = Modifier
                 .clickable(
                     onClick = {
+                        Mus.deleteStack()
                         updateEnvite(envite + 5)
                         Mus.saveState(context)
                     },
@@ -433,6 +429,7 @@ fun FilaEnvite(
         )
         TextButton(onClick = {
             if (rondaEnvites) {
+                Mus.deleteStack()
                 updateEnvite(envite + 1)
             } else {
                 Mus.pushState()

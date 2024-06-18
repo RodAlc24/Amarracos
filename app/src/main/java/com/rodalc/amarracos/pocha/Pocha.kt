@@ -15,7 +15,7 @@ object Pocha : StateSaver("pocha.json") {
     /**
      * Lista de jugadores actuales.
      */
-    private var jugadores = mutableListOf(Jugador(0), Jugador(1))
+    private var jugadores = mutableListOf(Jugador(1), Jugador(2))
 
     /**
      * Si duplica la ronda actual o no.
@@ -140,7 +140,7 @@ object Pocha : StateSaver("pocha.json") {
      */
     fun discardBackup(context: Context): Boolean {
         stack = UndoStack()
-        this.jugadores = mutableListOf(Jugador(0), Jugador(1))
+        this.jugadores = mutableListOf(Jugador(1), Jugador(2))
         return this.deleteFile(context)
     }
 

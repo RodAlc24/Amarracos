@@ -105,7 +105,8 @@ fun PantallaPocha() {
                             ) { Text(text = "-") }
                             Spacer(modifier = Modifier.width(10.dp))
                             Button(onClick = {
-                                jugadores = (jugadores + Jugador(jugadores.size)).toMutableList()
+                                jugadores =
+                                    (jugadores + Jugador(jugadores.size + 1)).toMutableList()
                             }) { Text(text = "+") }
                         }
                     },
@@ -281,7 +282,7 @@ fun FilaJugadorNombres(jugador: Jugador, numJugadores: Int, context: Context) {
         },
         maxLines = 1,
         label = { Text("Jugador ${jugador.id}") },
-        keyboardOptions = KeyboardOptions(imeAction = if (jugador.id + 1 == numJugadores) ImeAction.Done else ImeAction.Next)
+        keyboardOptions = KeyboardOptions(imeAction = if (jugador.id == numJugadores) ImeAction.Done else ImeAction.Next)
     )
 }
 

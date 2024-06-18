@@ -39,6 +39,7 @@ import kotlinx.coroutines.async
 fun PantallaAjustes() {
     val context = LocalContext.current
     val url = "https://github.com/RodAlc24/Amarracos"
+    val version = "Versión: v8 (1.1.1-release)"
 
     val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
         .collectAsState(initial = true)
@@ -82,7 +83,7 @@ fun PantallaAjustes() {
             }
         }
         item {
-            Elemento(icon = Icons.Rounded.Info, title = "Versión: v7 (1.1.0-release)")
+            Elemento(icon = Icons.Rounded.Info, title = version)
         }
     }
 }

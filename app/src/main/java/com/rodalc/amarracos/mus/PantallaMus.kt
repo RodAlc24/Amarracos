@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -242,17 +241,17 @@ fun PlantillaMus() {
     }
 
     Row(
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxSize()
     ) {
-        Spacer(modifier = Modifier.weight(1f))
-        ColumnaParejaLandscape(buenos = true, viewModel) { finRonda(true) }
-        Spacer(modifier = Modifier.weight(1f))
-        ColumnaEnvites(viewModel, rondaEnvites) { rondaEnvites = !rondaEnvites }
-        Spacer(modifier = Modifier.weight(1f))
-        ColumnaParejaLandscape(buenos = false, viewModel) { finRonda(false) }
-        Spacer(modifier = Modifier.weight(1f))
+        Box(modifier = Modifier.fillMaxWidth(0.33f)) {
+            ColumnaParejaLandscape(buenos = true, viewModel) { finRonda(true) }
+        }
+        Box(modifier = Modifier.fillMaxWidth(0.5f)) {
+            ColumnaEnvites(viewModel, rondaEnvites) { rondaEnvites = !rondaEnvites }
+        }
+        Box(modifier = Modifier.fillMaxWidth()) {
+            ColumnaParejaLandscape(buenos = false, viewModel) { finRonda(false) }
+        }
     }
 }
 
@@ -265,7 +264,7 @@ fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: (
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .fillMaxHeight()
+            .fillMaxSize()
             .padding(10.dp)
     ) {
         Spacer(modifier = Modifier.weight(5f))
@@ -338,9 +337,7 @@ fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEm
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth(.35f)
+        modifier = Modifier.fillMaxSize()
     ) {
         FilaEnvite(rondaEnvites, envites.grande, viewModel) {
             viewModel.updateEnvites(envites.copy(grande = it))
@@ -388,7 +385,7 @@ fun FilaEnvite(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Center,
         modifier = Modifier
             .padding(10.dp)
             .fillMaxWidth(1f)
@@ -413,20 +410,25 @@ fun FilaEnvite(
                 Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Buenos")
             }
         }
-        Text(
-            text = envite.toString(),
-            fontSize = 20.sp,
-            modifier = Modifier
-                .clickable(
-                    onClick = {
-                        Mus.deleteStack()
-                        updateEnvite(envite + 5)
-                        Mus.saveState(context)
-                    },
-                    enabled = rondaEnvites
-                )
-                .padding(10.dp)
-        )
+        Box(
+            modifier = Modifier.width(50.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = envite.toString(),
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .clickable(
+                        onClick = {
+                            Mus.deleteStack()
+                            updateEnvite(envite + 5)
+                            Mus.saveState(context)
+                        },
+                        enabled = rondaEnvites
+                    )
+            )
+        }
         TextButton(onClick = {
             if (rondaEnvites) {
                 Mus.deleteStack()
@@ -437,7 +439,7 @@ fun FilaEnvite(
                 updateEnvite(0)
             }
             Mus.saveState(context)
-        }, enabled = rondaEnvites || envite != 0) {
+        }, enabled = (rondaEnvites && envite < 99) || (!rondaEnvites && envite != 0)) {
             if (rondaEnvites) {
                 Icon(Icons.Rounded.Add, contentDescription = "Add")
             } else {
@@ -472,16 +474,16 @@ fun RecuperarDatos(context: Context, showConfig: (Boolean) -> Unit) {
                         modifier = Modifier.padding(10.dp),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        Button(onClick = {
-                            Mus.loadState((context))
-                            showConfig(false)
-                        }) { Text(text = "Sí") }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Button(onClick = {
+                        OutlinedButton(onClick = {
                             Mus.discardBackup(context)
                             Mus.reset()
                             showConfig(true)
                         }) { Text(text = "No") }
+                        Spacer(modifier = Modifier.width(20.dp))
+                        Button(onClick = {
+                            Mus.loadState((context))
+                            showConfig(false)
+                        }) { Text(text = "Sí") }
                     }
                 }
             }

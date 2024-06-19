@@ -21,11 +21,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -93,21 +94,41 @@ fun PantallaPocha() {
             Ronda.NOMBRES -> {
                 Plantilla(
                     header = {
-                        Text(
-                            text = "Jugadores ${jugadores.size}",
-                            fontSize = 20.sp
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Row {
-                            Button(
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth(0.9f)
+
+                        ) {
+                            Spacer(modifier = Modifier.weight(0.1f))
+                            Text(
+                                text = "Jugadores:",
+                                fontSize = 20.sp
+                            )
+                            Spacer(modifier = Modifier.weight(0.9f))
+                            TextButton(
                                 onClick = { jugadores = jugadores.dropLast(1).toMutableList() },
                                 enabled = jugadores.size > 2
-                            ) { Text(text = "-") }
+                            ) { Icon(Icons.Rounded.Remove, "Quitar jugador") }
                             Spacer(modifier = Modifier.width(10.dp))
-                            Button(onClick = {
-                                jugadores =
-                                    (jugadores + Jugador(jugadores.size + 1)).toMutableList()
-                            }) { Text(text = "+") }
+                            Box(
+                                modifier = Modifier.width(30.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = jugadores.size.toString(),
+                                    fontSize = 20.sp
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            TextButton(
+                                onClick = {
+                                    jugadores =
+                                        (jugadores + Jugador(jugadores.size + 1)).toMutableList()
+                                },
+                                enabled = jugadores.size < 100
+                            ) { Icon(Icons.Rounded.Add, "Añadir jugador") }
+                            Spacer(modifier = Modifier.weight(0.1f))
                         }
                     },
                     lineJugador = {
@@ -241,18 +262,20 @@ fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> U
             text = puntos,
             modifier = Modifier.padding(10.dp)
         )
-        FilledIconButton(
+        TextButton(
             onClick = {
                 valorState -= 1
                 modificar(valorState)
             },
             enabled = valorState > 0
         ) { Icon(Icons.Rounded.Remove, contentDescription = "Remove") }
-        Text(
-            text = valorState.toString(),
-            modifier = Modifier.padding(10.dp)
-        )
-        FilledIconButton(onClick = {
+        Box(
+            modifier = Modifier.width(30.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = valorState.toString())
+        }
+        TextButton(onClick = {
             valorState += 1
             modificar(valorState)
         }
@@ -330,7 +353,7 @@ fun Plantilla(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Button(
+            OutlinedButton(
                 modifier = Modifier.padding(10.dp),
                 enabled = (undoEnabled),
                 onClick = { undo() }) {
@@ -372,15 +395,15 @@ fun RecuperarDatos(context: Context, atExit: (Ronda) -> Unit) {
                         modifier = Modifier.padding(10.dp),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
+                        OutlinedButton(onClick = {
+                            Pocha.discardBackup(context)
+                            atExit(Ronda.NOMBRES)
+                        }) { Text(text = "No") }
+                        Spacer(modifier = Modifier.width(20.dp))
                         Button(onClick = {
                             Pocha.loadState(context)
                             atExit(Ronda.APUESTAS)
                         }) { Text(text = "Sí") }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Button(onClick = {
-                            Pocha.discardBackup(context)
-                            atExit(Ronda.NOMBRES)
-                        }) { Text(text = "No") }
                     }
                 }
             }

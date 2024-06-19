@@ -31,12 +31,20 @@ android {
             versionNameSuffix = rootProject.extra["releaseVersionSuffix"] as String
             signingConfig = signingConfigs.getByName("debug")
             isDebuggable = false
+            resValue(
+                "string", "versionCode",
+                "v${rootProject.extra["defaultVersionCode"]} ${rootProject.extra["defaultVersionName"]}$versionNameSuffix"
+            )
         }
         debug {
             isMinifyEnabled = false
             versionNameSuffix = rootProject.extra["debugVersionSuffix"] as String
             signingConfig = signingConfigs.getByName("debug")
             isDebuggable = true
+            resValue(
+                "string", "versionCode",
+                "v${rootProject.extra["defaultVersionCode"]} ${rootProject.extra["defaultVersionName"]}$versionNameSuffix"
+            )
         }
         getByName("debug") {
             versionNameSuffix = rootProject.extra["debugVersionSuffix"] as String

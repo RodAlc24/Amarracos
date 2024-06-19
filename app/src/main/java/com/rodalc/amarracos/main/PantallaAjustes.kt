@@ -27,8 +27,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.storage.DataStoreManager
 import kotlinx.coroutines.async
 
@@ -39,7 +41,6 @@ import kotlinx.coroutines.async
 fun PantallaAjustes() {
     val context = LocalContext.current
     val url = "https://github.com/RodAlc24/Amarracos"
-    val version = "Versión: v8 (1.1.1-release)"
 
     val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
         .collectAsState(initial = true)
@@ -83,7 +84,10 @@ fun PantallaAjustes() {
             }
         }
         item {
-            Elemento(icon = Icons.Rounded.Info, title = version)
+            Elemento(
+                icon = Icons.Rounded.Info,
+                title = "Versión: ${stringResource(R.string.versionCode)}"
+            )
         }
     }
 }

@@ -1,8 +1,7 @@
 package com.rodalc.amarracos.mus
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +23,8 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.automirrored.rounded.Undo
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
@@ -45,15 +47,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.storage.DataStoreManager
 import kotlinx.coroutines.async
@@ -68,6 +68,9 @@ fun PantallaMus() {
     var showConfig by rememberSaveable { mutableStateOf(true) }
     val context = LocalContext.current
     var canLoad by rememberSaveable { mutableStateOf(Mus.canLoadState(context)) }
+    val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    /*
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
@@ -90,6 +93,7 @@ fun PantallaMus() {
             activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
     }
+     */
 
     // Keep screen on. Only if user has selected it
     val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
@@ -117,7 +121,7 @@ fun PantallaMus() {
         if (showConfig) {
             PantallaConfiguracion(context) { showConfig = it }
         } else {
-            PlantillaMus()
+            PlantillaMus(landscape)
         }
     }
 
@@ -214,7 +218,7 @@ fun PantallaConfiguracion(
 }
 
 @Composable
-fun PlantillaMus() {
+fun PlantillaMus(landscape: Boolean) {
     val viewModel = MusViewModel()
     val buenos by viewModel.buenos.collectAsState()
     val malos by viewModel.malos.collectAsState()
@@ -240,93 +244,217 @@ fun PlantillaMus() {
         finRonda(false)
     }
 
-    Row(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Box(modifier = Modifier.fillMaxWidth(0.33f)) {
-            ColumnaParejaLandscape(buenos = true, viewModel) { finRonda(true) }
+    if (landscape) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+            ) {
+                BotonesPareja(buenos = true, landscape, viewModel) { finRonda(true) }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+            ) {
+                EnvitesYDeshacer(viewModel, landscape, rondaEnvites) {
+                    rondaEnvites = !rondaEnvites
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+            ) {
+                BotonesPareja(buenos = false, landscape, viewModel) { finRonda(false) }
+            }
         }
-        Box(modifier = Modifier.fillMaxWidth(0.5f)) {
-            ColumnaEnvites(viewModel, rondaEnvites) { rondaEnvites = !rondaEnvites }
-        }
-        Box(modifier = Modifier.fillMaxWidth()) {
-            ColumnaParejaLandscape(buenos = false, viewModel) { finRonda(false) }
+    } else {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                BotonesPareja(buenos = true, landscape, viewModel) { finRonda(true) }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                EnvitesYDeshacer(viewModel, landscape, rondaEnvites) {
+                    rondaEnvites = !rondaEnvites
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                BotonesPareja(buenos = false, landscape, viewModel) { finRonda(false) }
+            }
         }
     }
 }
 
 @Composable
-fun ColumnaParejaLandscape(buenos: Boolean, viewModel: MusViewModel, onOrdago: () -> Unit) {
+fun BotonesPareja(
+    buenos: Boolean,
+    landscape: Boolean,
+    viewModel: MusViewModel,
+    onOrdago: () -> Unit
+) {
     val context = LocalContext.current
     val pareja by if (buenos) viewModel.buenos.collectAsState() else viewModel.malos.collectAsState()
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp)
-    ) {
-        Spacer(modifier = Modifier.weight(5f))
-        Text(
-            text = "${pareja.nombre}: ${pareja.victorias}",
-            fontSize = 25.sp
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Text(
-            text = pareja.puntos.toString(),
-            fontSize = 80.sp,
-            modifier = Modifier.clickable(
-                onClick = {
-                    if (pareja.puntos + 5 >= Mus.getPuntos()) Mus.pushState()
-                    if (buenos) {
-                        viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 5))
-                    } else {
-                        viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 5))
-                    }
-                    Mus.saveState(context)
-                }
-            )
-        )
-        Row {
-            IconButton(
-                onClick = {
-                    if (buenos) {
-                        viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos - 1))
-                    } else {
-                        viewModel.updateMalos(pareja.copy(puntos = pareja.puntos - 1))
-                    }
-                    Mus.saveState(context)
-                },
-                enabled = pareja.puntos > 0
+    if (!landscape) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.weight(0.5f)
             ) {
-                Icon(Icons.Rounded.Remove, contentDescription = "Remove")
-            }
-            IconButton(onClick = {
-                if (pareja.puntos + 1 >= Mus.getPuntos()) Mus.pushState()
-                if (buenos) {
-                    viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
-                } else {
-                    viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
+                Text(
+                    text = "${pareja.nombre}: ${pareja.victorias}",
+                    fontSize = 25.sp
+                )
+                Spacer(modifier = Modifier.width(30.dp))
+                OutlinedButton(onClick = {
+                    Mus.pushState()
+                    onOrdago()
+                    Mus.saveState(context)
                 }
-                Mus.saveState(context)
-            }) {
-                Icon(Icons.Rounded.Add, contentDescription = "Add")
+                ) { Text("Órdago") }
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .weight(0.5f)
+            ) {
+                IconButton(
+                    onClick = {
+                        if (buenos) {
+                            viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos - 1))
+                        } else {
+                            viewModel.updateMalos(pareja.copy(puntos = pareja.puntos - 1))
+                        }
+                        Mus.saveState(context)
+                    },
+                    enabled = pareja.puntos > 0
+                ) {
+                    Icon(Icons.Rounded.Remove, contentDescription = "Remove")
+                }
+                Text(
+                    text = pareja.puntos.toString(),
+                    fontSize = 80.sp,
+                    modifier = Modifier.clickable(
+                        onClick = {
+                            if (pareja.puntos + 5 >= Mus.getPuntos()) Mus.pushState()
+                            if (buenos) {
+                                viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 5))
+                            } else {
+                                viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 5))
+                            }
+                            Mus.saveState(context)
+                        }
+                    )
+                )
+                IconButton(onClick = {
+                    if (pareja.puntos + 1 >= Mus.getPuntos()) Mus.pushState()
+                    if (buenos) {
+                        viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
+                    } else {
+                        viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
+                    }
+                    Mus.saveState(context)
+                }) {
+                    Icon(Icons.Rounded.Add, contentDescription = "Add")
+                }
             }
         }
-        Spacer(modifier = Modifier.weight(1f))
-        OutlinedButton(onClick = {
-            Mus.pushState()
-            onOrdago()
-            Mus.saveState(context)
+    } else {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+        ) {
+            Spacer(modifier = Modifier.weight(5f))
+            Text(
+                text = "${pareja.nombre}: ${pareja.victorias}",
+                fontSize = 25.sp
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = pareja.puntos.toString(),
+                fontSize = 80.sp,
+                modifier = Modifier.clickable(
+                    onClick = {
+                        if (pareja.puntos + 5 >= Mus.getPuntos()) Mus.pushState()
+                        if (buenos) {
+                            viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 5))
+                        } else {
+                            viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 5))
+                        }
+                        Mus.saveState(context)
+                    }
+                )
+            )
+            Row {
+                IconButton(
+                    onClick = {
+                        if (buenos) {
+                            viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos - 1))
+                        } else {
+                            viewModel.updateMalos(pareja.copy(puntos = pareja.puntos - 1))
+                        }
+                        Mus.saveState(context)
+                    },
+                    enabled = pareja.puntos > 0
+                ) {
+                    Icon(Icons.Rounded.Remove, contentDescription = "Remove")
+                }
+                IconButton(onClick = {
+                    if (pareja.puntos + 1 >= Mus.getPuntos()) Mus.pushState()
+                    if (buenos) {
+                        viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
+                    } else {
+                        viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
+                    }
+                    Mus.saveState(context)
+                }) {
+                    Icon(Icons.Rounded.Add, contentDescription = "Add")
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            OutlinedButton(onClick = {
+                Mus.pushState()
+                onOrdago()
+                Mus.saveState(context)
+            }
+            ) { Text("Órdago") }
+            Spacer(modifier = Modifier.weight(5f))
         }
-        ) { Text("Órdago") }
-        Spacer(modifier = Modifier.weight(5f))
     }
 }
 
 @Composable
-fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEmbites: () -> Unit) {
+fun EnvitesYDeshacer(
+    viewModel: MusViewModel,
+    landscape: Boolean,
+    rondaEnvites: Boolean,
+    changeRondaEmbites: () -> Unit
+) {
     val context = LocalContext.current
     val envites by viewModel.envites.collectAsState()
     var canUndo by rememberSaveable { mutableStateOf(Mus.canUndo()) }
@@ -334,47 +462,92 @@ fun ColumnaEnvites(viewModel: MusViewModel, rondaEnvites: Boolean, changeRondaEm
 
     if (!rondaEnvites && envites.vacio()) changeRondaEmbites()
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        FilaEnvite(rondaEnvites, envites.grande, viewModel) {
-            viewModel.updateEnvites(envites.copy(grande = it))
+    if (!landscape) {
+        Row {
+            BotonesEnvite(rondaEnvites, landscape, envites.grande, viewModel) {
+                viewModel.updateEnvites(envites.copy(grande = it))
+            }
+            BotonesEnvite(rondaEnvites, landscape, envites.chica, viewModel) {
+                viewModel.updateEnvites(envites.copy(chica = it))
+            }
+            BotonesEnvite(rondaEnvites, landscape, envites.pares, viewModel) {
+                viewModel.updateEnvites(envites.copy(pares = it))
+            }
+            BotonesEnvite(rondaEnvites, landscape, envites.juego, viewModel) {
+                viewModel.updateEnvites(envites.copy(juego = it))
+            }
+            if (rondaEnvites && !envites.vacio()) {
+                Button(
+                    onClick = { changeRondaEmbites() },
+                ) { Icon(Icons.Rounded.Done, contentDescription = "Done") }
+            } else {
+                Button(
+                    onClick = {
+                        if (canUndo) {
+                            if (rondaEnvites) changeRondaEmbites()
+                            Mus.popState()
+                            viewModel.update()
+                            Mus.saveState(context)
+                        } else {
+                            changeRondaEmbites()
+                        }
+                    }, enabled = canUndo || !envites.vacio()
+                ) { Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo") }
+            }
         }
-        FilaEnvite(rondaEnvites, envites.chica, viewModel) {
-            viewModel.updateEnvites(envites.copy(chica = it))
-        }
-        FilaEnvite(rondaEnvites, envites.pares, viewModel) {
-            viewModel.updateEnvites(envites.copy(pares = it))
-        }
-        FilaEnvite(rondaEnvites, envites.juego, viewModel) {
-            viewModel.updateEnvites(envites.copy(juego = it))
-        }
-        if (rondaEnvites && !envites.vacio()) {
-            Button(
-                onClick = { changeRondaEmbites() },
-            ) { Icon(Icons.Rounded.Done, contentDescription = "Done") }
-        } else {
-            Button(
-                onClick = {
-                    if (canUndo) {
-                        if (rondaEnvites) changeRondaEmbites()
-                        Mus.popState()
-                        viewModel.update()
-                        Mus.saveState(context)
-                    } else {
-                        changeRondaEmbites()
-                    }
-                }, enabled = canUndo || !envites.vacio()
-            ) { Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo") }
+    } else {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            BotonesEnvite(rondaEnvites, landscape, envites.grande, viewModel) {
+                viewModel.updateEnvites(envites.copy(grande = it))
+            }
+            BotonesEnvite(rondaEnvites, landscape, envites.chica, viewModel) {
+                viewModel.updateEnvites(envites.copy(chica = it))
+            }
+            BotonesEnvite(rondaEnvites, landscape, envites.pares, viewModel) {
+                viewModel.updateEnvites(envites.copy(pares = it))
+            }
+            BotonesEnvite(rondaEnvites, landscape, envites.juego, viewModel) {
+                viewModel.updateEnvites(envites.copy(juego = it))
+            }
+            if (rondaEnvites && !envites.vacio()) {
+                Button(
+                    onClick = { changeRondaEmbites() },
+                ) { Icon(Icons.Rounded.Done, contentDescription = "Done") }
+            } else {
+                Button(
+                    onClick = {
+                        if (canUndo) {
+                            if (rondaEnvites) changeRondaEmbites()
+                            Mus.popState()
+                            viewModel.update()
+                            Mus.saveState(context)
+                        } else {
+                            changeRondaEmbites()
+                        }
+                    }, enabled = canUndo || !envites.vacio()
+                ) { Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo") }
+            }
         }
     }
 }
 
+/**
+ * Conjunto de botones y un texto para gestionar un envite.
+ *
+ * @param rondaEnvites Si es la ronda de envites (true) o la de conteo (false)
+ * @param landscape Si el dispositivo está en horizontal
+ * @param envite La cantidad del envite
+ * @param viewModel El VM del mus
+ * @param updateEnvite Se ejecuta al modificar el valor del envite (e.g. para aumentarlo)
+ */
 @Composable
-fun FilaEnvite(
+fun BotonesEnvite(
     rondaEnvites: Boolean,
+    landscape: Boolean,
     envite: Int,
     viewModel: MusViewModel,
     updateEnvite: (Int) -> Unit
@@ -383,33 +556,58 @@ fun FilaEnvite(
     val buenos by viewModel.buenos.collectAsState()
     val malos by viewModel.malos.collectAsState()
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth(1f)
-    ) {
+    val botonGenerico = @Composable { primerBoton: Boolean ->
+        val botonSuma = primerBoton != landscape
         TextButton(
             onClick = {
                 if (rondaEnvites) {
                     Mus.deleteStack()
-                    updateEnvite(envite - 1)
+                    updateEnvite(envite + if (primerBoton == landscape) -1 else 1)
                 } else {
                     Mus.pushState()
-                    viewModel.updateBuenos(buenos.copy(puntos = buenos.puntos + envite))
+                    if (primerBoton) {
+                        viewModel.updateBuenos(buenos.copy(puntos = buenos.puntos + envite))
+                    } else {
+                        viewModel.updateMalos(malos.copy(puntos = malos.puntos + envite))
+                    }
                     updateEnvite(0)
                 }
                 Mus.saveState(context)
             },
-            enabled = envite > 0
+            enabled = if (rondaEnvites) if (botonSuma) envite < 99 else envite > 0 else envite != 0
         ) {
             if (rondaEnvites) {
-                Icon(Icons.Rounded.Remove, contentDescription = "Remove")
+                if (botonSuma) {
+                    Icon(Icons.Rounded.Add, contentDescription = "Aumentar envite")
+                } else {
+                    Icon(Icons.Rounded.Remove, contentDescription = "Reducir envite")
+                }
             } else {
-                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Buenos")
+                if (landscape) {
+                    if (primerBoton) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = "Buenos ganan"
+                        )
+                    } else {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowForward,
+                            contentDescription = "Malos ganan"
+                        )
+                    }
+                } else {
+                    if (primerBoton) {
+                        Icon(Icons.Rounded.ArrowUpward, contentDescription = "Buenos ganan")
+                    } else {
+                        Icon(Icons.Rounded.ArrowDownward, contentDescription = "Malos ganan")
+                    }
+                }
             }
         }
+    }
+
+    val botonesYTexto = @Composable {
+        botonGenerico(true)
         Box(
             modifier = Modifier.width(50.dp),
             contentAlignment = Alignment.Center
@@ -429,22 +627,26 @@ fun FilaEnvite(
                     )
             )
         }
-        TextButton(onClick = {
-            if (rondaEnvites) {
-                Mus.deleteStack()
-                updateEnvite(envite + 1)
-            } else {
-                Mus.pushState()
-                viewModel.updateMalos(malos.copy(puntos = malos.puntos + envite))
-                updateEnvite(0)
-            }
-            Mus.saveState(context)
-        }, enabled = (rondaEnvites && envite < 99) || (!rondaEnvites && envite != 0)) {
-            if (rondaEnvites) {
-                Icon(Icons.Rounded.Add, contentDescription = "Add")
-            } else {
-                Icon(Icons.AutoMirrored.Rounded.ArrowForward, contentDescription = "Add")
-            }
+        botonGenerico(false)
+    }
+
+    val modifier = Modifier.padding(10.dp)
+
+    if (landscape) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = modifier.fillMaxWidth()
+        ) {
+            botonesYTexto()
+        }
+    } else {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier.fillMaxHeight()
+        ) {
+            botonesYTexto()
         }
     }
 }

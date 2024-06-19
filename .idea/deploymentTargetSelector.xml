@@ -7,7 +7,7 @@
       </SelectionState>
       <SelectionState runConfigName="Amarracos">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-06-13T09:53:12.378208435Z">
+        <DropdownSelection timestamp="2024-06-19T16:09:54.925290733Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=/home/rod/.android/avd/Pixel_5_API_33.avd" />

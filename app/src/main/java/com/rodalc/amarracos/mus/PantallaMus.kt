@@ -59,6 +59,9 @@ import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.storage.DataStoreManager
 import kotlinx.coroutines.async
 
+/**
+ * Punto de entrada para el mus.
+ */
 @Preview(
     device = "spec:width=411dp,height=891dp,orientation=landscape",
     showSystemUi = true,
@@ -100,9 +103,15 @@ fun PantallaMus() {
             PlantillaMus(landscape)
         }
     }
-
 }
 
+/**
+ * Pantalla para poner los nombres y el límite de puntos.
+ * Solo debería llamarse una vez, al empezar la partida.
+ *
+ * @param context El contexto de la aplicación
+ * @param show Si se muestra o no esta pantalla
+ */
 @Composable
 fun PantallaConfiguracion(
     context: Context,
@@ -193,6 +202,11 @@ fun PantallaConfiguracion(
     }
 }
 
+/**
+ * Se encarga de representar todos los elementos necesarios para un partida de mus.
+ *
+ * @param landscape Si el dispositivo está en horizontal
+ */
 @Composable
 fun PlantillaMus(landscape: Boolean) {
     val viewModel = MusViewModel()
@@ -220,57 +234,33 @@ fun PlantillaMus(landscape: Boolean) {
         finRonda(false)
     }
 
+    val elementos = @Composable { modifier: Modifier ->
+        Box(modifier = modifier) {
+            BotonesPareja(buenos = true, landscape, viewModel) { finRonda(true) }
+        }
+        Box(modifier = modifier) {
+            EnvitesYDeshacer(viewModel, landscape, rondaEnvites) { rondaEnvites = !rondaEnvites }
+        }
+        Box(modifier = modifier) {
+            BotonesPareja(buenos = false, landscape, viewModel) { finRonda(false) }
+        }
+    }
+
     if (landscape) {
         Row(modifier = Modifier.fillMaxSize()) {
-            Box(
-                modifier = Modifier
+            elementos(
+                Modifier
                     .fillMaxHeight()
                     .weight(1f)
-            ) {
-                BotonesPareja(buenos = true, landscape, viewModel) { finRonda(true) }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-            ) {
-                EnvitesYDeshacer(viewModel, landscape, rondaEnvites) {
-                    rondaEnvites = !rondaEnvites
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-            ) {
-                BotonesPareja(buenos = false, landscape, viewModel) { finRonda(false) }
-            }
+            )
         }
     } else {
         Column(modifier = Modifier.fillMaxSize()) {
-            Box(
-                modifier = Modifier
+            elementos(
+                Modifier
                     .fillMaxWidth()
                     .weight(1f)
-            ) {
-                BotonesPareja(buenos = true, landscape, viewModel) { finRonda(true) }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                EnvitesYDeshacer(viewModel, landscape, rondaEnvites) {
-                    rondaEnvites = !rondaEnvites
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                BotonesPareja(buenos = false, landscape, viewModel) { finRonda(false) }
-            }
+            )
         }
     }
 }

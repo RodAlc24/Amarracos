@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,8 +29,8 @@ import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
@@ -69,31 +70,6 @@ fun PantallaMus() {
     val context = LocalContext.current
     var canLoad by rememberSaveable { mutableStateOf(Mus.canLoadState(context)) }
     val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    /*
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(lifecycleOwner) {
-        val activity = context as ComponentActivity
-        val lifecycleObserver = object : DefaultLifecycleObserver {
-            @SuppressLint("SourceLockedOrientationActivity")
-            override fun onCreate(owner: LifecycleOwner) {
-                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            }
-
-            override fun onDestroy(owner: LifecycleOwner) {
-                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        }
-    }
-     */
 
     // Keep screen on. Only if user has selected it
     val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
@@ -299,6 +275,14 @@ fun PlantillaMus(landscape: Boolean) {
     }
 }
 
+/**
+ * Conjunto de botones y puntos para cada pareja
+ *
+ * @param buenos Si es la primera pareja
+ * @param landscape Si el dispositivo está en horizontal
+ * @param viewModel El VM del mus
+ * @param onOrdago Se ejecuta con el bóton de órdago
+ */
 @Composable
 fun BotonesPareja(
     buenos: Boolean,
@@ -309,92 +293,26 @@ fun BotonesPareja(
     val context = LocalContext.current
     val pareja by if (buenos) viewModel.buenos.collectAsState() else viewModel.malos.collectAsState()
 
-    if (!landscape) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp)
+    val nombreVictorias = @Composable {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.weight(0.5f)
+            Text(text = "${pareja.nombre}:", fontSize = 25.sp)
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.width(40.dp)
             ) {
-                Text(
-                    text = "${pareja.nombre}: ${pareja.victorias}",
-                    fontSize = 25.sp
-                )
-                Spacer(modifier = Modifier.width(30.dp))
-                OutlinedButton(onClick = {
-                    Mus.pushState()
-                    onOrdago()
-                    Mus.saveState(context)
-                }
-                ) { Text("Órdago") }
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .weight(0.5f)
-            ) {
-                IconButton(
-                    onClick = {
-                        if (buenos) {
-                            viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos - 1))
-                        } else {
-                            viewModel.updateMalos(pareja.copy(puntos = pareja.puntos - 1))
-                        }
-                        Mus.saveState(context)
-                    },
-                    enabled = pareja.puntos > 0
-                ) {
-                    Icon(Icons.Rounded.Remove, contentDescription = "Remove")
-                }
-                Text(
-                    text = pareja.puntos.toString(),
-                    fontSize = 80.sp,
-                    modifier = Modifier.clickable(
-                        onClick = {
-                            if (pareja.puntos + 5 >= Mus.getPuntos()) Mus.pushState()
-                            if (buenos) {
-                                viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 5))
-                            } else {
-                                viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 5))
-                            }
-                            Mus.saveState(context)
-                        }
-                    )
-                )
-                IconButton(onClick = {
-                    if (pareja.puntos + 1 >= Mus.getPuntos()) Mus.pushState()
-                    if (buenos) {
-                        viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
-                    } else {
-                        viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
-                    }
-                    Mus.saveState(context)
-                }) {
-                    Icon(Icons.Rounded.Add, contentDescription = "Add")
-                }
+                Text(text = pareja.victorias.toString(), fontSize = 25.sp)
             }
         }
-    } else {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp)
+    }
+
+    val puntos = @Composable {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.width(110.dp)
         ) {
-            Spacer(modifier = Modifier.weight(5f))
-            Text(
-                text = "${pareja.nombre}: ${pareja.victorias}",
-                fontSize = 25.sp
-            )
-            Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = pareja.puntos.toString(),
                 fontSize = 80.sp,
@@ -410,44 +328,73 @@ fun BotonesPareja(
                     }
                 )
             )
-            Row {
-                IconButton(
-                    onClick = {
-                        if (buenos) {
-                            viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos - 1))
-                        } else {
-                            viewModel.updateMalos(pareja.copy(puntos = pareja.puntos - 1))
-                        }
-                        Mus.saveState(context)
-                    },
-                    enabled = pareja.puntos > 0
-                ) {
-                    Icon(Icons.Rounded.Remove, contentDescription = "Remove")
-                }
-                IconButton(onClick = {
-                    if (pareja.puntos + 1 >= Mus.getPuntos()) Mus.pushState()
-                    if (buenos) {
-                        viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
-                    } else {
-                        viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
-                    }
-                    Mus.saveState(context)
-                }) {
-                    Icon(Icons.Rounded.Add, contentDescription = "Add")
-                }
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            OutlinedButton(onClick = {
-                Mus.pushState()
-                onOrdago()
-                Mus.saveState(context)
-            }
-            ) { Text("Órdago") }
-            Spacer(modifier = Modifier.weight(5f))
         }
+    }
+
+    val botonOrdago = @Composable {
+        OutlinedButton(onClick = {
+            Mus.pushState()
+            onOrdago()
+            Mus.saveState(context)
+        }) { Text("Órdago") }
+    }
+
+    val reducirPuntos = @Composable {
+        TextButton(
+            onClick = {
+                if (buenos) {
+                    viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos - 1))
+                } else {
+                    viewModel.updateMalos(pareja.copy(puntos = pareja.puntos - 1))
+                }
+                Mus.saveState(context)
+            },
+            enabled = pareja.puntos > 0
+        ) { Icon(Icons.Rounded.Remove, contentDescription = "Remove", Modifier.size(40.dp)) }
+    }
+
+    val aumentarPuntos = @Composable {
+        TextButton(onClick = {
+            if (pareja.puntos + 1 >= Mus.getPuntos()) Mus.pushState()
+            if (buenos) {
+                viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
+            } else {
+                viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
+            }
+            Mus.saveState(context)
+        }) { Icon(Icons.Rounded.Add, contentDescription = "Add", Modifier.size(40.dp)) }
+    }
+
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp)
+    ) {
+        nombreVictorias()
+        if (landscape) puntos()
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+        ) {
+            reducirPuntos()
+            if (!landscape) puntos()
+            aumentarPuntos()
+        }
+        botonOrdago()
     }
 }
 
+/**
+ * Conjunto de botones y textos con los envites actuales.
+ *
+ * @param viewModel El VM del mus
+ * @param landscape Si el dispositivo está en horizontal
+ * @param rondaEnvites Si la la ronda es la de envidar (o la de conteo)
+ * @param changeRondaEmbites Se ejecuta al acabar los envites o el conteo
+ */
 @Composable
 fun EnvitesYDeshacer(
     viewModel: MusViewModel,
@@ -462,75 +409,60 @@ fun EnvitesYDeshacer(
 
     if (!rondaEnvites && envites.vacio()) changeRondaEmbites()
 
-    if (!landscape) {
-        Row {
-            BotonesEnvite(rondaEnvites, landscape, envites.grande, viewModel) {
-                viewModel.updateEnvites(envites.copy(grande = it))
-            }
-            BotonesEnvite(rondaEnvites, landscape, envites.chica, viewModel) {
-                viewModel.updateEnvites(envites.copy(chica = it))
-            }
-            BotonesEnvite(rondaEnvites, landscape, envites.pares, viewModel) {
-                viewModel.updateEnvites(envites.copy(pares = it))
-            }
-            BotonesEnvite(rondaEnvites, landscape, envites.juego, viewModel) {
-                viewModel.updateEnvites(envites.copy(juego = it))
-            }
-            if (rondaEnvites && !envites.vacio()) {
-                Button(
-                    onClick = { changeRondaEmbites() },
-                ) { Icon(Icons.Rounded.Done, contentDescription = "Done") }
+    val botonesEnvites = @Composable {
+        BotonesEnvite(rondaEnvites, landscape, envites.grande, viewModel) {
+            viewModel.updateEnvites(envites.copy(grande = it))
+        }
+        BotonesEnvite(rondaEnvites, landscape, envites.chica, viewModel) {
+            viewModel.updateEnvites(envites.copy(chica = it))
+        }
+        BotonesEnvite(rondaEnvites, landscape, envites.pares, viewModel) {
+            viewModel.updateEnvites(envites.copy(pares = it))
+        }
+        BotonesEnvite(rondaEnvites, landscape, envites.juego, viewModel) {
+            viewModel.updateEnvites(envites.copy(juego = it))
+        }
+        val done = rondaEnvites && !envites.vacio()
+
+        FilledIconButton(
+            onClick = {
+                if (done) {
+                    changeRondaEmbites()
+                } else {
+                    if (canUndo) {
+                        if (rondaEnvites) changeRondaEmbites()
+                        Mus.popState()
+                        viewModel.update()
+                        Mus.saveState(context)
+                    } else {
+                        changeRondaEmbites()
+                    }
+                }
+            }, enabled = done || canUndo || !envites.vacio()
+        ) {
+            if (done) {
+                Icon(Icons.Rounded.Done, contentDescription = "Done")
             } else {
-                Button(
-                    onClick = {
-                        if (canUndo) {
-                            if (rondaEnvites) changeRondaEmbites()
-                            Mus.popState()
-                            viewModel.update()
-                            Mus.saveState(context)
-                        } else {
-                            changeRondaEmbites()
-                        }
-                    }, enabled = canUndo || !envites.vacio()
-                ) { Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo") }
+                Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo")
             }
         }
-    } else {
+    }
+
+    if (landscape) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize()
         ) {
-            BotonesEnvite(rondaEnvites, landscape, envites.grande, viewModel) {
-                viewModel.updateEnvites(envites.copy(grande = it))
-            }
-            BotonesEnvite(rondaEnvites, landscape, envites.chica, viewModel) {
-                viewModel.updateEnvites(envites.copy(chica = it))
-            }
-            BotonesEnvite(rondaEnvites, landscape, envites.pares, viewModel) {
-                viewModel.updateEnvites(envites.copy(pares = it))
-            }
-            BotonesEnvite(rondaEnvites, landscape, envites.juego, viewModel) {
-                viewModel.updateEnvites(envites.copy(juego = it))
-            }
-            if (rondaEnvites && !envites.vacio()) {
-                Button(
-                    onClick = { changeRondaEmbites() },
-                ) { Icon(Icons.Rounded.Done, contentDescription = "Done") }
-            } else {
-                Button(
-                    onClick = {
-                        if (canUndo) {
-                            if (rondaEnvites) changeRondaEmbites()
-                            Mus.popState()
-                            viewModel.update()
-                            Mus.saveState(context)
-                        } else {
-                            changeRondaEmbites()
-                        }
-                    }, enabled = canUndo || !envites.vacio()
-                ) { Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo") }
-            }
+            botonesEnvites()
+        }
+    } else {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            botonesEnvites()
         }
     }
 }

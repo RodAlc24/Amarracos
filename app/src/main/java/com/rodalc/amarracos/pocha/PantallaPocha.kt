@@ -15,18 +15,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -47,7 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import com.rodalc.amarracos.main.PopUp
 import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.storage.DataStoreManager
 
@@ -84,11 +83,24 @@ fun PantallaPocha() {
     }
 
     if (canLoad) {
-        RecuperarDatos(context) {
-            state = it
-            jugadores = Pocha.getJugadores()
-            canLoad = false
-        }
+        PopUp(
+            title = "¿Recuperar la última partida?",
+            optionA = "No",
+            optionB = "Sí",
+            onClickA = {
+                Pocha.discardBackup(context)
+                state = Ronda.NOMBRES
+                jugadores = Pocha.getJugadores()
+                canLoad = false
+            },
+            onClickB = {
+                Pocha.loadState(context)
+                state = Ronda.APUESTAS
+                jugadores = Pocha.getJugadores()
+                canLoad = false
+            },
+            preferredOptionB = true
+        )
     } else {
         when (state) {
             Ronda.NOMBRES -> {
@@ -106,7 +118,7 @@ fun PantallaPocha() {
                                 fontSize = 20.sp
                             )
                             Spacer(modifier = Modifier.weight(0.9f))
-                            TextButton(
+                            IconButton(
                                 onClick = { jugadores = jugadores.dropLast(1).toMutableList() },
                                 enabled = jugadores.size > 2
                             ) { Icon(Icons.Rounded.Remove, "Quitar jugador") }
@@ -121,7 +133,7 @@ fun PantallaPocha() {
                                 )
                             }
                             Spacer(modifier = Modifier.width(10.dp))
-                            TextButton(
+                            IconButton(
                                 onClick = {
                                     jugadores =
                                         (jugadores + Jugador(jugadores.size + 1)).toMutableList()
@@ -169,12 +181,9 @@ fun PantallaPocha() {
                     },
                     lineJugador = { jugador ->
                         FilaJugador(
-                            texto = jugador.toString(),
-                            puntos = jugador.puntos.toString(),
-                            valor = jugador.apuesta
-                        ) {
-                            jugador.apuesta = it
-                        }
+                            jugador = jugador,
+                            ronda = Ronda.APUESTAS
+                        )
                     },
                     nextRound = {
                         state = Ronda.CONTEO
@@ -210,12 +219,9 @@ fun PantallaPocha() {
                     },
                     lineJugador = { jugador ->
                         FilaJugador(
-                            texto = jugador.toString(),
-                            puntos = "(${jugador.apuesta}) ${jugador.puntos}",
-                            valor = jugador.victoria
-                        ) {
-                            jugador.victoria = it
-                        }
+                            jugador = jugador,
+                            ronda = Ronda.CONTEO
+                        )
                     },
                     nextRound = {
                         Pocha.setDuplica(duplica)
@@ -237,21 +243,27 @@ fun PantallaPocha() {
 /**
  * Crea una fila con la información de un jugador, además de unos botones de - y + para aumentar y disminuir el valor correspondiente.
  *
- * @param texto El texto que se muestra a la izquierda, suele ser el nombre.
- * @param puntos Los puntos (totales) del jugador.
- * @param valor La cantidad que se quiere modificar, ya sean las apuestas o las victorias.
- * @param modificar Recibe como parámetro el nuevo valor de la variable recibida.
+ * @param jugador El jugador que se va a emplear
+ * @param ronda La ronda actual
  */
 @Composable
-fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> Unit) {
-    var valorState by rememberSaveable { mutableIntStateOf(valor) }
+fun FilaJugador(
+    jugador: Jugador,
+    ronda: Ronda
+) {
+    var valorState by rememberSaveable { mutableIntStateOf(if (ronda == Ronda.APUESTAS) jugador.apuesta else jugador.victoria) }
+    val content = ButtonDefaults.textButtonColors().contentColor
+    val contentDisabled = ButtonDefaults.textButtonColors().disabledContentColor
+    val tintA = if (valorState > 0) content else contentDisabled
+    val tintB = if (valorState < 99) content else contentDisabled
+
     Row(
         modifier = Modifier.fillMaxWidth(0.9f),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = texto,
+            text = jugador.toString(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
@@ -259,27 +271,36 @@ fun FilaJugador(texto: String, puntos: String, valor: Int, modificar: (Int) -> U
                 .clipToBounds()
         )
         Text(
-            text = puntos,
+            text = jugador.puntos.toString(),
             modifier = Modifier.padding(10.dp)
         )
-        TextButton(
+        IconButton(
             onClick = {
                 valorState -= 1
-                modificar(valorState)
+                if (ronda == Ronda.APUESTAS) {
+                    jugador.apuesta = valorState
+                } else {
+                    jugador.victoria = valorState
+                }
             },
             enabled = valorState > 0
-        ) { Icon(Icons.Rounded.Remove, contentDescription = "Remove") }
+        ) { Icon(Icons.Rounded.Remove, contentDescription = "Quitar 1 a $jugador", tint = tintA) }
         Box(
-            modifier = Modifier.width(30.dp),
+            modifier = Modifier.width(55.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = valorState.toString())
+            Text(text = "${jugador.victoria}/${jugador.apuesta}")
         }
-        TextButton(onClick = {
-            valorState += 1
-            modificar(valorState)
-        }
-        ) { Icon(Icons.Rounded.Add, contentDescription = "Add") }
+        IconButton(
+            onClick = {
+                valorState += 1
+                if (ronda == Ronda.APUESTAS) {
+                    jugador.apuesta = valorState
+                } else {
+                    jugador.victoria = valorState
+                }
+            }, enabled = valorState < 99
+        ) { Icon(Icons.Rounded.Add, contentDescription = "Añadir uno a $jugador", tint = tintB) }
     }
 }
 
@@ -365,47 +386,6 @@ fun Plantilla(
                 onClick = { nextRound() }
             ) {
                 Text("Aceptar")
-            }
-        }
-    }
-}
-
-/**
- * Dyalog mostrado al principio para preguntar si se quieren recuperar los datos de la partida anterior.
- *
- * @param context El contexto actual
- * @param atExit Se invoca al finalizar (al elegir una opción)
- */
-@Composable
-fun RecuperarDatos(context: Context, atExit: (Ronda) -> Unit) {
-    Dialog(onDismissRequest = { }) {
-        Box(modifier = Modifier) {
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(10.dp),
-                shape = RoundedCornerShape(16.dp),
-            ) {
-                Column(
-                    modifier = Modifier.padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "¿Recuperar la última partida?")
-                    Row(
-                        modifier = Modifier.padding(10.dp),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        OutlinedButton(onClick = {
-                            Pocha.discardBackup(context)
-                            atExit(Ronda.NOMBRES)
-                        }) { Text(text = "No") }
-                        Spacer(modifier = Modifier.width(20.dp))
-                        Button(onClick = {
-                            Pocha.loadState(context)
-                            atExit(Ronda.APUESTAS)
-                        }) { Text(text = "Sí") }
-                    }
-                }
             }
         }
     }

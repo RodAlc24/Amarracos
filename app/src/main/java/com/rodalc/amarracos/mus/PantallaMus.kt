@@ -31,11 +31,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -248,6 +246,8 @@ fun PlantillaMus(landscape: Boolean) {
     }
 
     val undo = @Composable {
+        val tint =
+            if (canUndo) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
         IconButton(
             onClick = {
                 Mus.popState()
@@ -258,7 +258,7 @@ fun PlantillaMus(landscape: Boolean) {
             Icon(
                 Icons.AutoMirrored.Rounded.Undo,
                 "Deshacer",
-                tint = if (canUndo) MaterialTheme.colorScheme.primary else ButtonDefaults.textButtonColors().disabledContentColor
+                tint = tint
             )
         }
     }
@@ -421,7 +421,10 @@ fun BotonesPareja(
     }
 
     val reducirPuntos = @Composable {
-        TextButton(
+        val enabled = pareja.puntos > 0
+        val tint =
+            if (enabled) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
+        IconButton(
             onClick = {
                 Mus.pushState()
                 if (buenos) {
@@ -431,20 +434,25 @@ fun BotonesPareja(
                 }
                 Mus.saveState(context)
             },
-            enabled = pareja.puntos > 0
-        ) { Icon(Icons.Rounded.Remove, contentDescription = "Remove", Modifier.size(40.dp)) }
+            enabled = enabled,
+            modifier = Modifier.padding(5.dp)
+        ) { Icon(Icons.Rounded.Remove, "Remove", Modifier.size(40.dp), tint = tint) }
     }
 
     val aumentarPuntos = @Composable {
-        TextButton(onClick = {
-            Mus.pushState()
-            if (buenos) {
-                viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
-            } else {
-                viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
-            }
-            Mus.saveState(context)
-        }) { Icon(Icons.Rounded.Add, contentDescription = "Add", Modifier.size(40.dp)) }
+        val tint = ButtonDefaults.textButtonColors().contentColor
+        IconButton(
+            onClick = {
+                Mus.pushState()
+                if (buenos) {
+                    viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
+                } else {
+                    viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
+                }
+                Mus.saveState(context)
+            },
+            modifier = Modifier.padding(5.dp)
+        ) { Icon(Icons.Rounded.Add, "Add", Modifier.size(40.dp), tint = tint) }
     }
 
     Column(
@@ -535,18 +543,22 @@ fun BotonesEnvite(
     val malos by viewModel.malos.collectAsState()
 
     val botonPuntuacion = @Composable { botonSuma: Boolean ->
-        TextButton(
+        val enabled = if (botonSuma) envite < 99 else envite > 0
+        val tint =
+            if (enabled) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
+
+        IconButton(
             onClick = {
                 Mus.pushState()
                 updateEnvite(envite + if (botonSuma) 1 else -1)
                 Mus.saveState(context)
             },
-            enabled = if (botonSuma) envite < 99 else envite > 0
+            enabled = enabled
         ) {
             if (botonSuma) {
-                Icon(Icons.Rounded.Add, contentDescription = "Aumentar envite")
+                Icon(Icons.Rounded.Add, contentDescription = "Aumentar envite", tint = tint)
             } else {
-                Icon(Icons.Rounded.Remove, contentDescription = "Reducir envite")
+                Icon(Icons.Rounded.Remove, contentDescription = "Reducir envite", tint = tint)
             }
         }
     }

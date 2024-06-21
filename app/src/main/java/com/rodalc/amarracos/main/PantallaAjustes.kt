@@ -11,9 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -40,7 +41,9 @@ import kotlinx.coroutines.async
 @Composable
 fun PantallaAjustes() {
     val context = LocalContext.current
-    val url = "https://github.com/RodAlc24/Amarracos"
+    val gitHub = "https://github.com/RodAlc24/Amarracos"
+    val mus = "https://www.nhfournier.es/como-jugar/mus/"
+    val pocha = "https://www.nhfournier.es/como-jugar/pocha/"
 
     val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
         .collectAsState(initial = true)
@@ -75,9 +78,27 @@ fun PantallaAjustes() {
             }
         }
         item {
+            Elemento(icon = Icons.AutoMirrored.Outlined.Help, title = "Cómo jugar al mus:") {
+                OutlinedButton(onClick = {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(mus)))
+                }) {
+                    Text(text = "Abrir")
+                }
+            }
+        }
+        item {
+            Elemento(icon = Icons.AutoMirrored.Outlined.Help, title = "Cómo jugar a la pocha:") {
+                OutlinedButton(onClick = {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pocha)))
+                }) {
+                    Text(text = "Abrir")
+                }
+            }
+        }
+        item {
             Elemento(icon = Icons.AutoMirrored.Rounded.OpenInNew, title = "Repositorio de GitHub") {
                 OutlinedButton(onClick = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(gitHub)))
                 }) {
                     Text(text = "Abrir")
                 }
@@ -85,7 +106,7 @@ fun PantallaAjustes() {
         }
         item {
             Elemento(
-                icon = Icons.Rounded.Info,
+                icon = Icons.Outlined.Info,
                 title = "Versión: ${stringResource(R.string.versionCode)}"
             )
         }

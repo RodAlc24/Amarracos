@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -28,12 +27,13 @@ import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Remove
-import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -54,7 +54,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import com.rodalc.amarracos.main.PopUp
 import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.storage.DataStoreManager
 import kotlinx.coroutines.async
@@ -92,10 +92,23 @@ fun PantallaMus() {
     }
 
     if (canLoad) {
-        RecuperarDatos(context = context) {
-            showConfig = it
-            canLoad = false
-        }
+        PopUp(
+            title = "¿Recuperar la última partida?",
+            optionA = "No",
+            optionB = "Sí",
+            onClickA = {
+                Mus.discardBackup(context)
+                Mus.reset()
+                showConfig = true
+                canLoad = false
+            },
+            onClickB = {
+                Mus.loadState((context))
+                showConfig = false
+                canLoad = false
+            },
+            preferredOptionB = true
+        )
     } else {
         if (showConfig) {
             PantallaConfiguracion(context) { showConfig = it }
@@ -212,13 +225,13 @@ fun PlantillaMus(landscape: Boolean) {
     val viewModel = MusViewModel()
     val buenos by viewModel.buenos.collectAsState()
     val malos by viewModel.malos.collectAsState()
-    val puntos by viewModel.puntos.collectAsState()
+    val canUndo by viewModel.canUndo.collectAsState()
+    val puntos = Mus.getPuntos()
 
-    var rondaEnvites by rememberSaveable { mutableStateOf(true) }
+    val context = LocalContext.current
 
     val finRonda = { gannBuenos: Boolean ->
         viewModel.updateEnvites(Envites())
-        rondaEnvites = true
         if (gannBuenos) {
             viewModel.updateBuenos(buenos.copy(puntos = 0, victorias = buenos.victorias + 1))
             viewModel.updateMalos(malos.copy(puntos = 0))
@@ -234,33 +247,120 @@ fun PlantillaMus(landscape: Boolean) {
         finRonda(false)
     }
 
-    val elementos = @Composable { modifier: Modifier ->
-        Box(modifier = modifier) {
-            BotonesPareja(buenos = true, landscape, viewModel) { finRonda(true) }
+    val undo = @Composable {
+        IconButton(
+            onClick = {
+                Mus.popState()
+                viewModel.update()
+                Mus.saveState(context)
+            }, enabled = canUndo
+        ) {
+            Icon(
+                Icons.AutoMirrored.Rounded.Undo,
+                "Deshacer",
+                tint = if (canUndo) MaterialTheme.colorScheme.primary else ButtonDefaults.textButtonColors().disabledContentColor
+            )
         }
-        Box(modifier = modifier) {
-            EnvitesYDeshacer(viewModel, landscape, rondaEnvites) { rondaEnvites = !rondaEnvites }
+    }
+
+    val ordago = @Composable {
+        var show by rememberSaveable { mutableStateOf(false) }
+        OutlinedButton(onClick = {
+            show = true
+        }) {
+            Text(text = "Órdago")
         }
-        Box(modifier = modifier) {
-            BotonesPareja(buenos = false, landscape, viewModel) { finRonda(false) }
+        if (show) PopUp(
+            title = "Ganador:",
+            optionA = buenos.nombre,
+            optionB = malos.nombre,
+            onClickA = {
+                Mus.pushState()
+                finRonda(true)
+                Mus.saveState(context)
+                show = false
+            },
+            onClickB = {
+                Mus.pushState()
+                finRonda(false)
+                Mus.saveState(context)
+                show = false
+            },
+            onDismiss = { show = false }
+        )
+    }
+
+    val elementos = @Composable { modifier1: Modifier, modifier2: Modifier ->
+        Box(modifier = modifier1) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                BotonesPareja(buenos = true, landscape, viewModel, Modifier.fillMaxSize(0.8f))
+                if (landscape) undo()
+            }
+        }
+        Box(modifier = modifier2) {
+            EnvitesYDeshacer(viewModel, landscape)
+        }
+        Box(modifier = modifier1) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                BotonesPareja(buenos = false, landscape, viewModel, Modifier.fillMaxSize(0.8f))
+                if (landscape) ordago()
+            }
         }
     }
 
     if (landscape) {
-        Row(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.8f)
+        ) {
             elementos(
                 Modifier
                     .fillMaxHeight()
-                    .weight(1f)
+                    .weight(1f),
+                Modifier
+                    .fillMaxHeight()
+                    .weight(1.3f)
             )
         }
     } else {
-        Column(modifier = Modifier.fillMaxSize()) {
-            elementos(
-                Modifier
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-            )
+                    .fillMaxHeight(0.9f)
+            ) {
+                elementos(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    Modifier
+                        .fillMaxHeight()
+                        .weight(1.3f)
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .fillMaxHeight()
+            ) {
+                undo()
+                ordago()
+            }
         }
     }
 }
@@ -271,14 +371,13 @@ fun PlantillaMus(landscape: Boolean) {
  * @param buenos Si es la primera pareja
  * @param landscape Si el dispositivo está en horizontal
  * @param viewModel El VM del mus
- * @param onOrdago Se ejecuta con el bóton de órdago
  */
 @Composable
 fun BotonesPareja(
     buenos: Boolean,
     landscape: Boolean,
     viewModel: MusViewModel,
-    onOrdago: () -> Unit
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val pareja by if (buenos) viewModel.buenos.collectAsState() else viewModel.malos.collectAsState()
@@ -308,7 +407,7 @@ fun BotonesPareja(
                 fontSize = 80.sp,
                 modifier = Modifier.clickable(
                     onClick = {
-                        if (pareja.puntos + 5 >= Mus.getPuntos()) Mus.pushState()
+                        Mus.pushState()
                         if (buenos) {
                             viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 5))
                         } else {
@@ -321,17 +420,10 @@ fun BotonesPareja(
         }
     }
 
-    val botonOrdago = @Composable {
-        OutlinedButton(onClick = {
-            Mus.pushState()
-            onOrdago()
-            Mus.saveState(context)
-        }) { Text("Órdago") }
-    }
-
     val reducirPuntos = @Composable {
         TextButton(
             onClick = {
+                Mus.pushState()
                 if (buenos) {
                     viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos - 1))
                 } else {
@@ -345,7 +437,7 @@ fun BotonesPareja(
 
     val aumentarPuntos = @Composable {
         TextButton(onClick = {
-            if (pareja.puntos + 1 >= Mus.getPuntos()) Mus.pushState()
+            Mus.pushState()
             if (buenos) {
                 viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
             } else {
@@ -358,11 +450,11 @@ fun BotonesPareja(
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp)
+        modifier = modifier.padding(10.dp)
     ) {
+        Spacer(modifier = Modifier.weight(1f))
         nombreVictorias()
+        Spacer(modifier = Modifier.weight(1f))
         if (landscape) puntos()
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -373,7 +465,6 @@ fun BotonesPareja(
             if (!landscape) puntos()
             aumentarPuntos()
         }
-        botonOrdago()
     }
 }
 
@@ -382,59 +473,26 @@ fun BotonesPareja(
  *
  * @param viewModel El VM del mus
  * @param landscape Si el dispositivo está en horizontal
- * @param rondaEnvites Si la la ronda es la de envidar (o la de conteo)
- * @param changeRondaEmbites Se ejecuta al acabar los envites o el conteo
  */
 @Composable
 fun EnvitesYDeshacer(
     viewModel: MusViewModel,
     landscape: Boolean,
-    rondaEnvites: Boolean,
-    changeRondaEmbites: () -> Unit
 ) {
-    val context = LocalContext.current
     val envites by viewModel.envites.collectAsState()
-    var canUndo by rememberSaveable { mutableStateOf(Mus.canUndo()) }
-    canUndo = Mus.canUndo()
-
-    if (!rondaEnvites && envites.vacio()) changeRondaEmbites()
 
     val botonesEnvites = @Composable {
-        BotonesEnvite(rondaEnvites, landscape, envites.grande, viewModel) {
+        BotonesEnvite(landscape, envites.grande, viewModel) {
             viewModel.updateEnvites(envites.copy(grande = it))
         }
-        BotonesEnvite(rondaEnvites, landscape, envites.chica, viewModel) {
+        BotonesEnvite(landscape, envites.chica, viewModel) {
             viewModel.updateEnvites(envites.copy(chica = it))
         }
-        BotonesEnvite(rondaEnvites, landscape, envites.pares, viewModel) {
+        BotonesEnvite(landscape, envites.pares, viewModel) {
             viewModel.updateEnvites(envites.copy(pares = it))
         }
-        BotonesEnvite(rondaEnvites, landscape, envites.juego, viewModel) {
+        BotonesEnvite(landscape, envites.juego, viewModel) {
             viewModel.updateEnvites(envites.copy(juego = it))
-        }
-        val done = rondaEnvites && !envites.vacio()
-
-        FilledIconButton(
-            onClick = {
-                if (done) {
-                    changeRondaEmbites()
-                } else {
-                    if (canUndo) {
-                        if (rondaEnvites) changeRondaEmbites()
-                        Mus.popState()
-                        viewModel.update()
-                        Mus.saveState(context)
-                    } else {
-                        changeRondaEmbites()
-                    }
-                }
-            }, enabled = done || canUndo || !envites.vacio()
-        ) {
-            if (done) {
-                Icon(Icons.Rounded.Done, contentDescription = "Done")
-            } else {
-                Icon(Icons.AutoMirrored.Rounded.Undo, contentDescription = "Undo")
-            }
         }
     }
 
@@ -460,7 +518,6 @@ fun EnvitesYDeshacer(
 /**
  * Conjunto de botones y un texto para gestionar un envite.
  *
- * @param rondaEnvites Si es la ronda de envites (true) o la de conteo (false)
  * @param landscape Si el dispositivo está en horizontal
  * @param envite La cantidad del envite
  * @param viewModel El VM del mus
@@ -468,7 +525,6 @@ fun EnvitesYDeshacer(
  */
 @Composable
 fun BotonesEnvite(
-    rondaEnvites: Boolean,
     landscape: Boolean,
     envite: Int,
     viewModel: MusViewModel,
@@ -478,58 +534,53 @@ fun BotonesEnvite(
     val buenos by viewModel.buenos.collectAsState()
     val malos by viewModel.malos.collectAsState()
 
-    val botonGenerico = @Composable { primerBoton: Boolean ->
-        val botonSuma = primerBoton != landscape
+    val botonPuntuacion = @Composable { botonSuma: Boolean ->
         TextButton(
             onClick = {
-                if (rondaEnvites) {
-                    Mus.deleteStack()
-                    updateEnvite(envite + if (primerBoton == landscape) -1 else 1)
-                } else {
-                    Mus.pushState()
-                    if (primerBoton) {
-                        viewModel.updateBuenos(buenos.copy(puntos = buenos.puntos + envite))
-                    } else {
-                        viewModel.updateMalos(malos.copy(puntos = malos.puntos + envite))
-                    }
-                    updateEnvite(0)
-                }
+                Mus.pushState()
+                updateEnvite(envite + if (botonSuma) 1 else -1)
                 Mus.saveState(context)
             },
-            enabled = if (rondaEnvites) if (botonSuma) envite < 99 else envite > 0 else envite != 0
+            enabled = if (botonSuma) envite < 99 else envite > 0
         ) {
-            if (rondaEnvites) {
-                if (botonSuma) {
-                    Icon(Icons.Rounded.Add, contentDescription = "Aumentar envite")
+            if (botonSuma) {
+                Icon(Icons.Rounded.Add, contentDescription = "Aumentar envite")
+            } else {
+                Icon(Icons.Rounded.Remove, contentDescription = "Reducir envite")
+            }
+        }
+    }
+
+    val botonConteo = @Composable { botonBuenos: Boolean ->
+        FilledIconButton(
+            onClick = {
+                Mus.pushState()
+                if (botonBuenos) {
+                    viewModel.updateBuenos(buenos.copy(puntos = buenos.puntos + envite))
                 } else {
-                    Icon(Icons.Rounded.Remove, contentDescription = "Reducir envite")
+                    viewModel.updateMalos(malos.copy(puntos = malos.puntos + envite))
+                }
+                updateEnvite(0)
+                Mus.saveState(context)
+            }, enabled = envite != 0
+        ) {
+            if (landscape) {
+                if (botonBuenos) {
+                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Buenos ganan")
+                } else {
+                    Icon(Icons.AutoMirrored.Rounded.ArrowForward, "Malos ganan")
                 }
             } else {
-                if (landscape) {
-                    if (primerBoton) {
-                        Icon(
-                            Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Buenos ganan"
-                        )
-                    } else {
-                        Icon(
-                            Icons.AutoMirrored.Rounded.ArrowForward,
-                            contentDescription = "Malos ganan"
-                        )
-                    }
+                if (botonBuenos) {
+                    Icon(Icons.Rounded.ArrowUpward, "Buenos ganan")
                 } else {
-                    if (primerBoton) {
-                        Icon(Icons.Rounded.ArrowUpward, contentDescription = "Buenos ganan")
-                    } else {
-                        Icon(Icons.Rounded.ArrowDownward, contentDescription = "Malos ganan")
-                    }
+                    Icon(Icons.Rounded.ArrowDownward, "Malos ganan")
                 }
             }
         }
     }
 
-    val botonesYTexto = @Composable {
-        botonGenerico(true)
+    val texto = @Composable {
         Box(
             modifier = Modifier.width(50.dp),
             contentAlignment = Alignment.Center
@@ -541,15 +592,14 @@ fun BotonesEnvite(
                     .padding(10.dp)
                     .clickable(
                         onClick = {
-                            Mus.deleteStack()
+                            Mus.pushState()
                             updateEnvite(envite + 5)
                             Mus.saveState(context)
                         },
-                        enabled = rondaEnvites
+                        enabled = envite < 95
                     )
             )
         }
-        botonGenerico(false)
     }
 
     val modifier = Modifier.padding(10.dp)
@@ -560,7 +610,11 @@ fun BotonesEnvite(
             horizontalArrangement = Arrangement.Center,
             modifier = modifier.fillMaxWidth()
         ) {
-            botonesYTexto()
+            botonConteo(true)
+            botonPuntuacion(false)
+            texto()
+            botonPuntuacion(true)
+            botonConteo(false)
         }
     } else {
         Column(
@@ -568,49 +622,11 @@ fun BotonesEnvite(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier.fillMaxHeight()
         ) {
-            botonesYTexto()
-        }
-    }
-}
-
-/**
- * Dyalog mostrado al principio para preguntar si se quieren recuperar los datos de la partida anterior.
- *
- * @param context El contexto actual
- * @param showConfig Si se debe mostrar la pantalla de configuración o no
- */
-@Composable
-fun RecuperarDatos(context: Context, showConfig: (Boolean) -> Unit) {
-    Dialog(onDismissRequest = { }) {
-        Box(modifier = Modifier) {
-            Surface(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(10.dp),
-                shape = RoundedCornerShape(16.dp),
-            ) {
-                Column(
-                    modifier = Modifier.padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "¿Recuperar la última partida?")
-                    Row(
-                        modifier = Modifier.padding(10.dp),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        OutlinedButton(onClick = {
-                            Mus.discardBackup(context)
-                            Mus.reset()
-                            showConfig(true)
-                        }) { Text(text = "No") }
-                        Spacer(modifier = Modifier.width(20.dp))
-                        Button(onClick = {
-                            Mus.loadState((context))
-                            showConfig(false)
-                        }) { Text(text = "Sí") }
-                    }
-                }
-            }
+            botonConteo(true)
+            botonPuntuacion(true)
+            texto()
+            botonPuntuacion(false)
+            botonConteo(false)
         }
     }
 }

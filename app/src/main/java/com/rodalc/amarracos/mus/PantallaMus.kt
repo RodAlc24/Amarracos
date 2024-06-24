@@ -36,6 +36,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -48,8 +49,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rodalc.amarracos.main.PopUp
@@ -383,16 +388,30 @@ fun BotonesPareja(
     val pareja by if (buenos) viewModel.buenos.collectAsState() else viewModel.malos.collectAsState()
 
     val nombreVictorias = @Composable {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(text = "${pareja.nombre}:", fontSize = 25.sp)
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.width(40.dp)
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .padding(vertical = 10.dp)
             ) {
-                Text(text = pareja.victorias.toString(), fontSize = 25.sp)
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.width(40.dp)
+                ) {
+                    Text(
+                        text = pareja.victorias.toString(),
+                        fontSize = 25.sp,
+                        maxLines = 1,
+                    )
+                }
+                Text(
+                    text = ":${pareja.nombre}",
+                    fontSize = 25.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Right
+                )
             }
         }
     }
@@ -458,16 +477,14 @@ fun BotonesPareja(
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.padding(10.dp)
+        modifier = modifier
     ) {
-        Spacer(modifier = Modifier.weight(1f))
         nombreVictorias()
-        Spacer(modifier = Modifier.weight(1f))
         if (landscape) puntos()
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier
+            modifier = Modifier.padding(10.dp)
         ) {
             reducirPuntos()
             if (!landscape) puntos()

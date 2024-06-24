@@ -81,12 +81,22 @@ fun PopUp(
                         modifier = Modifier.padding(10.dp),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        OutlinedButton(onClick = { onClickA() }) { Text(text = optionA) }
+                        OutlinedButton(onClick = { onClickA() }) {
+                            Text(
+                                text = optionA,
+                                maxLines = 1
+                            )
+                        }
                         Spacer(modifier = Modifier.width(20.dp))
                         if (preferredOptionB) {
-                            Button(onClick = { onClickB() }) { Text(text = optionB) }
+                            Button(onClick = { onClickB() }) { Text(text = optionB, maxLines = 1) }
                         } else {
-                            OutlinedButton(onClick = { onClickB() }) { Text(text = optionB) }
+                            OutlinedButton(onClick = { onClickB() }) {
+                                Text(
+                                    text = optionB,
+                                    maxLines = 1
+                                )
+                            }
                         }
                     }
                 }

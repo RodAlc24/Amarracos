@@ -16,11 +16,7 @@ data class Envites(
     var chica: Int = 0,
     var pares: Int = 0,
     var juego: Int = 0,
-) {
-    fun vacio(): Boolean {
-        return (this.grande + this.chica + this.pares + this.juego) == 0
-    }
-}
+)
 
 @Serializable
 data class SerialicerMus(

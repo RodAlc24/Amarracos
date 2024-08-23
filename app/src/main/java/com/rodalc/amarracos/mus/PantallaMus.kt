@@ -428,9 +428,9 @@ fun BotonesPareja(
                     onClick = {
                         Mus.pushState()
                         if (buenos) {
-                            viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 5))
+                            viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
                         } else {
-                            viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 5))
+                            viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
                         }
                         Mus.saveState(context)
                     }
@@ -622,10 +622,10 @@ fun BotonesEnvite(
                     .clickable(
                         onClick = {
                             Mus.pushState()
-                            updateEnvite(envite + 5)
+                            updateEnvite(envite + 2)
                             Mus.saveState(context)
                         },
-                        enabled = envite < 95
+                        enabled = envite < 98
                     )
             )
         }

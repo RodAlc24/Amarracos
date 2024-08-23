@@ -203,7 +203,7 @@ fun PantallaPocha() {
                 Plantilla(
                     header = {
                         Text(
-                            text = "Ronda de resultados",
+                            text = "Total apuestas: ${Pocha.getTotalApuestas()}",
                             fontSize = 20.sp
                         )
                         Spacer(modifier = Modifier.height(10.dp))
@@ -224,12 +224,17 @@ fun PantallaPocha() {
                         )
                     },
                     nextRound = {
-                        Pocha.setDuplica(duplica)
-                        Pocha.pushState()
-                        Pocha.actualizarPuntuacion(duplica)
-                        duplica = false
-                        Pocha.saveState(context)
-                        state = Ronda.APUESTAS
+                        if (Pocha.canContinue()) {
+                            Pocha.setDuplica(duplica)
+                            Pocha.pushState()
+                            Pocha.actualizarPuntuacion(duplica)
+                            duplica = false
+                            Pocha.saveState(context)
+                            state = Ronda.APUESTAS
+                        } else ToastRateLimiter.showToast(
+                            context,
+                            "Las apuestas no pueden coincidir con el número de rondas jugadas"
+                        )
                     },
                     undo = { state = Ronda.APUESTAS },
                     undoEnabled = true,

@@ -164,5 +164,32 @@ object Pocha : StateSaver("pocha.json") {
             jugador.actualizarPuntuacion(duplica)
         }
     }
+
+    /**
+     * Indica si se puede continuar con la partida, es decir, las apuestas no coinciden con el número de rondas.
+     *
+     * @return true si se puede continuar, false en caso contrario
+     */
+    fun canContinue(): Boolean {
+        var puntos = 0
+        for (jugador in this.jugadores) {
+            puntos += jugador.apuesta - jugador.victoria
+        }
+        return puntos != 0
+    }
+
+    /**
+     * Devuelve la suma total de las apuestas.
+     *
+     * @return La suma total de las apuestas
+     */
+    fun getTotalApuestas(): Int {
+        var apuestas = 0
+        for (jugador in this.jugadores) {
+            apuestas += jugador.apuesta
+        }
+        return apuestas
+    }
+
 }
 

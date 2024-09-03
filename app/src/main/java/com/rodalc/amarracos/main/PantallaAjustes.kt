@@ -1,5 +1,6 @@
 package com.rodalc.amarracos.main
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
@@ -11,13 +12,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Help
-import androidx.compose.material.icons.automirrored.rounded.OpenInNew
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.Mail
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +48,9 @@ fun PantallaAjustes() {
     val gitHub = "https://github.com/RodAlc24/Amarracos"
     val mus = "https://www.nhfournier.es/como-jugar/mus/"
     val pocha = "https://www.nhfournier.es/como-jugar/pocha/"
+    val mail = "weibull.apps@gmail.com"
+    val googlePlay = "market://details?id=com.rodalc.amarracos"
+    val webGooglePlay = "https://play.google.com/store/apps/details?id=com.rodalc.amarracos"
 
     val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
         .collectAsState(initial = true)
@@ -63,7 +70,10 @@ fun PantallaAjustes() {
             HorizontalDivider()
         }
         item {
-            Elemento(icon = Icons.Rounded.Bolt, title = "Mantener la pantalla encendida") {
+            Elemento(
+                icon = Icons.Outlined.Bolt,
+                title = "Mantener la pantalla encendida durante las partidas"
+            ) {
                 Switch(
                     checked = screenState,
                     onCheckedChange = {
@@ -78,29 +88,94 @@ fun PantallaAjustes() {
             }
         }
         item {
-            Elemento(icon = Icons.AutoMirrored.Outlined.Help, title = "Cómo jugar al mus:") {
-                OutlinedButton(onClick = {
+            Elemento(icon = Icons.AutoMirrored.Outlined.HelpOutline, title = "Cómo jugar al mus:") {
+                IconButton(onClick = {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(mus)))
                 }) {
-                    Text(text = "Abrir")
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                        contentDescription = "Abrir en internet"
+                    )
                 }
             }
         }
         item {
-            Elemento(icon = Icons.AutoMirrored.Outlined.Help, title = "Cómo jugar a la pocha:") {
-                OutlinedButton(onClick = {
+            Elemento(
+                icon = Icons.AutoMirrored.Outlined.HelpOutline,
+                title = "Cómo jugar a la pocha:"
+            ) {
+                IconButton(onClick = {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pocha)))
                 }) {
-                    Text(text = "Abrir")
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                        contentDescription = "Abrir en internet"
+                    )
                 }
             }
         }
         item {
-            Elemento(icon = Icons.AutoMirrored.Rounded.OpenInNew, title = "Repositorio de GitHub") {
-                OutlinedButton(onClick = {
+            Elemento(icon = Icons.Outlined.Link, title = "Repositorio de GitHub") {
+                IconButton(onClick = {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(gitHub)))
                 }) {
-                    Text(text = "Abrir")
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                        contentDescription = "Abrir en internet"
+                    )
+                }
+            }
+        }
+        item {
+            Elemento(
+                icon = Icons.Outlined.StarOutline,
+                title = "Calificar Amarracos en Google Play"
+            ) {
+                IconButton(onClick = {
+                    val uri: Uri = Uri.parse(googlePlay)
+                    val goToMarket = Intent(Intent.ACTION_VIEW, uri)
+                    // To count with Play market backstack, After pressing back button,
+                    // to taken back to our application, we need to add following flags to intent.
+                    goToMarket.addFlags(
+                        Intent.FLAG_ACTIVITY_NO_HISTORY or
+                                Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
+                                Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+                    )
+                    try {
+                        context.startActivity(goToMarket)
+                    } catch (e: ActivityNotFoundException) {
+                        context.startActivity(
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse(webGooglePlay)
+                            )
+                        )
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                        contentDescription = "Abrir en internet"
+                    )
+                }
+            }
+        }
+        item {
+            Elemento(
+                icon = Icons.Outlined.Mail,
+                title = "Contacto: $mail"
+            ) {
+                IconButton(onClick = {
+                    context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("mailto:$mail")
+                        )
+                    )
+                }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                        contentDescription = "Abrir en el correo"
+                    )
                 }
             }
         }

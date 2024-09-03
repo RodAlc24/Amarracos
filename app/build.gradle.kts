@@ -38,6 +38,7 @@ android {
         }
         debug {
             isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
             versionNameSuffix = rootProject.extra["debugVersionSuffix"] as String
             signingConfig = signingConfigs.getByName("debug")
             isDebuggable = true

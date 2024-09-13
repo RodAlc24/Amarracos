@@ -64,9 +64,9 @@ fun PantallaAjustes() {
 
     ) {
         item {
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "Ajustes e infomación", fontSize = 20.sp)
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(text = "Ajustes e infomación", fontSize = 25.sp)
+            Spacer(modifier = Modifier.height(20.dp))
             HorizontalDivider()
         }
         item {
@@ -88,7 +88,7 @@ fun PantallaAjustes() {
             }
         }
         item {
-            Elemento(icon = Icons.AutoMirrored.Outlined.HelpOutline, title = "Cómo jugar al mus:") {
+            Elemento(icon = Icons.AutoMirrored.Outlined.HelpOutline, title = "Cómo jugar al mus") {
                 IconButton(onClick = {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(mus)))
                 }) {
@@ -102,7 +102,7 @@ fun PantallaAjustes() {
         item {
             Elemento(
                 icon = Icons.AutoMirrored.Outlined.HelpOutline,
-                title = "Cómo jugar a la pocha:"
+                title = "Cómo jugar a la pocha"
             ) {
                 IconButton(onClick = {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pocha)))

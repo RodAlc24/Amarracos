@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,10 +29,10 @@ import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -47,6 +46,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -162,7 +162,7 @@ fun PantallaConfiguracion(
                 } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
             },
             maxLines = 1,
-            label = { Text(text = labelBuenos) },
+            placeholder = { Text(text = labelBuenos) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -175,7 +175,7 @@ fun PantallaConfiguracion(
                 } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
             },
             maxLines = 1,
-            label = { Text(text = labelMalos) },
+            placeholder = { Text(text = labelMalos) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
         )
         Spacer(modifier = Modifier.weight(0.2f))
@@ -261,12 +261,13 @@ fun PlantillaMus(landscape: Boolean) {
     val undo = @Composable {
         val tint =
             if (canUndo) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
-        IconButton(
+        TextButton(
             onClick = {
                 Mus.popState()
                 viewModel.update()
                 Mus.saveState(context)
-            }, enabled = canUndo
+            }, enabled = canUndo,
+            modifier = Modifier.size(50.dp)
         ) {
             Icon(
                 Icons.AutoMirrored.Rounded.Undo,
@@ -425,24 +426,23 @@ fun BotonesPareja(
     }
 
     val puntos = @Composable {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.width(110.dp)
+        TextButton(
+            onClick = {
+                Mus.pushState()
+                if (buenos) {
+                    viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
+                } else {
+                    viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
+                }
+                Mus.saveState(context)
+            },
+            modifier = Modifier
+                .width(110.dp)
         ) {
             Text(
                 text = pareja.puntos.toString(),
-                fontSize = 80.sp,
-                modifier = Modifier.clickable(
-                    onClick = {
-                        Mus.pushState()
-                        if (buenos) {
-                            viewModel.updateBuenos(pareja.copy(puntos = pareja.puntos + 1))
-                        } else {
-                            viewModel.updateMalos(pareja.copy(puntos = pareja.puntos + 1))
-                        }
-                        Mus.saveState(context)
-                    }
-                )
+                fontSize = 60.sp,
+                color = Color.Black
             )
         }
     }
@@ -451,7 +451,7 @@ fun BotonesPareja(
         val enabled = pareja.puntos > 0
         val tint =
             if (enabled) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
-        IconButton(
+        TextButton(
             onClick = {
                 Mus.pushState()
                 if (buenos) {
@@ -462,13 +462,15 @@ fun BotonesPareja(
                 Mus.saveState(context)
             },
             enabled = enabled,
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier
+                .padding(5.dp)
+                .size(60.dp)
         ) { Icon(Icons.Rounded.Remove, "Remove", Modifier.size(40.dp), tint = tint) }
     }
 
     val aumentarPuntos = @Composable {
         val tint = ButtonDefaults.textButtonColors().contentColor
-        IconButton(
+        TextButton(
             onClick = {
                 Mus.pushState()
                 if (buenos) {
@@ -478,7 +480,9 @@ fun BotonesPareja(
                 }
                 Mus.saveState(context)
             },
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier
+                .padding(5.dp)
+                .size(60.dp)
         ) { Icon(Icons.Rounded.Add, "Add", Modifier.size(40.dp), tint = tint) }
     }
 
@@ -572,7 +576,7 @@ fun BotonesEnvite(
         val tint =
             if (enabled) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
 
-        IconButton(
+        TextButton(
             onClick = {
                 Mus.pushState()
                 updateEnvite(envite + if (botonSuma) 1 else -1)
@@ -622,20 +626,16 @@ fun BotonesEnvite(
             modifier = Modifier.width(50.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = envite.toString(),
-                fontSize = 20.sp,
-                modifier = Modifier
-                    .padding(10.dp)
-                    .clickable(
-                        onClick = {
-                            Mus.pushState()
-                            updateEnvite(envite + 2)
-                            Mus.saveState(context)
-                        },
-                        enabled = envite < 98
-                    )
-            )
+            TextButton(
+                onClick = {
+                    Mus.pushState()
+                    updateEnvite(envite + 2)
+                    Mus.saveState(context)
+                },
+                enabled = envite < 98
+            ) {
+                Text(text = envite.toString(), fontSize = 20.sp, color = Color.Black)
+            }
         }
     }
 

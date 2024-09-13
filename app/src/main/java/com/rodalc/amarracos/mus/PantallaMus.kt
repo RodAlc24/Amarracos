@@ -29,6 +29,7 @@ import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -46,7 +47,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -442,7 +442,7 @@ fun BotonesPareja(
             Text(
                 text = pareja.puntos.toString(),
                 fontSize = 60.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }
@@ -634,7 +634,11 @@ fun BotonesEnvite(
                 },
                 enabled = envite < 98
             ) {
-                Text(text = envite.toString(), fontSize = 20.sp, color = Color.Black)
+                Text(
+                    text = envite.toString(),
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
     }

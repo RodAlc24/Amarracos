@@ -135,6 +135,11 @@ fun PantallaConfiguracion(
 ) {
     var buenos by rememberSaveable { mutableStateOf("") }
     var malos by rememberSaveable { mutableStateOf("") }
+
+    MusDefaultConfigManager.loadState(context)
+    val labelBuenos = MusDefaultConfigManager.getBuenos()
+    val labelMalos = MusDefaultConfigManager.getMalos()
+
     val puntos30 by DataStoreManager.readDataStore(context, DataStoreManager.Key.MUS_A_30)
         .collectAsState(initial = true)
     val coreutineScope = rememberCoroutineScope()
@@ -157,7 +162,7 @@ fun PantallaConfiguracion(
                 } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
             },
             maxLines = 1,
-            label = { Text(text = "Buenos") },
+            label = { Text(text = labelBuenos) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -170,7 +175,7 @@ fun PantallaConfiguracion(
                 } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
             },
             maxLines = 1,
-            label = { Text(text = "Malos") },
+            label = { Text(text = labelMalos) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
         )
         Spacer(modifier = Modifier.weight(0.2f))
@@ -205,8 +210,11 @@ fun PantallaConfiguracion(
         Spacer(modifier = Modifier.weight(0.2f))
         OutlinedButton(
             onClick = {
-                Mus.getBuenos().nombre = if (buenos == "") "Buenos" else buenos
-                Mus.getMalos().nombre = if (malos == "") "Malos" else malos
+                Mus.getBuenos().nombre = if (buenos == "") labelBuenos else buenos
+                Mus.getMalos().nombre = if (malos == "") labelMalos else malos
+                MusDefaultConfigManager.setBuenos(Mus.getBuenos().nombre)
+                MusDefaultConfigManager.setMalos(Mus.getMalos().nombre)
+                MusDefaultConfigManager.saveState(context)
                 Mus.setPuntos(if (puntos30) 30 else 40)
                 Mus.saveState(context)
                 show(false)

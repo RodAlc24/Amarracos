@@ -20,7 +20,7 @@ class UndoStack<T>(private val maxCapacity: Int = 0) {
         if (maxCapacity == 0 || stack.size < maxCapacity) {
             stack.add(element)
         } else {
-            stack.removeFirst()
+            stack.removeAt(0)
             stack.add(element)
         }
     }
@@ -40,6 +40,6 @@ class UndoStack<T>(private val maxCapacity: Int = 0) {
      * @return El último elemento de la pila, o null si la pila está vacía.
      */
     fun pop(): T? {
-        return if (stack.isEmpty()) null else stack.removeLast()
+        return if (stack.isEmpty()) null else stack.removeAt(stack.lastIndex)
     }
 }

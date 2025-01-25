@@ -1,8 +1,5 @@
 package com.rodalc.amarracos.pocha
 
-import com.rodalc.amarracos.pocha.Ronda.APUESTAS
-import com.rodalc.amarracos.pocha.Ronda.CONTEO
-import com.rodalc.amarracos.pocha.Ronda.NOMBRES
 import kotlinx.serialization.Serializable
 import kotlin.math.abs
 

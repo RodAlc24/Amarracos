@@ -67,6 +67,10 @@ fun PantallaInicio(navController: NavController) {
         GameButton(icon = Icons.AutoMirrored.Rounded.ArrowForward, text = "Pocha") {
             navController.navigate("pantallaPocha")
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        GameButton(icon = Icons.AutoMirrored.Rounded.ArrowForward, text = "Genérico") {
+            navController.navigate("pantallaMarcador")
+        }
         Spacer(modifier = Modifier.weight(0.1f))
     }
 }
@@ -75,7 +79,7 @@ fun PantallaInicio(navController: NavController) {
 fun GameButton(icon: ImageVector, text: String, onClick: () -> Unit) {
     FilledTonalButton(onClick = onClick) {
         Row {
-            Text(text, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(0.2f))
+            Text(text, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(0.3f))
             Icon(imageVector = icon, contentDescription = icon.name)
         }
     }

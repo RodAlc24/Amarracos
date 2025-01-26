@@ -1,8 +1,9 @@
-package com.rodalc.amarracos.pocha
+package com.rodalc.amarracos.generico
 
 import android.content.Context
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -48,22 +48,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rodalc.amarracos.main.PopUp
 import com.rodalc.amarracos.main.ToastRateLimiter
+import com.rodalc.amarracos.main.repeatingClickable
 import com.rodalc.amarracos.storage.DataStoreManager
 
 /**
- * Gestiona toda la pantalla para el juego de la pocha.
+ * Gestiona toda la pantalla para el marcador de puntos.
  */
 @Preview(
     showBackground = true,
     device = "spec:width=411dp,height=891dp,orientation=landscape"
 )
 @Composable
-fun PantallaPocha() {
+fun PantallaGenerico() {
     val context = LocalContext.current
     var state by rememberSaveable { mutableStateOf(Ronda.NOMBRES) }
-    var duplica by rememberSaveable { mutableStateOf(Pocha.getDuplica()) }
-    var canLoad by rememberSaveable { mutableStateOf(Pocha.canLoadState(context)) }
-    var jugadores by remember { mutableStateOf(Pocha.getJugadores()) }
+    var canLoad by rememberSaveable { mutableStateOf(Generico.canLoadState(context)) }
+    var jugadores by remember { mutableStateOf(Generico.getJugadores()) }
 
     // Keep screen on. Only if user has selected it
     val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
@@ -88,15 +88,15 @@ fun PantallaPocha() {
             optionA = "No",
             optionB = "Sí",
             onClickA = {
-                Pocha.discardBackup(context)
+                Generico.discardBackup(context)
                 state = Ronda.NOMBRES
-                jugadores = Pocha.getJugadores()
+                jugadores = Generico.getJugadores()
                 canLoad = false
             },
             onClickB = {
-                Pocha.loadState(context)
-                state = Ronda.APUESTAS
-                jugadores = Pocha.getJugadores()
+                Generico.loadState(context)
+                state = Ronda.JUEGO
+                jugadores = Generico.getJugadores()
                 canLoad = false
             },
             preferredOptionB = true
@@ -136,7 +136,7 @@ fun PantallaPocha() {
                             IconButton(
                                 onClick = {
                                     jugadores =
-                                        (jugadores + JugadorPocha(jugadores.size + 1)).toMutableList()
+                                        (jugadores + Jugador(jugadores.size + 1)).toMutableList()
                                 },
                                 enabled = jugadores.size < 100
                             ) { Icon(Icons.Rounded.Add, "Añadir jugador") }
@@ -151,9 +151,9 @@ fun PantallaPocha() {
                         )
                     },
                     nextRound = {
-                        Pocha.setJugadores(jugadores)
-                        Pocha.saveState(context)
-                        state = Ronda.APUESTAS
+                        Generico.setJugadores(jugadores)
+                        Generico.saveState(context)
+                        state = Ronda.JUEGO
                     },
                     undo = {},
                     undoEnabled = false,
@@ -161,41 +161,31 @@ fun PantallaPocha() {
                 )
             }
 
-            Ronda.APUESTAS -> {
+            Ronda.JUEGO -> {
                 Plantilla(
                     header = {
                         Text(
-                            text = "Ronda de apuestas",
+                            text = "Puntos totales:",
                             fontSize = 20.sp
                         )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth(0.9f)
-                        ) {
-                            Text(text = "Duplicar puntuación")
-                            Spacer(modifier = Modifier.weight(1f))
-                            Switch(checked = duplica, onCheckedChange = { duplica = it })
-                        }
                         Spacer(modifier = Modifier.height(10.dp))
                     },
                     lineJugador = { jugador ->
                         FilaJugador(
                             jugador = jugador,
-                            ronda = Ronda.APUESTAS
+                            ronda = Ronda.JUEGO
                         )
                     },
                     nextRound = {
                         state = Ronda.CONTEO
                     },
                     undo = {
-                        Pocha.popState()
-                        jugadores = Pocha.getJugadores()
-                        duplica = Pocha.getDuplica()
+                        Generico.popState()
+                        jugadores = Generico.getJugadores()
                         state = Ronda.CONTEO
                     },
-                    undoEnabled = Pocha.canUndo(),
-                    jugadores = Pocha.getJugadores()
+                    undoEnabled = Generico.canUndo(),
+                    jugadores = Generico.getJugadores()
                 )
             }
 
@@ -203,18 +193,9 @@ fun PantallaPocha() {
                 Plantilla(
                     header = {
                         Text(
-                            text = "Total apuestas: ${Pocha.getTotalApuestas()}",
+                            text = "Puntos ganados en esta ronda: ",
                             fontSize = 20.sp
                         )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth(0.9f)
-                        ) {
-                            Text(text = "Duplicar puntuación")
-                            Spacer(modifier = Modifier.weight(1f))
-                            Switch(checked = duplica, onCheckedChange = { duplica = it })
-                        }
                         Spacer(modifier = Modifier.height(10.dp))
                     },
                     lineJugador = { jugador ->
@@ -224,21 +205,14 @@ fun PantallaPocha() {
                         )
                     },
                     nextRound = {
-                        if (Pocha.canContinue()) {
-                            Pocha.setDuplica(duplica)
-                            Pocha.pushState()
-                            Pocha.actualizarPuntuacion(duplica)
-                            duplica = false
-                            Pocha.saveState(context)
-                            state = Ronda.APUESTAS
-                        } else ToastRateLimiter.showToast(
-                            context,
-                            "Las apuestas no pueden coincidir con el número de rondas jugadas"
-                        )
+                        Generico.pushState()
+                        Generico.actualizarPuntuacion()
+                        Generico.saveState(context)
+                        state = Ronda.JUEGO
                     },
-                    undo = { state = Ronda.APUESTAS },
+                    undo = { state = Ronda.JUEGO },
                     undoEnabled = true,
-                    jugadores = Pocha.getJugadores()
+                    jugadores = Generico.getJugadores()
                 )
             }
         }
@@ -253,17 +227,18 @@ fun PantallaPocha() {
  */
 @Composable
 fun FilaJugador(
-    jugador: JugadorPocha,
+    jugador: Jugador,
     ronda: Ronda
 ) {
-    var valorState by rememberSaveable { mutableIntStateOf(if (ronda == Ronda.APUESTAS) jugador.apuesta else jugador.victoria) }
+    var valorState by rememberSaveable { mutableIntStateOf(jugador.incremento) }
     val content = ButtonDefaults.textButtonColors().contentColor
     val contentDisabled = ButtonDefaults.textButtonColors().disabledContentColor
-    val tintA = if (valorState > 0) content else contentDisabled
+    val tintA = if (valorState > -99) content else contentDisabled
     val tintB = if (valorState < 99) content else contentDisabled
+    val interactionSource = remember { MutableInteractionSource() }
 
     Row(
-        modifier = Modifier.fillMaxWidth(0.9f),
+        modifier = Modifier.fillMaxWidth(0.9f).height(50.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -275,37 +250,57 @@ fun FilaJugador(
                 .weight(1f) // Allocate space for the text
                 .clipToBounds()
         )
-        Text(
-            text = jugador.puntos.toString(),
-            modifier = Modifier.padding(10.dp)
-        )
-        IconButton(
-            onClick = {
-                valorState -= 1
-                if (ronda == Ronda.APUESTAS) {
-                    jugador.apuesta = valorState
-                } else {
-                    jugador.victoria = valorState
-                }
-            },
-            enabled = valorState > 0
-        ) { Icon(Icons.Rounded.Remove, contentDescription = "Quitar 1 a $jugador", tint = tintA) }
-        Box(
-            modifier = Modifier.width(55.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = "${jugador.victoria}/${jugador.apuesta}")
+
+        if (ronda == Ronda.JUEGO) {
+            Text(
+                text = jugador.puntos.toString(),
+                fontSize = 20.sp,
+                modifier = Modifier.padding(10.dp)
+            )
+        } else if (ronda == Ronda.CONTEO) {
+            IconButton(
+                modifier = Modifier.repeatingClickable(
+                    interactionSource = interactionSource,
+                    onClick = {
+                        valorState -= 1
+                        jugador.incremento = valorState
+                    },
+                ),
+                onClick = {},
+            ) {
+                Icon(
+                    Icons.Rounded.Remove,
+                    contentDescription = "Quitar 1 a $jugador",
+                    tint = tintA
+                )
+            }
+            Box(
+                modifier = Modifier.width(55.dp).height(50.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = valorState.toString(),
+                    fontSize = 20.sp
+                )
+            }
+            IconButton(
+                modifier = Modifier.repeatingClickable(
+                    interactionSource = interactionSource,
+                    onClick = {
+                        valorState += 1
+                        jugador.incremento = valorState
+                    },
+                ),
+                onClick = {},
+
+            ) {
+                Icon(
+                    Icons.Rounded.Add,
+                    contentDescription = "Añadir uno a $jugador",
+                    tint = tintB
+                )
+            }
         }
-        IconButton(
-            onClick = {
-                valorState += 1
-                if (ronda == Ronda.APUESTAS) {
-                    jugador.apuesta = valorState
-                } else {
-                    jugador.victoria = valorState
-                }
-            }, enabled = valorState < 99
-        ) { Icon(Icons.Rounded.Add, contentDescription = "Añadir uno a $jugador", tint = tintB) }
     }
 }
 
@@ -318,7 +313,7 @@ fun FilaJugador(
  * @param context El contexto actual
  */
 @Composable
-fun FilaJugadorNombres(jugador: JugadorPocha, numJugadores: Int, context: Context) {
+fun FilaJugadorNombres(jugador: Jugador, numJugadores: Int, context: Context) {
     var nombreState by rememberSaveable { mutableStateOf(jugador.nombre) }
     TextField(
         modifier = Modifier.fillMaxWidth(0.8f),
@@ -348,11 +343,11 @@ fun FilaJugadorNombres(jugador: JugadorPocha, numJugadores: Int, context: Contex
 @Composable
 fun Plantilla(
     header: @Composable () -> Unit,
-    lineJugador: @Composable (JugadorPocha) -> Unit,
+    lineJugador: @Composable (Jugador) -> Unit,
     nextRound: () -> Unit,
     undo: () -> Unit,
     undoEnabled: Boolean,
-    jugadores: List<JugadorPocha>
+    jugadores: List<Jugador>
 ) {
     Column(
         modifier = Modifier

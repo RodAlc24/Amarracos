@@ -16,7 +16,7 @@ import kotlin.math.abs
  * @see Ronda
  */
 @Serializable
-data class Jugador(
+data class JugadorPocha(
     val id: Int,
     var nombre: String = "",
     var puntos: Int = 0,

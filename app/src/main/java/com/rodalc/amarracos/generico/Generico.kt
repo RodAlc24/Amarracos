@@ -1,4 +1,4 @@
-package com.rodalc.amarracos.pocha
+package com.rodalc.amarracos.generico
 
 import android.content.Context
 import com.rodalc.amarracos.storage.StateSaver
@@ -10,29 +10,24 @@ import java.io.IOException
 /**
  * Se encarga de gestionar los jugadores y guardar el progreso para poder volver o restaurar el estado de la partida anterior.
  */
-object Pocha : StateSaver("pocha.json") {
+object Generico : StateSaver("generico.json") {
     /**
      * Lista de jugadores actuales.
      */
-    private var jugadores = mutableListOf(JugadorPocha(1), JugadorPocha(2))
-
-    /**
-     * Si duplica la ronda actual o no.
-     */
-    private var duplica = false
+    private var jugadores = mutableListOf(Jugador(1), Jugador(2))
 
     /**
      * Stack para poder deshacer acciones.
      * @see UndoStack
      */
-    private var stack = UndoStack<UndoMus>()
+    private var stack = UndoStack<UndoGenerico>()
 
     /**
      * Devuelve la lista actual de jugadores.
      *
      * @return La lista actual de jugadores
      */
-    fun getJugadores(): List<JugadorPocha> {
+    fun getJugadores(): List<Jugador> {
         return this.jugadores
     }
 
@@ -41,33 +36,15 @@ object Pocha : StateSaver("pocha.json") {
      *
      * @param jugadores Los nuevos jugadores
      */
-    fun setJugadores(jugadores: List<JugadorPocha>) {
+    fun setJugadores(jugadores: List<Jugador>) {
         this.jugadores = jugadores.toMutableList()
-    }
-
-    /**
-     * Devuelve si duplica o no la ronda actual.
-     *
-     * @return Si duplica la ronda actual
-     */
-    fun getDuplica(): Boolean {
-        return this.duplica
-    }
-
-    /**
-     * Indica si duplica o no la ronda actual.
-     *
-     * @param duplica Si duplica la ronda actual
-     */
-    fun setDuplica(duplica: Boolean) {
-        this.duplica = duplica
     }
 
     /**
      * Almacena en el stack el estado actual de la partida.
      */
     fun pushState() {
-        val temp = UndoMus(this.duplica, this.jugadores.map { it.copy() })
+        val temp = UndoGenerico(this.jugadores.map { it.copy() })
         this.stack.push(temp)
     }
 
@@ -76,9 +53,8 @@ object Pocha : StateSaver("pocha.json") {
      * Si hay un error (no hay nada que recuperar, por ejemplo) no hace nada.
      */
     fun popState() {
-        val temp = this.stack.pop() ?: UndoMus(this.duplica, this.jugadores)
+        val temp = this.stack.pop() ?: UndoGenerico(this.jugadores)
         this.jugadores = temp.jugadores.toMutableList()
-        this.duplica = temp.duplica
     }
 
     /**
@@ -90,9 +66,11 @@ object Pocha : StateSaver("pocha.json") {
         return this.stack.size() > 0
     }
 
-    private data class UndoMus(
-        val duplica: Boolean,
-        val jugadores: List<JugadorPocha>
+    /**
+     * Clase auxiliar para almacenar el estado de una partida.
+     */
+    private data class UndoGenerico(
+        val jugadores: List<Jugador>
     )
 
     /**
@@ -122,7 +100,7 @@ object Pocha : StateSaver("pocha.json") {
             inputStream.close()
 
             val jsonString = String(buffer, Charsets.UTF_8)
-            this.jugadores = Json.decodeFromString<MutableList<JugadorPocha>>(jsonString).toMutableList()
+            this.jugadores = Json.decodeFromString<MutableList<Jugador>>(jsonString).toMutableList()
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
@@ -139,7 +117,7 @@ object Pocha : StateSaver("pocha.json") {
      */
     fun discardBackup(context: Context): Boolean {
         stack = UndoStack()
-        this.jugadores = mutableListOf(JugadorPocha(1), JugadorPocha(2))
+        this.jugadores = mutableListOf(Jugador(1), Jugador(2))
         return this.deleteFile(context)
     }
 
@@ -156,39 +134,11 @@ object Pocha : StateSaver("pocha.json") {
     /**
      * Actualiza la puntuación de todos los jugadores.
      *
-     * @param duplica Si se duplican los puntos o no
      */
-    fun actualizarPuntuacion(duplica: Boolean) {
+    fun actualizarPuntuacion() {
         for (jugador in this.jugadores) {
-            jugador.actualizarPuntuacion(duplica)
+            jugador.actualizarPuntuacion()
         }
     }
-
-    /**
-     * Indica si se puede continuar con la partida, es decir, las apuestas no coinciden con el número de rondas.
-     *
-     * @return true si se puede continuar, false en caso contrario
-     */
-    fun canContinue(): Boolean {
-        var puntos = 0
-        for (jugador in this.jugadores) {
-            puntos += jugador.apuesta - jugador.victoria
-        }
-        return puntos != 0
-    }
-
-    /**
-     * Devuelve la suma total de las apuestas.
-     *
-     * @return La suma total de las apuestas
-     */
-    fun getTotalApuestas(): Int {
-        var apuestas = 0
-        for (jugador in this.jugadores) {
-            apuestas += jugador.apuesta
-        }
-        return apuestas
-    }
-
 }
 

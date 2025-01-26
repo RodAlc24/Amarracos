@@ -1,7 +1,12 @@
 package com.rodalc.amarracos.main
 
+import androidx.compose.runtime.getValue
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,10 +20,16 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * Un objeto que limita la frecuencia de mostrar toasts en la aplicación.
@@ -100,6 +111,38 @@ fun PopUp(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+fun Modifier.repeatingClickable(
+    interactionSource: InteractionSource,
+    enabled: Boolean = true,
+    maxDelayMillis: Long = 500,
+    minDelayMillis: Long = 130,
+    delayDecayFactor: Float = .20f,
+    onClick: () -> Unit
+): Modifier = composed {
+    val currentClickListener by rememberUpdatedState(onClick)
+    val isEnabled by rememberUpdatedState(enabled)
+
+    pointerInput(interactionSource, isEnabled) {
+        coroutineScope {
+            awaitEachGesture {
+                val down = awaitFirstDown(requireUnconsumed = false)
+                val job = launch {
+                    var currentDelayMillis = maxDelayMillis
+                    while (isEnabled && down.pressed) {
+                        currentClickListener()
+                        delay(currentDelayMillis)
+                        val nextMillis =
+                            currentDelayMillis - (currentDelayMillis * delayDecayFactor)
+                        currentDelayMillis = nextMillis.toLong().coerceAtLeast(minDelayMillis)
+                    }
+                }
+                waitForUpOrCancellation()
+                job.cancel()
             }
         }
     }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -59,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rodalc.amarracos.main.PopUp
 import com.rodalc.amarracos.main.ToastRateLimiter
+import com.rodalc.amarracos.main.repeatingClickable
 import com.rodalc.amarracos.storage.DataStoreManager
 import kotlinx.coroutines.async
 
@@ -577,12 +580,16 @@ fun BotonesEnvite(
             if (enabled) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
 
         TextButton(
-            onClick = {
-                Mus.pushState()
-                updateEnvite(envite + if (botonSuma) 1 else -1)
-                Mus.saveState(context)
-            },
-            enabled = enabled
+            modifier = Modifier.repeatingClickable(
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = {
+                    Mus.pushState()
+                    updateEnvite(envite + if (botonSuma) 1 else -1)
+                    Mus.saveState(context)
+                },
+                enabled = enabled,
+            ),
+            onClick = {},
         ) {
             if (botonSuma) {
                 Icon(Icons.Rounded.Add, contentDescription = "Aumentar envite", tint = tint)

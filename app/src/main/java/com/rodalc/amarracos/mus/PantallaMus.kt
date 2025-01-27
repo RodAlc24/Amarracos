@@ -17,8 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.automirrored.rounded.Undo
@@ -28,14 +31,20 @@ import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -55,26 +64,23 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.rodalc.amarracos.main.PopUp
 import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.main.repeatingClickable
 import com.rodalc.amarracos.storage.DataStoreManager
+import com.rodalc.amarracos.ui.theme.Playfair
 import kotlinx.coroutines.async
 
 /**
  * Punto de entrada para el mus.
  */
-@Preview(
-    device = "spec:width=411dp,height=891dp,orientation=landscape",
-    showSystemUi = true,
-    showBackground = true
-)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PantallaMus() {
+fun PantallaMus(navigation: NavController) {
     var showConfig by rememberSaveable { mutableStateOf(true) }
     val context = LocalContext.current
     var canLoad by rememberSaveable { mutableStateOf(Mus.canLoadState(context)) }
@@ -97,30 +103,10 @@ fun PantallaMus() {
         }
     }
 
-    if (canLoad) {
-        PopUp(
-            title = "¿Recuperar la última partida?",
-            optionA = "No",
-            optionB = "Sí",
-            onClickA = {
-                Mus.discardBackup(context)
-                Mus.reset()
-                showConfig = true
-                canLoad = false
-            },
-            onClickB = {
-                Mus.loadState((context))
-                showConfig = false
-                canLoad = false
-            },
-            preferredOptionB = true
-        )
+    if (showConfig) {
+        PantallaConfiguracion(canLoad, navigation, context) { showConfig = it }
     } else {
-        if (showConfig) {
-            PantallaConfiguracion(context) { showConfig = it }
-        } else {
-            PlantillaMus(landscape)
-        }
+        PlantillaMus(landscape)
     }
 }
 
@@ -131,13 +117,17 @@ fun PantallaMus() {
  * @param context El contexto de la aplicación
  * @param show Si se muestra o no esta pantalla
  */
+@ExperimentalMaterial3Api
 @Composable
 fun PantallaConfiguracion(
+    canLoad: Boolean,
+    navController: NavController,
     context: Context,
     show: (Boolean) -> Unit
 ) {
     var buenos by rememberSaveable { mutableStateOf("") }
     var malos by rememberSaveable { mutableStateOf("") }
+    var recuperar by rememberSaveable { mutableStateOf(canLoad) }
 
     MusDefaultConfigManager.loadState(context)
     val labelBuenos = MusDefaultConfigManager.getBuenos()
@@ -147,84 +137,148 @@ fun PantallaConfiguracion(
         .collectAsState(initial = true)
     val coreutineScope = rememberCoroutineScope()
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-
-    ) {
-        Spacer(modifier = Modifier.weight(0.2f))
-        Text(text = "Mus", fontSize = 30.sp)
-        Spacer(modifier = Modifier.weight(0.2f))
-        TextField(
-            modifier = Modifier.fillMaxWidth(0.7f),
-            value = buenos,
-            onValueChange = {
-                if (it.length <= 10) {
-                    buenos = it
-                } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
-            },
-            maxLines = 1,
-            placeholder = { Text(text = labelBuenos) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        TextField(
-            modifier = Modifier.fillMaxWidth(0.7f),
-            value = malos,
-            onValueChange = {
-                if (it.length <= 10) {
-                    malos = it
-                } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
-            },
-            maxLines = 1,
-            placeholder = { Text(text = labelMalos) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
-        )
-        Spacer(modifier = Modifier.weight(0.2f))
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Puntos")
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(text = "30:")
-            RadioButton(selected = puntos30, onClick = {
-                coreutineScope.async {
-                    DataStoreManager.setDataStore(
-                        context,
-                        DataStoreManager.Key.MUS_A_30,
-                        true
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.primaryContainer,
+                ),
+                title = {
+                    Text(
+                        "Mus",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = Playfair,
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("pantallaInicial") }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back to main menu",
+                            tint = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    }
+                },
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                if (recuperar) {
+                    Mus.loadState((context))
+                    show(false)
+                } else {
+                    Mus.discardBackup(context)
+                    Mus.reset()
+                    Mus.getBuenos().nombre = if (buenos == "") labelBuenos else buenos
+                    Mus.getMalos().nombre = if (malos == "") labelMalos else malos
+                    MusDefaultConfigManager.setBuenos(Mus.getBuenos().nombre)
+                    MusDefaultConfigManager.setMalos(Mus.getMalos().nombre)
+                    MusDefaultConfigManager.saveState(context)
+                    Mus.setPuntos(if (puntos30) 30 else 40)
+                    Mus.saveState(context)
+                    show(false)
                 }
-            })
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(text = "40:")
-            RadioButton(selected = !puntos30, onClick = {
-                coreutineScope.async {
-                    DataStoreManager.setDataStore(
-                        context,
-                        DataStoreManager.Key.MUS_A_30,
-                        false
-                    )
-                }
-            })
+            }) {
+                Icon(Icons.Rounded.Done, contentDescription = "Done")
+            }
         }
-        Spacer(modifier = Modifier.weight(0.2f))
-        OutlinedButton(
-            onClick = {
-                Mus.getBuenos().nombre = if (buenos == "") labelBuenos else buenos
-                Mus.getMalos().nombre = if (malos == "") labelMalos else malos
-                MusDefaultConfigManager.setBuenos(Mus.getBuenos().nombre)
-                MusDefaultConfigManager.setMalos(Mus.getMalos().nombre)
-                MusDefaultConfigManager.saveState(context)
-                Mus.setPuntos(if (puntos30) 30 else 40)
-                Mus.saveState(context)
-                show(false)
-            },
-            modifier = Modifier.padding(20.dp)
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentAlignment = Alignment.Center
         ) {
-            Icon(Icons.Rounded.Done, contentDescription = "Done")
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(0.8f)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    RadioButton(
+                        selected = recuperar,
+                        onClick = { recuperar = true },
+                        enabled = canLoad
+                    )
+                    Text(text = "Recuperar partida guardada")
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    RadioButton(selected = !recuperar, onClick = { recuperar = false })
+                    Text(text = "Nueva partida")
+                }
+                Spacer(modifier = Modifier.height(5.dp))
+                TextField(
+                    modifier = Modifier.fillMaxWidth(0.7f),
+                    value = buenos,
+                    onValueChange = {
+                        if (it.length <= 10) {
+                            buenos = it
+                        } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
+                    },
+                    maxLines = 1,
+                    placeholder = { Text(text = labelBuenos) },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    enabled = !recuperar
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                TextField(
+                    modifier = Modifier.fillMaxWidth(0.7f),
+                    value = malos,
+                    onValueChange = {
+                        if (it.length <= 10) {
+                            malos = it
+                        } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
+                    },
+                    maxLines = 1,
+                    placeholder = { Text(text = labelMalos) },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    enabled = !recuperar
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                Text(text = "Puntos para ganar:")
+                Spacer(modifier = Modifier.height(5.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    RadioButton(selected = puntos30, onClick = {
+                        coreutineScope.async {
+                            DataStoreManager.setDataStore(
+                                context,
+                                DataStoreManager.Key.MUS_A_30,
+                                true
+                            )
+                        }
+                    }, enabled = !recuperar)
+                    Text(text = "30")
+                    Spacer(modifier = Modifier.width(10.dp))
+                    RadioButton(selected = !puntos30, onClick = {
+                        coreutineScope.async {
+                            DataStoreManager.setDataStore(
+                                context,
+                                DataStoreManager.Key.MUS_A_30,
+                                false
+                            )
+                        }
+                    }, enabled = !recuperar)
+                    Text(text = "40")
+                }
+            }
         }
     }
 }

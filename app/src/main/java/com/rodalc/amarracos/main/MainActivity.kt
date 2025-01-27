@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -15,11 +16,13 @@ import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.generico.PantallaGenerico
 import com.rodalc.amarracos.mus.PantallaMus
 import com.rodalc.amarracos.pocha.PantallaPocha
+import com.rodalc.amarracos.pocha.ScaffoldExample
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 /**
  * Punto de inicio de la aplicación
  */
+@ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +44,7 @@ class MainActivity : ComponentActivity() {
 /**
  * Función que gestiona el controlador para la navegación entre pantallas.
  */
+@ExperimentalMaterial3Api
 @Composable
 fun MyApp() {
     val navController = rememberNavController()
@@ -50,13 +54,15 @@ fun MyApp() {
         composable("pantallaMus") { PantallaMus() }
         composable("pantallaPocha") { PantallaPocha() }
         composable("pantallaMarcador") { PantallaGenerico() }
-        composable("pantallaAjustes") { PantallaAjustes() }
+        composable("nuevaPocha") { ScaffoldExample() }
+        composable("pantallaAjustes") { PantallaAjustes(navController) }
     }
 }
 
 /**
  * Función auxiliar para Preview
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(
     showBackground = true,
     device = "id:pixel", backgroundColor = 0xFFFFFFFF

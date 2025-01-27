@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Bolt
@@ -19,11 +21,16 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,17 +40,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.rodalc.amarracos.R
 import com.rodalc.amarracos.storage.DataStoreManager
+import com.rodalc.amarracos.ui.theme.Playfair
 import kotlinx.coroutines.async
 
 /**
  * Pantalla con los ajustes generales de la aplicación y los créditos.
  */
+@ExperimentalMaterial3Api
 @Composable
-fun PantallaAjustes() {
+fun PantallaAjustes(navController: NavController) {
     val context = LocalContext.current
     val gitHub = "https://github.com/RodAlc24/Amarracos"
     val mus = "https://www.nhfournier.es/como-jugar/mus/"
@@ -57,137 +67,162 @@ fun PantallaAjustes() {
 
     val coreutineScope = rememberCoroutineScope()
 
-    LazyColumn(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-
-    ) {
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Ajustes e infomación", fontSize = 25.sp)
-            Spacer(modifier = Modifier.height(20.dp))
-            HorizontalDivider()
-        }
-        item {
-            Elemento(
-                icon = Icons.Outlined.Bolt,
-                title = "Mantener la pantalla encendida durante las partidas"
-            ) {
-                Switch(
-                    checked = screenState,
-                    onCheckedChange = {
-                        coreutineScope.async {
-                            DataStoreManager.setDataStore(
-                                context,
-                                DataStoreManager.Key.KEEP_SCREEN_ON,
-                                it
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.primaryContainer,
+                ),
+                title = {
+                    Text(
+                        "Ajustes e información",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = Playfair,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("pantallaInicial") }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back to main menu",
+                            tint = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    }
+                },
+            )
+        },
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Elemento(
+                    icon = Icons.Outlined.Bolt,
+                    title = "Mantener la pantalla encendida durante las partidas"
+                ) {
+                    Switch(
+                        checked = screenState,
+                        onCheckedChange = {
+                            coreutineScope.async {
+                                DataStoreManager.setDataStore(
+                                    context,
+                                    DataStoreManager.Key.KEEP_SCREEN_ON,
+                                    it
+                                )
+                            }
+                        })
+                }
+            }
+            item {
+                Elemento(
+                    icon = Icons.AutoMirrored.Outlined.HelpOutline,
+                    title = "Cómo jugar al mus"
+                ) {
+                    IconButton(onClick = {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(mus)))
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                            contentDescription = "Abrir en internet"
+                        )
+                    }
+                }
+            }
+            item {
+                Elemento(
+                    icon = Icons.AutoMirrored.Outlined.HelpOutline,
+                    title = "Cómo jugar a la pocha"
+                ) {
+                    IconButton(onClick = {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pocha)))
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                            contentDescription = "Abrir en internet"
+                        )
+                    }
+                }
+            }
+            item {
+                Elemento(icon = Icons.Outlined.Link, title = "Repositorio de GitHub") {
+                    IconButton(onClick = {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(gitHub)))
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                            contentDescription = "Abrir en internet"
+                        )
+                    }
+                }
+            }
+            item {
+                Elemento(
+                    icon = Icons.Outlined.StarOutline,
+                    title = "Calificar Amarracos en Google Play"
+                ) {
+                    IconButton(onClick = {
+                        val uri: Uri = Uri.parse(googlePlay)
+                        val goToMarket = Intent(Intent.ACTION_VIEW, uri)
+                        // To count with Play market backstack, After pressing back button,
+                        // to taken back to our application, we need to add following flags to intent.
+                        goToMarket.addFlags(
+                            Intent.FLAG_ACTIVITY_NO_HISTORY or
+                                    Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
+                                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+                        )
+                        try {
+                            context.startActivity(goToMarket)
+                        } catch (e: ActivityNotFoundException) {
+                            context.startActivity(
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse(webGooglePlay)
+                                )
                             )
                         }
-                    })
-            }
-        }
-        item {
-            Elemento(icon = Icons.AutoMirrored.Outlined.HelpOutline, title = "Cómo jugar al mus") {
-                IconButton(onClick = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(mus)))
-                }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                        contentDescription = "Abrir en internet"
-                    )
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                            contentDescription = "Abrir en internet"
+                        )
+                    }
                 }
             }
-        }
-        item {
-            Elemento(
-                icon = Icons.AutoMirrored.Outlined.HelpOutline,
-                title = "Cómo jugar a la pocha"
-            ) {
-                IconButton(onClick = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pocha)))
-                }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                        contentDescription = "Abrir en internet"
-                    )
-                }
-            }
-        }
-        item {
-            Elemento(icon = Icons.Outlined.Link, title = "Repositorio de GitHub") {
-                IconButton(onClick = {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(gitHub)))
-                }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                        contentDescription = "Abrir en internet"
-                    )
-                }
-            }
-        }
-        item {
-            Elemento(
-                icon = Icons.Outlined.StarOutline,
-                title = "Calificar Amarracos en Google Play"
-            ) {
-                IconButton(onClick = {
-                    val uri: Uri = Uri.parse(googlePlay)
-                    val goToMarket = Intent(Intent.ACTION_VIEW, uri)
-                    // To count with Play market backstack, After pressing back button,
-                    // to taken back to our application, we need to add following flags to intent.
-                    goToMarket.addFlags(
-                        Intent.FLAG_ACTIVITY_NO_HISTORY or
-                                Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
-                                Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-                    )
-                    try {
-                        context.startActivity(goToMarket)
-                    } catch (e: ActivityNotFoundException) {
+            item {
+                Elemento(
+                    icon = Icons.Outlined.Mail,
+                    title = "Contacto: $mail"
+                ) {
+                    IconButton(onClick = {
                         context.startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse(webGooglePlay)
+                                Uri.parse("mailto:$mail")
                             )
                         )
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                        contentDescription = "Abrir en internet"
-                    )
-                }
-            }
-        }
-        item {
-            Elemento(
-                icon = Icons.Outlined.Mail,
-                title = "Contacto: $mail"
-            ) {
-                IconButton(onClick = {
-                    context.startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("mailto:$mail")
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                            contentDescription = "Abrir en el correo"
                         )
-                    )
-                }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                        contentDescription = "Abrir en el correo"
-                    )
+                    }
                 }
             }
-        }
-        item {
-            Elemento(
-                icon = Icons.Outlined.Info,
-                title = "Versión: ${stringResource(R.string.versionCode)}"
-            )
+            item {
+                Elemento(
+                    icon = Icons.Outlined.Info,
+                    title = "Versión: ${stringResource(R.string.versionCode)}"
+                )
+            }
         }
     }
 }
-
 
 @Composable
 fun Elemento(

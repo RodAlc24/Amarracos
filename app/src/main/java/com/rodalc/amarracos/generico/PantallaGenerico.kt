@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.rodalc.amarracos.generico
 
 import android.content.Context
@@ -18,15 +20,31 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Undo
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.RadioButtonChecked
+import androidx.compose.material.icons.outlined.RadioButtonUnchecked
+import androidx.compose.material.icons.outlined.SsidChart
+import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Remove
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -43,27 +61,25 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.rodalc.amarracos.main.PopUp
+import androidx.navigation.NavController
 import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.main.repeatingClickable
 import com.rodalc.amarracos.storage.DataStoreManager
+import com.rodalc.amarracos.ui.theme.Playfair
 
 /**
  * Gestiona toda la pantalla para el marcador de puntos.
  */
-@Preview(
-    showBackground = true,
-    device = "spec:width=411dp,height=891dp,orientation=landscape"
-)
 @Composable
-fun PantallaGenerico() {
+fun PantallaGenerico(navController: NavController) {
     val context = LocalContext.current
     var state by rememberSaveable { mutableStateOf(Ronda.NOMBRES) }
     var canLoad by rememberSaveable { mutableStateOf(Generico.canLoadState(context)) }
-    var jugadores by remember { mutableStateOf(Generico.getJugadores()) }
+    var jugadores by rememberSaveable { mutableStateOf(listOf(Jugador(1), Jugador(2))) }
+    var recuperar by rememberSaveable { mutableStateOf(canLoad) }
+
 
     // Keep screen on. Only if user has selected it
     val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
@@ -82,56 +98,55 @@ fun PantallaGenerico() {
         }
     }
 
-    if (canLoad) {
-        PopUp(
-            title = "¿Recuperar la última partida?",
-            optionA = "No",
-            optionB = "Sí",
-            onClickA = {
-                Generico.discardBackup(context)
-                state = Ronda.NOMBRES
-                jugadores = Generico.getJugadores()
-                canLoad = false
-            },
-            onClickB = {
-                Generico.loadState(context)
-                state = Ronda.JUEGO
-                jugadores = Generico.getJugadores()
-                canLoad = false
-            },
-            preferredOptionB = true
-        )
-    } else {
-        when (state) {
-            Ronda.NOMBRES -> {
-                Plantilla(
-                    header = {
+    when (state) {
+        Ronda.NOMBRES -> {
+            Plantilla(
+                options = false,
+                navController = navController,
+                header = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        RadioButton(
+                            selected = recuperar,
+                            onClick = { recuperar = true },
+                            enabled = canLoad
+                        )
+                        Text(text = "Recuperar partida guardada")
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        RadioButton(selected = !recuperar, onClick = { recuperar = false })
+                        Text(text = "Nueva partida")
+                    }
+                    if (!recuperar) {
+                        HorizontalDivider()
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth(0.9f)
-
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Spacer(modifier = Modifier.weight(0.1f))
-                            Text(
-                                text = "Jugadores:",
-                                fontSize = 20.sp
-                            )
-                            Spacer(modifier = Modifier.weight(0.9f))
                             IconButton(
                                 onClick = { jugadores = jugadores.dropLast(1).toMutableList() },
                                 enabled = jugadores.size > 2
-                            ) { Icon(Icons.Rounded.Remove, "Quitar jugador") }
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Remove,
+                                    "Quitar jugador",
+                                    tint = if (jugadores.size > 2) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
+                                )
+                            }
                             Spacer(modifier = Modifier.width(10.dp))
                             Box(
                                 modifier = Modifier.width(30.dp),
                                 contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = jugadores.size.toString(),
-                                    fontSize = 20.sp
-                                )
-                            }
+                            ) { Text(text = jugadores.size.toString()) }
                             Spacer(modifier = Modifier.width(10.dp))
                             IconButton(
                                 onClick = {
@@ -139,82 +154,82 @@ fun PantallaGenerico() {
                                         (jugadores + Jugador(jugadores.size + 1)).toMutableList()
                                 },
                                 enabled = jugadores.size < 100
-                            ) { Icon(Icons.Rounded.Add, "Añadir jugador") }
-                            Spacer(modifier = Modifier.weight(0.1f))
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Add,
+                                    "Añadir jugador",
+                                    tint = if (jugadores.size < 100) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
+                                )
+                            }
                         }
-                    },
-                    lineJugador = {
-                        FilaJugadorNombres(
-                            jugador = it,
-                            numJugadores = jugadores.size,
-                            context = context
-                        )
-                    },
-                    nextRound = {
+                    }
+                },
+                lineJugador = {
+                    if (!recuperar) FilaJugadorNombres(
+                        jugador = it,
+                        numJugadores = jugadores.size,
+                        context = context
+                    )
+                },
+                floatingIcon = { Icon(Icons.Rounded.Done, contentDescription = "Hecho") },
+                nextRound = {
+                    if (recuperar) {
+                        Generico.loadState(context)
+                        jugadores = Generico.getJugadores()
+                    } else {
+                        Generico.discardBackup(context)
                         Generico.setJugadores(jugadores)
                         Generico.saveState(context)
-                        state = Ronda.JUEGO
-                    },
-                    undo = {},
-                    undoEnabled = false,
-                    jugadores = jugadores
-                )
-            }
+                    }
+                    state = Ronda.JUEGO
+                },
+                jugadores = jugadores
+            )
+        }
 
-            Ronda.JUEGO -> {
-                Plantilla(
-                    header = {
-                        Text(
-                            text = "Puntos totales:",
-                            fontSize = 20.sp
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                    },
-                    lineJugador = { jugador ->
-                        FilaJugador(
-                            jugador = jugador,
-                            ronda = Ronda.JUEGO
-                        )
-                    },
-                    nextRound = {
-                        state = Ronda.CONTEO
-                    },
-                    undo = {
-                        Generico.popState()
-                        jugadores = Generico.getJugadores()
-                        state = Ronda.CONTEO
-                    },
-                    undoEnabled = Generico.canUndo(),
+        Ronda.JUEGO -> {
+            Plantilla(
+                navController = navController,
+                lineJugador = { jugador ->
+                    FilaJugador(
+                        jugador = jugador,
+                        ronda = Ronda.JUEGO
+                    )
+                },
+                nextRound = {
+                    state = Ronda.CONTEO
+                },
+                floatingIcon = { Icon(Icons.Rounded.Add, contentDescription = "Añadir") },
+                undo = {
+                    Generico.popState()
                     jugadores = Generico.getJugadores()
-                )
-            }
+                    state = Ronda.CONTEO
+                },
+                undoEnabled = Generico.canUndo(),
+                jugadores = Generico.getJugadores()
+            )
+        }
 
-            Ronda.CONTEO -> {
-                Plantilla(
-                    header = {
-                        Text(
-                            text = "Puntos ganados en esta ronda: ",
-                            fontSize = 20.sp
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                    },
-                    lineJugador = { jugador ->
-                        FilaJugador(
-                            jugador = jugador,
-                            ronda = Ronda.CONTEO
-                        )
-                    },
-                    nextRound = {
-                        Generico.pushState()
-                        Generico.actualizarPuntuacion()
-                        Generico.saveState(context)
-                        state = Ronda.JUEGO
-                    },
-                    undo = { state = Ronda.JUEGO },
-                    undoEnabled = true,
-                    jugadores = Generico.getJugadores()
-                )
-            }
+        Ronda.CONTEO -> {
+            Plantilla(
+                navController = navController,
+                lineJugador = { jugador ->
+                    FilaJugador(
+                        jugador = jugador,
+                        ronda = Ronda.CONTEO
+                    )
+                },
+                nextRound = {
+                    Generico.pushState()
+                    Generico.actualizarPuntuacion()
+                    Generico.saveState(context)
+                    state = Ronda.JUEGO
+                },
+                floatingIcon = { Icon(Icons.Rounded.Done, contentDescription = "Hecho") },
+                undo = { state = Ronda.JUEGO },
+                undoEnabled = true,
+                jugadores = Generico.getJugadores()
+            )
         }
     }
 }
@@ -238,7 +253,9 @@ fun FilaJugador(
     val interactionSource = remember { MutableInteractionSource() }
 
     Row(
-        modifier = Modifier.fillMaxWidth(0.9f).height(50.dp),
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .height(50.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -275,7 +292,9 @@ fun FilaJugador(
                 )
             }
             Box(
-                modifier = Modifier.width(55.dp).height(50.dp),
+                modifier = Modifier
+                    .width(55.dp)
+                    .height(50.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -293,7 +312,7 @@ fun FilaJugador(
                 ),
                 onClick = {},
 
-            ) {
+                ) {
                 Icon(
                     Icons.Rounded.Add,
                     contentDescription = "Añadir uno a $jugador",
@@ -342,51 +361,160 @@ fun FilaJugadorNombres(jugador: Jugador, numJugadores: Int, context: Context) {
  */
 @Composable
 fun Plantilla(
-    header: @Composable () -> Unit,
+    options: Boolean = true,
+    navController: NavController,
+    header: @Composable () -> Unit = {},
     lineJugador: @Composable (Jugador) -> Unit,
     nextRound: () -> Unit,
-    undo: () -> Unit,
-    undoEnabled: Boolean,
+    floatingIcon: @Composable () -> Unit,
+    undo: () -> Unit = {},
+    undoEnabled: Boolean = false,
     jugadores: List<Jugador>
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(20.dp))
-        header()
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            items(jugadores) { jugador ->
-                lineJugador(jugador)
-                Spacer(modifier = Modifier.height(10.dp))
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.primaryContainer,
+                ),
+                title = {
+                    Text(
+                        "Puntuaciones",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = Playfair,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("pantallaInicial") }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back to main menu",
+                            tint = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    }
+                },
+                actions = {
+                    if (options) {
+                        SortMenu()
+                        OptionsMenu(undoEnabled = undoEnabled, undo = undo)
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { nextRound() }) {
+                floatingIcon()
             }
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedButton(
-                modifier = Modifier.padding(10.dp),
-                enabled = (undoEnabled),
-                onClick = { undo() }) {
-                Text(text = "Volver")
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Button(
-                modifier = Modifier.padding(10.dp),
-                onClick = { nextRound() }
+            Spacer(modifier = Modifier.height(20.dp))
+            header()
+            Spacer(modifier = Modifier.height(10.dp))
+            LazyColumn(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) {
-                Text("Aceptar")
+                items(jugadores) { jugador ->
+                    lineJugador(jugador)
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun OptionsMenu(
+    undoEnabled: Boolean,
+    undo: () -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier
+    ) {
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(
+                Icons.Default.MoreVert,
+                contentDescription = "More options",
+                tint = MaterialTheme.colorScheme.primaryContainer
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                leadingIcon = @Composable {
+                    Icon(Icons.Outlined.SsidChart, contentDescription = "Ver resultados")
+                },
+                text = { Text("Finalizar y ver resultados") },
+                onClick = { expanded = false }
+            )
+            if (undoEnabled) {
+                DropdownMenuItem(
+                    leadingIcon = @Composable {
+                        Icon(Icons.AutoMirrored.Outlined.Undo, contentDescription = "Deshacer")
+                    },
+                    text = { Text("Deshacer") },
+                    onClick = {
+                        undo()
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SortMenu() {
+    var expanded by remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier
+    ) {
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(
+                Icons.Outlined.SwapVert,
+                contentDescription = "Ordenar",
+                tint = MaterialTheme.colorScheme.primaryContainer
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                leadingIcon = @Composable {
+                    Icon(Icons.Outlined.RadioButtonChecked, contentDescription = "Predeterminado")
+                },
+                text = { Text("Predeterminado") },
+                onClick = { expanded = false }
+            )
+            DropdownMenuItem(
+                leadingIcon = @Composable {
+                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Nombre")
+                },
+                text = { Text("Por nombre") },
+                onClick = { expanded = false }
+            )
+            DropdownMenuItem(
+                leadingIcon = @Composable {
+                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Puntos")
+                },
+                text = { Text("Por puntos") },
+                onClick = { expanded = false }
+            )
         }
     }
 }

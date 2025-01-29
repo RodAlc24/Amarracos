@@ -5,10 +5,12 @@ package com.rodalc.amarracos.generico
 import android.content.Context
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -104,29 +106,38 @@ fun PantallaGenerico(navController: NavController) {
                 options = false,
                 navController = navController,
                 header = {
+                    Spacer(modifier = Modifier.height(20.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(0.9f)
                     ) {
                         RadioButton(
                             selected = recuperar,
                             onClick = { recuperar = true },
                             enabled = canLoad
                         )
-                        Text(text = "Recuperar partida guardada")
+                        Text(
+                            text = "Recuperar partida guardada",
+                            modifier = Modifier.clickable(onClick = { recuperar = true })
+                        )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(0.9f)
                     ) {
                         RadioButton(selected = !recuperar, onClick = { recuperar = false })
-                        Text(text = "Nueva partida")
+                        Text(
+                            text = "Nueva partida",
+                            modifier = Modifier.clickable(onClick = { recuperar = false })
+                        )
                     }
                     if (!recuperar) {
+                        Spacer(modifier = Modifier.height(10.dp))
                         HorizontalDivider()
+                        Spacer(modifier = Modifier.height(10.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
@@ -283,7 +294,10 @@ fun FilaJugador(
                         jugador.incremento = valorState
                     },
                 ),
-                onClick = {},
+                onClick = {
+                    valorState -= 1
+                    jugador.incremento = valorState
+                },
             ) {
                 Icon(
                     Icons.Rounded.Remove,
@@ -310,7 +324,10 @@ fun FilaJugador(
                         jugador.incremento = valorState
                     },
                 ),
-                onClick = {},
+                onClick = {
+                    valorState += 1
+                    jugador.incremento = valorState
+                },
 
                 ) {
                 Icon(
@@ -335,7 +352,7 @@ fun FilaJugador(
 fun FilaJugadorNombres(jugador: Jugador, numJugadores: Int, context: Context) {
     var nombreState by rememberSaveable { mutableStateOf(jugador.nombre) }
     TextField(
-        modifier = Modifier.fillMaxWidth(0.8f),
+        modifier = Modifier.fillMaxWidth(0.9f),
         value = nombreState,
         onValueChange = {
             if (it.length <= 20) {
@@ -416,18 +433,20 @@ fun Plantilla(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
             header()
-            Spacer(modifier = Modifier.height(10.dp))
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f),
+                contentPadding = PaddingValues(10.dp)
             ) {
                 items(jugadores) { jugador ->
                     lineJugador(jugador)
                     Spacer(modifier = Modifier.height(10.dp))
+                }
+                item {
+                    Spacer(modifier = Modifier.height(70.dp))
                 }
             }
         }

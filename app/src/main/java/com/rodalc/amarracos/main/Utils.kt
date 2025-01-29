@@ -142,8 +142,8 @@ fun Modifier.repeatingClickable(
                 val job = launch {
                     var currentDelayMillis = maxDelayMillis
                     while (isEnabled && down.pressed) {
-                        currentClickListener()
                         delay(currentDelayMillis)
+                        currentClickListener()
                         val nextMillis =
                             currentDelayMillis - (currentDelayMillis * delayDecayFactor)
                         currentDelayMillis = nextMillis.toLong().coerceAtLeast(minDelayMillis)

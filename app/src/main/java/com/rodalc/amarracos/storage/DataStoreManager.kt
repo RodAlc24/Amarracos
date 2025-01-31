@@ -18,7 +18,7 @@ object DataStoreManager {
     }
 
     fun readDataStore(context: Context, key: Key): Flow<Boolean> {
-        return context.dataStore.data.map { it[booleanPreferencesKey(key.name)] ?: true }
+        return context.dataStore.data.map { it[booleanPreferencesKey(key.name)] != false }
     }
 
     suspend fun setDataStore(context: Context, key: Key, value: Boolean) {

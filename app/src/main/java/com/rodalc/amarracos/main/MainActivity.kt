@@ -51,7 +51,7 @@ fun MyApp() {
     NavHost(navController, startDestination = "pantallaInicial") {
         composable("pantallaInicial") { PantallaInicio(navController) }
         composable("pantallaMus") { PantallaMus(navController) }
-        composable("pantallaPocha") { PantallaPocha() }
+        composable("pantallaPocha") { PantallaPocha(navController) }
         composable("pantallaMarcador") { PantallaGenerico(navController) }
         composable("pantallaAjustes") { PantallaAjustes(navController) }
     }

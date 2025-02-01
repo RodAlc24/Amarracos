@@ -20,6 +20,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.rodalc.amarracos.main.ToastRateLimiter
 
 /**
  * Menu con las opciones (deshacer, ver resultados, etc.)
@@ -32,6 +34,7 @@ fun OptionsMenu(
     undoEnabled: Boolean,
     undo: () -> Unit,
 ) {
+    val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -52,7 +55,10 @@ fun OptionsMenu(
                     Icon(Icons.Outlined.SsidChart, contentDescription = "Ver resultados")
                 },
                 text = { Text("Finalizar y ver resultados") },
-                onClick = { expanded = false }
+                onClick = {
+                    expanded = false
+                    ToastRateLimiter.showToast(context, "Próximamente")
+                }
             )
             if (undoEnabled) {
                 DropdownMenuItem(
@@ -76,6 +82,8 @@ fun OptionsMenu(
 @Composable
 fun SortMenu() {
     var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
     Box(
         modifier = Modifier
     ) {
@@ -95,21 +103,30 @@ fun SortMenu() {
                     Icon(Icons.Outlined.RadioButtonChecked, contentDescription = "Predeterminado")
                 },
                 text = { Text("Predeterminado") },
-                onClick = { expanded = false }
+                onClick = {
+                    expanded = false
+                    ToastRateLimiter.showToast(context, "Próximamente")
+                }
             )
             DropdownMenuItem(
                 leadingIcon = @Composable {
                     Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Nombre")
                 },
                 text = { Text("Por nombre") },
-                onClick = { expanded = false }
+                onClick = {
+                    expanded = false
+                    ToastRateLimiter.showToast(context, "Próximamente")
+                }
             )
             DropdownMenuItem(
                 leadingIcon = @Composable {
                     Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Puntos")
                 },
                 text = { Text("Por puntos") },
-                onClick = { expanded = false }
+                onClick = {
+                    expanded = false
+                    ToastRateLimiter.showToast(context, "Próximamente")
+                }
             )
         }
     }

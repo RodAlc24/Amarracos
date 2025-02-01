@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.main.repeatingClickable
 
@@ -47,10 +46,6 @@ fun FilaJugador(
     ronda: Ronda
 ) {
     var valorState by rememberSaveable { mutableIntStateOf(jugador.incremento) }
-    val content = ButtonDefaults.textButtonColors().contentColor
-    val contentDisabled = ButtonDefaults.textButtonColors().disabledContentColor
-    val tintA = if (valorState > -99) content else contentDisabled
-    val tintB = if (valorState < 99) content else contentDisabled
     val interactionSource = remember { MutableInteractionSource() }
 
     Row(
@@ -72,7 +67,6 @@ fun FilaJugador(
         if (ronda == Ronda.JUEGO) {
             Text(
                 text = jugador.puntos.toString(),
-                fontSize = 20.sp,
                 modifier = Modifier.padding(10.dp)
             )
         } else if (ronda == Ronda.CONTEO) {
@@ -92,18 +86,15 @@ fun FilaJugador(
                 Icon(
                     Icons.Rounded.Remove,
                     contentDescription = "Quitar 1 a $jugador",
-                    tint = tintA
+                    tint = ButtonDefaults.textButtonColors().contentColor
                 )
             }
             Box(
-                modifier = Modifier
-                    .width(55.dp)
-                    .height(50.dp),
+                modifier = Modifier.width(40.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = valorState.toString(),
-                    fontSize = 20.sp
                 )
             }
             IconButton(
@@ -123,7 +114,7 @@ fun FilaJugador(
                 Icon(
                     Icons.Rounded.Add,
                     contentDescription = "Añadir uno a $jugador",
-                    tint = tintB
+                    tint = ButtonDefaults.textButtonColors().contentColor
                 )
             }
         }

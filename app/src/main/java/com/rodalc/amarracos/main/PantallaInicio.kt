@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -49,8 +51,8 @@ fun PantallaInicio(navController: NavController) {
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.primaryContainer,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
                     Text(
@@ -65,7 +67,7 @@ fun PantallaInicio(navController: NavController) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,
                             contentDescription = "Go to settings",
-                            tint = MaterialTheme.colorScheme.primaryContainer
+                            tint = MaterialTheme.colorScheme.primary
 
                         )
                     }
@@ -81,7 +83,8 @@ fun PantallaInicio(navController: NavController) {
         ) {
             Image(
                 painter = painterResource(id = R.drawable.logo_transparente),
-                contentDescription = "Logo amarracos"
+                contentDescription = "Logo amarracos",
+
             )
         }
         Column(
@@ -103,10 +106,6 @@ fun PantallaInicio(navController: NavController) {
             GameButton(icon = Icons.AutoMirrored.Rounded.ArrowForward, text = "Genérico") {
                 navController.navigate("pantallaMarcador")
             }
-            //Spacer(modifier = Modifier.height(10.dp))
-            //GameButton(icon = Icons.AutoMirrored.Rounded.ArrowForward, text = "NuevaPocha") {
-            //    navController.navigate("nuevaPocha")
-            //}
             Spacer(modifier = Modifier.height(50.dp))
         }
     }
@@ -114,10 +113,10 @@ fun PantallaInicio(navController: NavController) {
 
 @Composable
 fun GameButton(icon: ImageVector, text: String, onClick: () -> Unit) {
-    FilledTonalButton(onClick = onClick) {
+    Button(onClick = onClick, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
         Row {
-            Text(text, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(0.3f))
-            Icon(imageVector = icon, contentDescription = icon.name)
+            Text(text, fontSize = 20.sp, modifier = Modifier.fillMaxWidth(0.3f), color = MaterialTheme.colorScheme.primary)
+            Icon(imageVector = icon, contentDescription = icon.name, tint = MaterialTheme.colorScheme.primary)
         }
     }
 }

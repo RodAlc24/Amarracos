@@ -35,8 +35,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -56,7 +58,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.rodalc.amarracos.generico.OptionsMenu
 import com.rodalc.amarracos.generico.SortMenu
@@ -206,7 +207,15 @@ fun PantallaPocha(navController: NavController) {
                     ) {
                         Text(text = "Duplicar puntuación")
                         Spacer(modifier = Modifier.weight(1f))
-                        Switch(checked = duplica, onCheckedChange = { duplica = it })
+                        Switch(
+                            checked = duplica,
+                            onCheckedChange = { duplica = it },
+                            colors = SwitchDefaults.colors(
+                                uncheckedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                                uncheckedBorderColor = MaterialTheme.colorScheme.primary,
+                                uncheckedThumbColor = MaterialTheme.colorScheme.primary
+                                )
+                        )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                 },
@@ -367,7 +376,11 @@ fun FilaJugadorNombres(jugador: JugadorPocha, numJugadores: Int, context: Contex
         },
         maxLines = 1,
         label = { Text("Jugador ${jugador.id}") },
-        keyboardOptions = KeyboardOptions(imeAction = if (jugador.id == numJugadores) ImeAction.Done else ImeAction.Next)
+        keyboardOptions = KeyboardOptions(imeAction = if (jugador.id == numJugadores) ImeAction.Done else ImeAction.Next),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+        )
     )
 }
 
@@ -397,8 +410,8 @@ fun Plantilla(
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.primaryContainer,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
                     Text(
@@ -413,7 +426,7 @@ fun Plantilla(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back to main menu",
-                            tint = MaterialTheme.colorScheme.primaryContainer
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },

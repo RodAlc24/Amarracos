@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.rodalc.amarracos.main.ToastRateLimiter
+import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 /**
  * Menu con las opciones (deshacer, ver resultados, etc.)
@@ -43,16 +44,17 @@ fun OptionsMenu(
             Icon(
                 Icons.Default.MoreVert,
                 contentDescription = "More options",
-                tint = MaterialTheme.colorScheme.primaryContainer
+                tint = MaterialTheme.colorScheme.primary
             )
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         ) {
             DropdownMenuItem(
                 leadingIcon = @Composable {
-                    Icon(Icons.Outlined.SsidChart, contentDescription = "Ver resultados")
+                    Icon(Icons.Outlined.SsidChart, contentDescription = "Ver resultados", tint = MaterialTheme.colorScheme.primary)
                 },
                 text = { Text("Finalizar y ver resultados") },
                 onClick = {
@@ -63,7 +65,7 @@ fun OptionsMenu(
             if (undoEnabled) {
                 DropdownMenuItem(
                     leadingIcon = @Composable {
-                        Icon(Icons.AutoMirrored.Outlined.Undo, contentDescription = "Deshacer")
+                        Icon(Icons.AutoMirrored.Outlined.Undo, contentDescription = "Deshacer", tint = MaterialTheme.colorScheme.primary)
                     },
                     text = { Text("Deshacer") },
                     onClick = {
@@ -91,16 +93,17 @@ fun SortMenu() {
             Icon(
                 Icons.Outlined.SwapVert,
                 contentDescription = "Ordenar",
-                tint = MaterialTheme.colorScheme.primaryContainer
+                tint = MaterialTheme.colorScheme.primary
             )
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         ) {
             DropdownMenuItem(
                 leadingIcon = @Composable {
-                    Icon(Icons.Outlined.RadioButtonChecked, contentDescription = "Predeterminado")
+                    Icon(Icons.Outlined.RadioButtonChecked, contentDescription = "Predeterminado", tint = MaterialTheme.colorScheme.primary)
                 },
                 text = { Text("Predeterminado") },
                 onClick = {
@@ -110,7 +113,7 @@ fun SortMenu() {
             )
             DropdownMenuItem(
                 leadingIcon = @Composable {
-                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Nombre")
+                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Nombre", tint = MaterialTheme.colorScheme.primary)
                 },
                 text = { Text("Por nombre") },
                 onClick = {
@@ -120,7 +123,7 @@ fun SortMenu() {
             )
             DropdownMenuItem(
                 leadingIcon = @Composable {
-                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Puntos")
+                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Puntos", tint = MaterialTheme.colorScheme.primary)
                 },
                 text = { Text("Por puntos") },
                 onClick = {

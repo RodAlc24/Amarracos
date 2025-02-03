@@ -20,6 +20,7 @@ import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +28,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -79,8 +81,8 @@ fun PantallaConfiguracion(
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.primaryContainer,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
                     Text(
@@ -129,16 +131,16 @@ fun PantallaConfiguracion(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize(0.8f)
+                    .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
+                Spacer(modifier = Modifier.height(20.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
                     RadioButton(
                         selected = recuperar,
@@ -151,68 +153,78 @@ fun PantallaConfiguracion(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(0.9f)
                 ) {
                     RadioButton(selected = !recuperar, onClick = { recuperar = false })
                     Text(text = "Nueva partida")
                 }
-                Spacer(modifier = Modifier.height(5.dp))
-                TextField(
-                    modifier = Modifier.fillMaxWidth(0.7f),
-                    value = buenos,
-                    onValueChange = {
-                        if (it.length <= 10) {
-                            buenos = it
-                        } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
-                    },
-                    maxLines = 1,
-                    placeholder = { Text(text = labelBuenos) },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    enabled = !recuperar
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                TextField(
-                    modifier = Modifier.fillMaxWidth(0.7f),
-                    value = malos,
-                    onValueChange = {
-                        if (it.length <= 10) {
-                            malos = it
-                        } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
-                    },
-                    maxLines = 1,
-                    placeholder = { Text(text = labelMalos) },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    enabled = !recuperar
-                )
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(text = "Puntos para ganar:")
-                Spacer(modifier = Modifier.height(5.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.width(10.dp))
-                    RadioButton(selected = puntos30, onClick = {
-                        coreutineScope.async {
-                            DataStoreManager.setDataStore(
-                                context,
-                                DataStoreManager.Key.MUS_A_30,
-                                true
-                            )
-                        }
-                    }, enabled = !recuperar)
-                    Text(text = "30")
-                    Spacer(modifier = Modifier.width(10.dp))
-                    RadioButton(selected = !puntos30, onClick = {
-                        coreutineScope.async {
-                            DataStoreManager.setDataStore(
-                                context,
-                                DataStoreManager.Key.MUS_A_30,
-                                false
-                            )
-                        }
-                    }, enabled = !recuperar)
-                    Text(text = "40")
+                if (!recuperar) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(30.dp))
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(0.7f),
+                        value = buenos,
+                        onValueChange = {
+                            if (it.length <= 10) {
+                                buenos = it
+                            } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
+                        },
+                        maxLines = 1,
+                        placeholder = { Text(text = labelBuenos) },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    TextField(
+                        modifier = Modifier.fillMaxWidth(0.7f),
+                        value = malos,
+                        onValueChange = {
+                            if (it.length <= 10) {
+                                malos = it
+                            } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
+                        },
+                        maxLines = 1,
+                        placeholder = { Text(text = labelMalos) },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Text(text = "Puntos para ganar:")
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Spacer(modifier = Modifier.width(10.dp))
+                        RadioButton(selected = puntos30, onClick = {
+                            coreutineScope.async {
+                                DataStoreManager.setDataStore(
+                                    context,
+                                    DataStoreManager.Key.MUS_A_30,
+                                    true
+                                )
+                            }
+                        })
+                        Text(text = "30")
+                        Spacer(modifier = Modifier.width(10.dp))
+                        RadioButton(selected = !puntos30, onClick = {
+                            coreutineScope.async {
+                                DataStoreManager.setDataStore(
+                                    context,
+                                    DataStoreManager.Key.MUS_A_30,
+                                    false
+                                )
+                            }
+                        })
+                        Text(text = "40")
+                    }
                 }
             }
         }

@@ -248,7 +248,11 @@ fun BotonesEnvite(
                 },
                 enabled = enabled,
             ),
-            onClick = {},
+            onClick = {
+                Mus.pushState()
+                updateEnvite(envite + if (botonSuma) 1 else -1)
+                Mus.saveState(context)
+            },
         ) {
             if (botonSuma) {
                 Icon(Icons.Rounded.Add, contentDescription = "Aumentar envite", tint = tint)

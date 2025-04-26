@@ -1,5 +1,9 @@
 # Amarracos
 
+![GitHub License](https://img.shields.io/github/license/RodAlc24/Amarracos)
+![GitHub Release](https://img.shields.io/github/v/release/RodAlc24/Amarracos)
+![Google Play Downloads](https://playbadges.pavi2410.me/badge/downloads?id=com.rodalc.amarracos&pretty)
+
 ![Logo](images/LogoCompleto.png "Amarracos")
 
 <a href="https://play.google.com/store/apps/details?id=com.rodalc.amarracos"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="120"></a>

@@ -11,20 +11,30 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.coroutineScope
@@ -143,6 +153,78 @@ fun Modifier.repeatingClickable(
                 }
                 waitForUpOrCancellation()
                 job.cancel()
+            }
+        }
+    }
+}
+
+/**
+ * Pop-Up para introducir valores numéricos.
+ *
+ * @param title El título del pop-Up
+ * @param value El valor actual
+ * @param minValue El valor mínimo
+ * @param maxValue El valor máximo
+ * @param onValueChange La acción a realizar cuando se cambie el valor
+ * @param onDismiss Acción al hacer click fuera del pop-Up
+ */
+@Composable
+fun NumberInput(
+    title: String,
+    value: Int,
+    minValue: Int = -9999,
+    maxValue: Int = 9999,
+    onValueChange: (Int) -> Unit,
+    onDismiss: () -> Unit = {}
+) {
+    Dialog(onDismissRequest = { onDismiss() }) {
+        var valueText by rememberSaveable { mutableStateOf(value.toString())}
+        Box(modifier = Modifier) {
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(10.dp),
+                shape = RoundedCornerShape(16.dp),
+            ) {
+                Column(
+                    modifier = Modifier.padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = title)
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        TextField(
+                            modifier = Modifier.fillMaxWidth(0.7f),
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done,
+                                keyboardType = KeyboardType.Number
+                            ),
+                            value = valueText,
+                            onValueChange = {
+                                valueText = it
+                            },
+                            maxLines = 1,
+                            placeholder = { Text(text = title) },
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            )
+                        )
+                    }
+                    val newValue = valueText.toIntOrNull()
+                    val valid = newValue != null && newValue >= minValue && newValue <= maxValue
+                    Button(
+                        onClick = {
+                            onValueChange(newValue ?: value)
+                            onDismiss()
+                        },
+                        enabled = valid
+                    ) {
+                        Text(text = "Aceptar")
+                    }
+                }
             }
         }
     }

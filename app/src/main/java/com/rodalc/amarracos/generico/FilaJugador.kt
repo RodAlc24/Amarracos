@@ -1,6 +1,7 @@
 package com.rodalc.amarracos.generico
 
 import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.rodalc.amarracos.main.NumberInput
 import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.main.repeatingClickable
 
@@ -49,6 +51,7 @@ fun FilaJugador(
 ) {
     var valorState by rememberSaveable { mutableIntStateOf(jugador.incremento) }
     val interactionSource = remember { MutableInteractionSource() }
+    var showPopUp by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -95,8 +98,11 @@ fun FilaJugador(
                 )
             }
             Box(
-                modifier = Modifier.width(40.dp),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.width(40.dp)
+                    .clickable(onClick = {
+                        showPopUp = true
+}),
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = valorState.toString(),
@@ -126,6 +132,15 @@ fun FilaJugador(
                 )
             }
         }
+    }
+
+    if (showPopUp) {
+        NumberInput(
+            title = "Prueba",
+            value = valorState,
+            onValueChange = {valorState = it},
+            onDismiss = {showPopUp = false},
+        )
     }
 }
 

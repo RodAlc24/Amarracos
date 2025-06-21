@@ -74,6 +74,9 @@ fun FilaJugador(
         } else if (ronda == Ronda.CONTEO) {
             IconButton(
                 modifier = Modifier.repeatingClickable(
+                    maxDelayMillis = 500,
+                    minDelayMillis = 10,
+                    delayDecayFactor = .10f,
                     interactionSource = interactionSource,
                     onClick = {
                         valorState -= 1
@@ -101,6 +104,9 @@ fun FilaJugador(
             }
             IconButton(
                 modifier = Modifier.repeatingClickable(
+                    maxDelayMillis = 500,
+                    minDelayMillis = 10,
+                    delayDecayFactor = .10f,
                     interactionSource = interactionSource,
                     onClick = {
                         valorState += 1

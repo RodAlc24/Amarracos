@@ -180,6 +180,8 @@ fun NumberInput(
 ) {
     Dialog(onDismissRequest = { onDismiss() }) {
         var valueText by rememberSaveable { mutableStateOf(value.toString())}
+        if (valueText == "0") valueText = ""
+
         Box(modifier = Modifier) {
             Surface(
                 modifier = Modifier

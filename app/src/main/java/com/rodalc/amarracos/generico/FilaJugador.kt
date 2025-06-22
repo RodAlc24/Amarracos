@@ -98,10 +98,11 @@ fun FilaJugador(
                 )
             }
             Box(
-                modifier = Modifier.width(40.dp)
+                modifier = Modifier
+                    .width(40.dp)
                     .clickable(onClick = {
                         showPopUp = true
-}),
+                    }),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -136,10 +137,13 @@ fun FilaJugador(
 
     if (showPopUp) {
         NumberInput(
-            title = "Prueba",
+            title = "Puntuación",
             value = valorState,
-            onValueChange = {valorState = it},
-            onDismiss = {showPopUp = false},
+            onValueChange = {
+                valorState = it
+                jugador.incremento = valorState
+            },
+            onDismiss = { showPopUp = false },
         )
     }
 }

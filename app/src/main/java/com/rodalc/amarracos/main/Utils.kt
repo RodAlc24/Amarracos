@@ -92,6 +92,7 @@ fun PopUp(
                     .align(Alignment.Center)
                     .padding(10.dp),
                 shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Column(
                     modifier = Modifier.padding(10.dp),

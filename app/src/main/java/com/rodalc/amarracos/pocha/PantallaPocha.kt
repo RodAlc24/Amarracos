@@ -214,7 +214,7 @@ fun PantallaPocha(navController: NavController) {
                                 uncheckedTrackColor = MaterialTheme.colorScheme.primaryContainer,
                                 uncheckedBorderColor = MaterialTheme.colorScheme.primary,
                                 uncheckedThumbColor = MaterialTheme.colorScheme.primary
-                                )
+                            )
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
@@ -251,7 +251,15 @@ fun PantallaPocha(navController: NavController) {
                     ) {
                         Text(text = "Duplicar puntuación")
                         Spacer(modifier = Modifier.weight(1f))
-                        Switch(checked = duplica, onCheckedChange = { duplica = it })
+                        Switch(
+                            checked = duplica,
+                            onCheckedChange = { duplica = it },
+                            colors = SwitchDefaults.colors(
+                                uncheckedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                                uncheckedBorderColor = MaterialTheme.colorScheme.primary,
+                                uncheckedThumbColor = MaterialTheme.colorScheme.primary
+                            )
+                        )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                 },

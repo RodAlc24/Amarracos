@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10" apply false
 }
 
-val defaultVersionCode by extra(17)
-val defaultVersionName by extra("1.2.3")
+val defaultVersionCode by extra(18)
+val defaultVersionName by extra("1.2.4")
 val releaseVersionSuffix by extra("-release")
 val debugVersionSuffix by extra("-debug")

@@ -177,8 +177,9 @@ fun PantallaGenerico(navController: NavController) {
                     }
                     state = Ronda.JUEGO
                 },
-                jugadores = jugadores
-            )
+                jugadores = jugadores,
+                showResults = { state = Ronda.RESULTADOS }
+                )
         }
 
         Ronda.JUEGO -> {
@@ -200,7 +201,8 @@ fun PantallaGenerico(navController: NavController) {
                     state = Ronda.CONTEO
                 },
                 undoEnabled = Generico.canUndo(),
-                jugadores = Generico.getJugadores()
+                jugadores = Generico.getJugadores(),
+                showResults = { state = Ronda.RESULTADOS }
             )
         }
 
@@ -222,8 +224,12 @@ fun PantallaGenerico(navController: NavController) {
                 floatingIcon = { Icon(Icons.Rounded.Done, contentDescription = "Hecho") },
                 undo = { state = Ronda.JUEGO },
                 undoEnabled = true,
-                jugadores = Generico.getJugadores()
+                jugadores = Generico.getJugadores(),
+                showResults = { state = Ronda.RESULTADOS }
             )
+        }
+        Ronda.RESULTADOS -> {
+            PantallaResultados(Generico.getJugadores(), { state = Ronda.JUEGO })
         }
     }
 }
@@ -251,7 +257,8 @@ fun Plantilla(
     floatingIcon: @Composable () -> Unit,
     undo: () -> Unit = {},
     undoEnabled: Boolean = false,
-    jugadores: List<Jugador>
+    jugadores: List<Jugador>,
+    showResults: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -280,7 +287,11 @@ fun Plantilla(
                 actions = {
                     if (options) {
                         SortMenu()
-                        OptionsMenu(undoEnabled = undoEnabled, undo = undo)
+                        OptionsMenu(
+                            undoEnabled = undoEnabled,
+                            undo = undo,
+                            showResults = showResults
+                        )
                     }
                 }
             )

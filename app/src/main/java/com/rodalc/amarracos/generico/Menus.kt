@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.rodalc.amarracos.main.ToastRateLimiter
-import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 /**
  * Menu con las opciones (deshacer, ver resultados, etc.)
@@ -34,8 +33,8 @@ import com.rodalc.amarracos.ui.theme.AmarracosTheme
 fun OptionsMenu(
     undoEnabled: Boolean,
     undo: () -> Unit,
+    showResults: () -> Unit = {}
 ) {
-    val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -59,7 +58,7 @@ fun OptionsMenu(
                 text = { Text("Finalizar y ver resultados") },
                 onClick = {
                     expanded = false
-                    ToastRateLimiter.showToast(context, "Próximamente")
+                    showResults()
                 }
             )
             if (undoEnabled) {

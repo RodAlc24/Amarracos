@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
  * @property nombre Nombre del jugador.
  * @property puntos Puntos acumulados por el jugador.
  * @property incremento Puntos ganados por el jugador en la ronda actual.
+ * @property historicoPuntos Mapa que contiene el historial de puntos del jugador.
  *
  * @see Ronda
  */
@@ -19,6 +20,7 @@ data class Jugador(
     var nombre: String = "",
     var puntos: Int = 0,
     var incremento: Int = 0,
+    var historicoPuntos: Map<Int, Int> = mapOf(0 to 0)
 ) {
     /**
      * Actualiza la puntuación del jugador.
@@ -29,6 +31,7 @@ data class Jugador(
     fun actualizarPuntuacion() {
         this.puntos += this.incremento
         this.incremento = 0
+        this.historicoPuntos = this.historicoPuntos + mapOf(this.historicoPuntos.size to this.puntos)
     }
 
     /**
@@ -51,5 +54,6 @@ data class Jugador(
 enum class Ronda {
     NOMBRES,
     JUEGO,
-    CONTEO
+    CONTEO,
+    RESULTADOS
 }

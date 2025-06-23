@@ -17,6 +17,18 @@ Este proyecto ha sido posible gracias a la colaboración de [dc138](https://gith
 
 Amarracos forma parte de los proyectos realizados por la asociación [LIMA-UAM](https://github.com/LIMA-UAM).
 
+## Licencia
+
+El código (salvo los archivos `Marker.kt` y `Grafico.kt`) está bajo la licencia MIT.  
+Copyright (c) 2024-2025 Rodrigo Alcántara.
+
+`app/src/main/java/com/rodalc/amarracos/resulltados/Grafico.kt`  
+`app/src/main/java/com/rodalc/amarracos/resulltados/Marker.kt`  
+Están bajo la licencia Apache 2.0. (https://github.com/patrykandpatrick/vico).  
+Copyright 2025 by Patryk Goworowski and Patrick Michalik.
+
+Las modificaciones realizadas se pueden ver en los citados archivos.
+
 ---
 
 Google Play es una marca de Google LLC.

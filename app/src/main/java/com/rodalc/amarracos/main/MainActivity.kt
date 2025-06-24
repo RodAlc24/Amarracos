@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.generico.PantallaGenerico
 import com.rodalc.amarracos.mus.PantallaMus
 import com.rodalc.amarracos.pocha.PantallaPocha
+import com.rodalc.amarracos.pocha.PantallaResultadosPocha
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 /**
@@ -54,6 +55,7 @@ fun MyApp() {
         composable("pantallaPocha") { PantallaPocha(navController) }
         composable("pantallaMarcador") { PantallaGenerico(navController) }
         composable("pantallaAjustes") { PantallaAjustes(navController) }
+        composable("pantallaResultadosPocha") { PantallaResultadosPocha(navController) }
     }
 }
 

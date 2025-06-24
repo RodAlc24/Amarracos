@@ -441,7 +441,10 @@ fun Plantilla(
                 actions = {
                     if (options) {
                         SortMenu()
-                        OptionsMenu(undoEnabled = undoEnabled, undo = undo)
+                        OptionsMenu(
+                            undoEnabled = undoEnabled,
+                            undo = undo,
+                            showResults = {navController.navigate("pantallaResultadosPocha")})
                     }
                 }
             )

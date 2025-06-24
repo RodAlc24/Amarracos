@@ -21,7 +21,7 @@
  * No changes have been made.
  */
 
-package com.rodalc.amarracos.resulltados
+package com.rodalc.amarracos.resultados
 
 import android.text.Layout
 import androidx.compose.material3.MaterialTheme

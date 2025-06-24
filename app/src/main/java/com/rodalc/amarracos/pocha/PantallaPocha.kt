@@ -1,6 +1,5 @@
 package com.rodalc.amarracos.pocha
 
-import android.content.Context
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
@@ -12,13 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,8 +24,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -44,10 +39,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.rodalc.amarracos.comun.FilaJugadorNombres
 import com.rodalc.amarracos.comun.Jugador
 import com.rodalc.amarracos.comun.Plantilla
 import com.rodalc.amarracos.comun.Ronda
@@ -355,34 +350,4 @@ fun FilaJugador(
             }, enabled = valorState < 99
         ) { Icon(Icons.Rounded.Add, contentDescription = "Añadir uno a $jugador", tint = tintB) }
     }
-}
-
-
-/**
- * Fila para poner los nombres de cada jugador.
- *
- * @param jugador El jugador en cuestión
- * @param numJugadores El número total de jugadores, útil para saber cuál es el último
- * @param context El contexto actual
- */
-@Composable
-fun FilaJugadorNombres(jugador: Jugador, numJugadores: Int, context: Context) {
-    var nombreState by rememberSaveable { mutableStateOf(jugador.nombre) }
-    TextField(
-        modifier = Modifier.fillMaxWidth(0.8f),
-        value = nombreState,
-        onValueChange = {
-            if (it.length <= 20) {
-                nombreState = it
-                jugador.nombre = nombreState
-            } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
-        },
-        maxLines = 1,
-        label = { Text("Jugador ${jugador.id}") },
-        keyboardOptions = KeyboardOptions(imeAction = if (jugador.id == numJugadores) ImeAction.Done else ImeAction.Next),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-        )
-    )
 }

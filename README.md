@@ -27,7 +27,7 @@ Copyright (c) 2024-2025 Rodrigo Alcántara.
 Están bajo la licencia Apache 2.0. (https://github.com/patrykandpatrick/vico).  
 Copyright 2025 by Patryk Goworowski and Patrick Michalik.
 
-Las modificaciones realizadas se pueden al inicio de cada archivo.
+Las modificaciones realizadas se pueden ver al inicio de cada archivo.
 
 ---
 

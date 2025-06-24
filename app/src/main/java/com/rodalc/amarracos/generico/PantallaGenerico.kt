@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.rodalc.amarracos.generico
 
 import android.view.WindowManager
@@ -7,34 +5,21 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -46,15 +31,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.rodalc.amarracos.comun.Jugador
-import com.rodalc.amarracos.comun.OptionsMenu
+import com.rodalc.amarracos.comun.Plantilla
 import com.rodalc.amarracos.comun.Ronda
-import com.rodalc.amarracos.comun.SortMenu
 import com.rodalc.amarracos.storage.DataStoreManager
-import com.rodalc.amarracos.ui.theme.Playfair
 
 /**
  * Gestiona toda la pantalla para el marcador de puntos.
@@ -90,8 +72,10 @@ fun PantallaGenerico(navController: NavController) {
     when (state) {
         Ronda.NOMBRES -> {
             Plantilla(
+                title = "Generico",
                 options = false,
                 navController = navController,
+                pantallaResultadosId = "pantallaResultadosGenerico",
                 header = {
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(
@@ -187,7 +171,9 @@ fun PantallaGenerico(navController: NavController) {
 
         Ronda.JUEGO -> {
             Plantilla(
+                title = "Generico",
                 navController = navController,
+                pantallaResultadosId = "pantallaResultadosGenerico",
                 lineJugador = { jugador ->
                     FilaJugador(
                         jugador = jugador,
@@ -210,7 +196,9 @@ fun PantallaGenerico(navController: NavController) {
 
         Ronda.CONTEO -> {
             Plantilla(
+                title = "Generico",
                 navController = navController,
+                pantallaResultadosId = "pantallaResultadosGenerico",
                 lineJugador = { jugador ->
                     FilaJugador(
                         jugador = jugador,
@@ -228,100 +216,6 @@ fun PantallaGenerico(navController: NavController) {
                 undoEnabled = true,
                 jugadores = Generico.getJugadores(),
             )
-        }
-    }
-}
-
-/**
- * Plantilla para la pantalla de la pocha.
- *
- * @param options Si se mostrarán las opciones
- * @param navController El controlador de navegación
- * @param header El encabezado de la pantalla (un título...)
- * @param lineJugador La fila en la que se representará cada uno de los jugadores
- * @param nextRound Se llamará al cambiar de ronda
- * @param floatingIcon El icono del botón flotante
- * @param undo Se llamará pulsando el botón "volver"
- * @param undoEnabled Indica si se activa el botón "volver"
- * @param jugadores La lista con los jugadores de la partida
- */
-@Composable
-fun Plantilla(
-    options: Boolean = true,
-    navController: NavController,
-    header: @Composable () -> Unit = {},
-    lineJugador: @Composable (Jugador) -> Unit,
-    nextRound: () -> Unit,
-    floatingIcon: @Composable () -> Unit,
-    undo: () -> Unit = {},
-    undoEnabled: Boolean = false,
-    jugadores: List<Jugador>,
-) {
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text(
-                        "Puntuaciones",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontFamily = Playfair,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigate("pantallaInicial") }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back to main menu",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                },
-                actions = {
-                    if (options) {
-                        SortMenu()
-                        OptionsMenu(
-                            undoEnabled = undoEnabled,
-                            undo = undo,
-                            showResults = { navController.navigate("pantallaResultadosGenerico") }
-                        )
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { nextRound() }) {
-                floatingIcon()
-            }
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            header()
-            LazyColumn(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                contentPadding = PaddingValues(10.dp)
-            ) {
-                items(jugadores) { jugador ->
-                    lineJugador(jugador)
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-                item {
-                    Spacer(modifier = Modifier.height(70.dp))
-                }
-            }
         }
     }
 }

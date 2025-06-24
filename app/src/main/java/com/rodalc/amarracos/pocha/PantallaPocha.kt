@@ -444,7 +444,8 @@ fun Plantilla(
                         OptionsMenu(
                             undoEnabled = undoEnabled,
                             undo = undo,
-                            showResults = {navController.navigate("pantallaResultadosPocha")})
+                            showResults = {navController.navigate("pantallaResultadosPocha")}
+                        )
                     }
                 }
             )

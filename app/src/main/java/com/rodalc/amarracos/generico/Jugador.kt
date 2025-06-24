@@ -55,5 +55,4 @@ enum class Ronda {
     NOMBRES,
     JUEGO,
     CONTEO,
-    RESULTADOS
 }

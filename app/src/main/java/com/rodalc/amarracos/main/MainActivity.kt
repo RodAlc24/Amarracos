@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.generico.PantallaGenerico
+import com.rodalc.amarracos.generico.PantallaResultados
 import com.rodalc.amarracos.mus.PantallaMus
 import com.rodalc.amarracos.pocha.PantallaPocha
 import com.rodalc.amarracos.pocha.PantallaResultadosPocha
@@ -55,7 +56,8 @@ fun MyApp() {
         composable("pantallaPocha") { PantallaPocha(navController) }
         composable("pantallaMarcador") { PantallaGenerico(navController) }
         composable("pantallaAjustes") { PantallaAjustes(navController) }
-        composable("pantallaResultadosPocha") { PantallaResultadosPocha(navController) }
+        composable("pantallaResultadosPocha") { PantallaResultados(pocha = true, navController) }
+        composable("pantallaResultadosGenerico") { PantallaResultados(pocha = false, navController) }
     }
 }
 

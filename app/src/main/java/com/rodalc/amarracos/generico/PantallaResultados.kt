@@ -22,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.navigation.NavController
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.rodalc.amarracos.pocha.Pocha
 import com.rodalc.amarracos.resulltados.LegendLabelKey
 import com.rodalc.amarracos.resulltados.Puntuaciones
 import com.rodalc.amarracos.ui.theme.Playfair
@@ -31,9 +33,10 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun PantallaResultados(
-    jugadores: List<Jugador>,
-    goBack: () -> Unit
+    pocha: Boolean,
+    navController: NavController
 ) {
+    val jugadores = if (pocha == true) Pocha.getJugadores() else Generico.getJugadores()
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -50,7 +53,7 @@ fun PantallaResultados(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { goBack() }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back to main menu",

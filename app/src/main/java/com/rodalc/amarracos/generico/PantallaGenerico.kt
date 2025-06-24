@@ -178,7 +178,6 @@ fun PantallaGenerico(navController: NavController) {
                     state = Ronda.JUEGO
                 },
                 jugadores = jugadores,
-                showResults = { state = Ronda.RESULTADOS }
                 )
         }
 
@@ -202,7 +201,6 @@ fun PantallaGenerico(navController: NavController) {
                 },
                 undoEnabled = Generico.canUndo(),
                 jugadores = Generico.getJugadores(),
-                showResults = { state = Ronda.RESULTADOS }
             )
         }
 
@@ -225,11 +223,7 @@ fun PantallaGenerico(navController: NavController) {
                 undo = { state = Ronda.JUEGO },
                 undoEnabled = true,
                 jugadores = Generico.getJugadores(),
-                showResults = { state = Ronda.RESULTADOS }
             )
-        }
-        Ronda.RESULTADOS -> {
-            PantallaResultados(Generico.getJugadores(), { state = Ronda.JUEGO })
         }
     }
 }
@@ -258,7 +252,6 @@ fun Plantilla(
     undo: () -> Unit = {},
     undoEnabled: Boolean = false,
     jugadores: List<Jugador>,
-    showResults: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -290,7 +283,7 @@ fun Plantilla(
                         OptionsMenu(
                             undoEnabled = undoEnabled,
                             undo = undo,
-                            showResults = showResults
+                            showResults = {navController.navigate("pantallaResultadosGenerico")}
                         )
                     }
                 }

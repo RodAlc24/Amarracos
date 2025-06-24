@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.rodalc.amarracos.generico
+package com.rodalc.amarracos.comun
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.rodalc.amarracos.generico.Generico
 import com.rodalc.amarracos.pocha.Pocha
 import com.rodalc.amarracos.resulltados.LegendLabelKey
 import com.rodalc.amarracos.resulltados.Puntuaciones

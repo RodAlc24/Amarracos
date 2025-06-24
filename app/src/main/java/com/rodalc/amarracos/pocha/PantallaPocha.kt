@@ -59,8 +59,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.rodalc.amarracos.generico.OptionsMenu
-import com.rodalc.amarracos.generico.SortMenu
+import com.rodalc.amarracos.comun.Jugador
+import com.rodalc.amarracos.comun.OptionsMenu
+import com.rodalc.amarracos.comun.Ronda
+import com.rodalc.amarracos.comun.SortMenu
 import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.storage.DataStoreManager
 import com.rodalc.amarracos.ui.theme.Playfair
@@ -76,7 +78,7 @@ fun PantallaPocha(navController: NavController) {
     var state by rememberSaveable { mutableStateOf(Ronda.NOMBRES) }
     var duplica by rememberSaveable { mutableStateOf(Pocha.getDuplica()) }
     var canLoad by rememberSaveable { mutableStateOf(Pocha.canLoadState(context)) }
-    var jugadores by remember { mutableStateOf(listOf(JugadorPocha(1), JugadorPocha(2))) }
+    var jugadores by remember { mutableStateOf(listOf(Jugador(1), Jugador(2))) }
     var recuperar by rememberSaveable { mutableStateOf(canLoad) }
 
     // Keep screen on. Only if user has selected it
@@ -158,7 +160,7 @@ fun PantallaPocha(navController: NavController) {
                             IconButton(
                                 onClick = {
                                     jugadores =
-                                        (jugadores + JugadorPocha(jugadores.size + 1)).toMutableList()
+                                        (jugadores + Jugador(jugadores.size + 1)).toMutableList()
                                 },
                                 enabled = jugadores.size < 100
                             ) {
@@ -190,13 +192,13 @@ fun PantallaPocha(navController: NavController) {
                         Pocha.setJugadores(jugadores)
                         Pocha.saveState(context)
                     }
-                    state = Ronda.APUESTAS
+                    state = Ronda.JUEGO
                 },
                 jugadores = jugadores
             )
         }
 
-        Ronda.APUESTAS -> {
+        Ronda.JUEGO -> {
             Plantilla(
                 navController = navController,
                 header = {
@@ -222,7 +224,7 @@ fun PantallaPocha(navController: NavController) {
                 lineJugador = { jugador ->
                     FilaJugador(
                         jugador = jugador,
-                        ronda = Ronda.APUESTAS
+                        ronda = Ronda.JUEGO
                     )
                 },
                 nextRound = {
@@ -276,14 +278,14 @@ fun PantallaPocha(navController: NavController) {
                         Pocha.actualizarPuntuacion(duplica)
                         duplica = false
                         Pocha.saveState(context)
-                        state = Ronda.APUESTAS
+                        state = Ronda.JUEGO
                     } else ToastRateLimiter.showToast(
                         context,
                         "Las apuestas no pueden coincidir con el número de rondas jugadas"
                     )
                 },
                 floatingIcon = { Icon(Icons.Rounded.Done, contentDescription = "Hecho") },
-                undo = { state = Ronda.APUESTAS },
+                undo = { state = Ronda.JUEGO },
                 undoEnabled = true,
                 jugadores = Pocha.getJugadores()
             )
@@ -299,10 +301,10 @@ fun PantallaPocha(navController: NavController) {
  */
 @Composable
 fun FilaJugador(
-    jugador: JugadorPocha,
+    jugador: Jugador,
     ronda: Ronda
 ) {
-    var valorState by rememberSaveable { mutableIntStateOf(if (ronda == Ronda.APUESTAS) jugador.apuesta else jugador.victoria) }
+    var valorState by rememberSaveable { mutableIntStateOf(if (ronda == Ronda.JUEGO) jugador.apuesta else jugador.victoria) }
     val content = ButtonDefaults.textButtonColors().contentColor
     val contentDisabled = ButtonDefaults.textButtonColors().disabledContentColor
     val tintA = if (valorState > 0) content else contentDisabled
@@ -322,13 +324,13 @@ fun FilaJugador(
                 .clipToBounds()
         )
         Text(
-            text = if (ronda == Ronda.APUESTAS) jugador.puntos.toString() else jugador.apuesta.toString(),
+            text = if (ronda == Ronda.JUEGO) jugador.puntos.toString() else jugador.apuesta.toString(),
             modifier = Modifier.padding(10.dp)
         )
         IconButton(
             onClick = {
                 valorState -= 1
-                if (ronda == Ronda.APUESTAS) {
+                if (ronda == Ronda.JUEGO) {
                     jugador.apuesta = valorState
                 } else {
                     jugador.victoria = valorState
@@ -340,7 +342,7 @@ fun FilaJugador(
             modifier = Modifier.width(40.dp),
             contentAlignment = Alignment.Center
         ) {
-            if (ronda == Ronda.APUESTAS) {
+            if (ronda == Ronda.JUEGO) {
                 Text(text = jugador.apuesta.toString())
             } else {
                 Text(
@@ -352,7 +354,7 @@ fun FilaJugador(
         IconButton(
             onClick = {
                 valorState += 1
-                if (ronda == Ronda.APUESTAS) {
+                if (ronda == Ronda.JUEGO) {
                     jugador.apuesta = valorState
                 } else {
                     jugador.victoria = valorState
@@ -371,7 +373,7 @@ fun FilaJugador(
  * @param context El contexto actual
  */
 @Composable
-fun FilaJugadorNombres(jugador: JugadorPocha, numJugadores: Int, context: Context) {
+fun FilaJugadorNombres(jugador: Jugador, numJugadores: Int, context: Context) {
     var nombreState by rememberSaveable { mutableStateOf(jugador.nombre) }
     TextField(
         modifier = Modifier.fillMaxWidth(0.8f),
@@ -407,12 +409,12 @@ fun Plantilla(
     options: Boolean = true,
     navController: NavController,
     header: @Composable () -> Unit,
-    lineJugador: @Composable (JugadorPocha) -> Unit,
+    lineJugador: @Composable (Jugador) -> Unit,
     nextRound: () -> Unit,
     floatingIcon: @Composable () -> Unit,
     undo: () -> Unit = {},
     undoEnabled: Boolean = false,
-    jugadores: List<JugadorPocha>
+    jugadores: List<Jugador>
 ) {
     Scaffold(
         topBar = {

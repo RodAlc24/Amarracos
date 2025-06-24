@@ -25,7 +25,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import com.rodalc.amarracos.generico.Jugador
 import com.rodalc.amarracos.resulltados.LegendLabelKey
 import com.rodalc.amarracos.resulltados.Puntuaciones
 import com.rodalc.amarracos.ui.theme.Playfair

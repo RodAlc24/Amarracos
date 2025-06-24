@@ -1,4 +1,4 @@
-package com.rodalc.amarracos.generico
+package com.rodalc.amarracos.comun
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons

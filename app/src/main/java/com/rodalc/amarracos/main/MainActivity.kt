@@ -14,10 +14,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.generico.PantallaGenerico
-import com.rodalc.amarracos.generico.PantallaResultados
+import com.rodalc.amarracos.comun.PantallaResultados
 import com.rodalc.amarracos.mus.PantallaMus
 import com.rodalc.amarracos.pocha.PantallaPocha
-import com.rodalc.amarracos.pocha.PantallaResultadosPocha
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 /**

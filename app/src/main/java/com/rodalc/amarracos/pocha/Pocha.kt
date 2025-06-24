@@ -1,6 +1,7 @@
 package com.rodalc.amarracos.pocha
 
 import android.content.Context
+import com.rodalc.amarracos.comun.Jugador
 import com.rodalc.amarracos.storage.StateSaver
 import com.rodalc.amarracos.storage.UndoStack
 import kotlinx.serialization.json.Json
@@ -14,7 +15,7 @@ object Pocha : StateSaver("pocha.json") {
     /**
      * Lista de jugadores actuales.
      */
-    private var jugadores = mutableListOf(JugadorPocha(1), JugadorPocha(2))
+    private var jugadores = mutableListOf(Jugador(1), Jugador(2))
 
     /**
      * Si duplica la ronda actual o no.
@@ -32,7 +33,7 @@ object Pocha : StateSaver("pocha.json") {
      *
      * @return La lista actual de jugadores
      */
-    fun getJugadores(): List<JugadorPocha> {
+    fun getJugadores(): List<Jugador> {
         return this.jugadores
     }
 
@@ -41,7 +42,7 @@ object Pocha : StateSaver("pocha.json") {
      *
      * @param jugadores Los nuevos jugadores
      */
-    fun setJugadores(jugadores: List<JugadorPocha>) {
+    fun setJugadores(jugadores: List<Jugador>) {
         this.jugadores = jugadores.toMutableList()
     }
 
@@ -92,7 +93,7 @@ object Pocha : StateSaver("pocha.json") {
 
     private data class UndoMus(
         val duplica: Boolean,
-        val jugadores: List<JugadorPocha>
+        val jugadores: List<Jugador>
     )
 
     /**
@@ -122,7 +123,7 @@ object Pocha : StateSaver("pocha.json") {
             inputStream.close()
 
             val jsonString = String(buffer, Charsets.UTF_8)
-            this.jugadores = Json.decodeFromString<MutableList<JugadorPocha>>(jsonString).toMutableList()
+            this.jugadores = Json.decodeFromString<MutableList<Jugador>>(jsonString).toMutableList()
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
@@ -139,7 +140,7 @@ object Pocha : StateSaver("pocha.json") {
      */
     fun discardBackup(context: Context): Boolean {
         stack = UndoStack()
-        this.jugadores = mutableListOf(JugadorPocha(1), JugadorPocha(2))
+        this.jugadores = mutableListOf(Jugador(1), Jugador(2))
         return this.deleteFile(context)
     }
 
@@ -160,7 +161,7 @@ object Pocha : StateSaver("pocha.json") {
      */
     fun actualizarPuntuacion(duplica: Boolean) {
         for (jugador in this.jugadores) {
-            jugador.actualizarPuntuacion(duplica)
+            jugador.actualizarPuntuacion(pocha = true, duplica = duplica)
         }
     }
 
@@ -189,6 +190,5 @@ object Pocha : StateSaver("pocha.json") {
         }
         return apuestas
     }
-
 }
 

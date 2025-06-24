@@ -49,6 +49,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.rodalc.amarracos.comun.Jugador
+import com.rodalc.amarracos.comun.OptionsMenu
+import com.rodalc.amarracos.comun.Ronda
+import com.rodalc.amarracos.comun.SortMenu
 import com.rodalc.amarracos.storage.DataStoreManager
 import com.rodalc.amarracos.ui.theme.Playfair
 
@@ -283,7 +287,7 @@ fun Plantilla(
                         OptionsMenu(
                             undoEnabled = undoEnabled,
                             undo = undo,
-                            showResults = {navController.navigate("pantallaResultadosGenerico")}
+                            showResults = { navController.navigate("pantallaResultadosGenerico") }
                         )
                     }
                 }

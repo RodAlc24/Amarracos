@@ -1,6 +1,7 @@
 package com.rodalc.amarracos.generico
 
 import android.content.Context
+import com.rodalc.amarracos.comun.Jugador
 import com.rodalc.amarracos.storage.StateSaver
 import com.rodalc.amarracos.storage.UndoStack
 import kotlinx.serialization.json.Json

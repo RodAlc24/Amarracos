@@ -34,6 +34,8 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.rodalc.amarracos.comun.Jugador
+import com.rodalc.amarracos.comun.Ronda
 import com.rodalc.amarracos.main.NumberInput
 import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.main.repeatingClickable

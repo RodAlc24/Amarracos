@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.rodalc.amarracos.main.ToastRateLimiter
 import com.rodalc.amarracos.storage.DataStoreManager
-import com.rodalc.amarracos.ui.theme.Playfair
+import com.rodalc.amarracos.ui.elements.TitleTopBar
 import kotlinx.coroutines.async
 
 /**
@@ -80,28 +80,9 @@ fun PantallaConfiguracion(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text(
-                        "Mus",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontFamily = Playfair,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigate("pantallaInicial") }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back to main menu",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                },
+            TitleTopBar(
+                title = "Mus",
+                backButtonAction = { navController.popBackStack() },
             )
         },
         floatingActionButton = {

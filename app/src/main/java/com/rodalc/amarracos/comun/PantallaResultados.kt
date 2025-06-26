@@ -29,7 +29,7 @@ import com.rodalc.amarracos.generico.Generico
 import com.rodalc.amarracos.pocha.Pocha
 import com.rodalc.amarracos.resultados.LegendLabelKey
 import com.rodalc.amarracos.resultados.Puntuaciones
-import com.rodalc.amarracos.ui.theme.Playfair
+import com.rodalc.amarracos.ui.elements.TitleTopBar
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -40,28 +40,9 @@ fun PantallaResultados(
     val jugadores = if (pocha == true) Pocha.getJugadores() else Generico.getJugadores()
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text(
-                        "Resultados",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontFamily = Playfair,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back to main menu",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                },
+            TitleTopBar(
+                title = "Resultados",
+                backButtonAction = { navController.popBackStack() },
             )
         },
     ) { padding ->

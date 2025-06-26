@@ -114,7 +114,7 @@ fun Plantilla(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                contentPadding = PaddingValues(10.dp)
+                contentPadding = PaddingValues(top = 11.dp, bottom = 10.dp)
             ) {
                 items(jugadores) { jugador ->
                     lineJugador(jugador)

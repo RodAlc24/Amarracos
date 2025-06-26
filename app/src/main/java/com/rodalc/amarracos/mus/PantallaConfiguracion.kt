@@ -1,6 +1,7 @@
 package com.rodalc.amarracos.mus
 
 import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -97,7 +98,7 @@ fun PantallaConfiguracion(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back to main menu",
-                            tint = MaterialTheme.colorScheme.primaryContainer
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
@@ -140,7 +141,9 @@ fun PantallaConfiguracion(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier.fillMaxWidth(0.9f)
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .clickable(onClick = { recuperar = true })
                 ) {
                     RadioButton(
                         selected = recuperar,
@@ -153,7 +156,9 @@ fun PantallaConfiguracion(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier.fillMaxWidth(0.9f)
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .clickable(onClick = { recuperar = false })
                 ) {
                     RadioButton(selected = !recuperar, onClick = { recuperar = false })
                     Text(text = "Nueva partida")

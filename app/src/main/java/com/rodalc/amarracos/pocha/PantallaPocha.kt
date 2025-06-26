@@ -92,29 +92,27 @@ fun PantallaPocha(navController: NavController) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier.fillMaxWidth(0.9f)
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .clickable(onClick = { recuperar = true })
                     ) {
                         RadioButton(
                             selected = recuperar,
                             onClick = { recuperar = true },
                             enabled = canLoad
                         )
-                        Text(
-                            text = "Recuperar partida guardada",
-                            modifier = Modifier.clickable(onClick = { recuperar = true })
-                        )
+                        Text(text = "Recuperar partida guardada")
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier.fillMaxWidth(0.9f)
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .clickable(onClick = { recuperar = false })
                     ) {
                         RadioButton(selected = !recuperar, onClick = { recuperar = false })
-                        Text(
-                            text = "Nueva partida",
-                            modifier = Modifier.clickable(onClick = { recuperar = false })
-                        )
+                        Text(text = "Nueva partida")
                     }
                     if (!recuperar) {
                         Spacer(modifier = Modifier.height(10.dp))

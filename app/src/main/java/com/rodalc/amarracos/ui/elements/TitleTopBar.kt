@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.rodalc.amarracos.ui.elements
 
 import androidx.compose.material.icons.Icons
@@ -20,7 +22,6 @@ import androidx.compose.ui.text.style.TextOverflow
  * @param actions Las acciones a realizar a la derecha de la barra de título
  */
 @Composable
-@ExperimentalMaterial3Api
 fun TitleTopBar(
     title: String,
     backButtonAction: (() -> Unit)? = null,

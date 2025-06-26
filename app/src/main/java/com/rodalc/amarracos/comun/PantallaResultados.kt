@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.rodalc.amarracos.comun
 
 import androidx.compose.foundation.layout.Arrangement
@@ -7,21 +5,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
@@ -58,7 +46,8 @@ fun PantallaResultados(
                     }
                 }
                 extras { extraStore ->
-                    extraStore[LegendLabelKey] = jugadores.map { jugador -> jugador.toString() }.toSet()
+                    extraStore[LegendLabelKey] =
+                        jugadores.map { jugador -> jugador.toString() }.toSet()
                 }
             }
         }
@@ -70,7 +59,7 @@ fun PantallaResultados(
             verticalArrangement = Arrangement.Center
         ) {
             Box(modifier = Modifier.fillMaxWidth(0.8f)) {
-            Puntuaciones(modelProducer)
+                Puntuaciones(modelProducer)
             }
         }
     }

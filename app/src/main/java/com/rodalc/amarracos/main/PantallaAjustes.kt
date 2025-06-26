@@ -20,7 +20,6 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.StarOutline
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,7 +47,6 @@ import kotlinx.coroutines.async
 /**
  * Pantalla con los ajustes generales de la aplicación y los créditos.
  */
-@ExperimentalMaterial3Api
 @Composable
 fun PantallaAjustes(navController: NavController) {
     val context = LocalContext.current

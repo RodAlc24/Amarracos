@@ -40,7 +40,6 @@ import com.rodalc.amarracos.ui.theme.AmarracosTheme
  *
  * @param navController El controlador usado para cambiar entre pantallas.
  */
-@ExperimentalMaterial3Api
 @Composable
 fun PantallaInicio(navController: NavController) {
     Scaffold(

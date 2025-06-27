@@ -35,14 +35,16 @@ data class Jugador(
      */
     fun actualizarPuntuacion(pocha: Boolean = false, duplica: Boolean = false) {
         if (pocha) {
-            this.incremento = if (this.apuesta == this.victoria) 10 + 5 * this.apuesta else -5 * abs(this.apuesta - this.victoria)
+            this.incremento =
+                if (this.apuesta == this.victoria) 10 + 5 * this.apuesta else -5 * abs(this.apuesta - this.victoria)
             if (duplica) this.incremento *= 2
         }
         this.puntos += this.incremento
         this.incremento = 0
         this.apuesta = 0
         this.victoria = 0
-        this.historicoPuntos = this.historicoPuntos + mapOf(this.historicoPuntos.size to this.puntos)
+        this.historicoPuntos =
+            this.historicoPuntos + mapOf(this.historicoPuntos.size to this.puntos)
     }
 
     /**

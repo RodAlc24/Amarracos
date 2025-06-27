@@ -22,7 +22,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -130,7 +129,7 @@ fun PantallaPocha(navController: NavController) {
                                 Icon(
                                     Icons.Rounded.Remove,
                                     "Quitar jugador",
-                                    tint = if (jugadores.size > 2) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
+                                    tint = if (jugadores.size > 2) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor //TODO
                                 )
                             }
                             Spacer(modifier = Modifier.width(10.dp))
@@ -149,7 +148,7 @@ fun PantallaPocha(navController: NavController) {
                                 Icon(
                                     Icons.Rounded.Add,
                                     "Añadir jugador",
-                                    tint = if (jugadores.size < 100) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
+                                    tint = if (jugadores.size < 100) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor //TODO
                                 )
                             }
                         }
@@ -196,11 +195,6 @@ fun PantallaPocha(navController: NavController) {
                         Switch(
                             checked = duplica,
                             onCheckedChange = { duplica = it },
-                            colors = SwitchDefaults.colors(
-                                uncheckedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                                uncheckedBorderColor = MaterialTheme.colorScheme.primary,
-                                uncheckedThumbColor = MaterialTheme.colorScheme.primary
-                            )
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
@@ -242,11 +236,6 @@ fun PantallaPocha(navController: NavController) {
                         Switch(
                             checked = duplica,
                             onCheckedChange = { duplica = it },
-                            colors = SwitchDefaults.colors(
-                                uncheckedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                                uncheckedBorderColor = MaterialTheme.colorScheme.primary,
-                                uncheckedThumbColor = MaterialTheme.colorScheme.primary
-                            )
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
@@ -291,8 +280,8 @@ fun FilaJugador(
     ronda: Ronda
 ) {
     var valorState by rememberSaveable { mutableIntStateOf(if (ronda == Ronda.JUEGO) jugador.apuesta else jugador.victoria) }
-    val content = ButtonDefaults.textButtonColors().contentColor
-    val contentDisabled = ButtonDefaults.textButtonColors().disabledContentColor
+    val content = ButtonDefaults.textButtonColors().contentColor //TODO
+    val contentDisabled = ButtonDefaults.textButtonColors().disabledContentColor //TODO
     val tintA = if (valorState > 0) content else contentDisabled
     val tintB = if (valorState < 99) content else contentDisabled
 

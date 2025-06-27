@@ -17,12 +17,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -92,7 +90,6 @@ fun PopUp(
                     .align(Alignment.Center)
                     .padding(10.dp),
                 shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Column(
                     modifier = Modifier.padding(10.dp),
@@ -179,7 +176,7 @@ fun NumberInput(
     onDismiss: () -> Unit = {}
 ) {
     Dialog(onDismissRequest = { onDismiss() }) {
-        var valueText by rememberSaveable { mutableStateOf(value.toString())}
+        var valueText by rememberSaveable { mutableStateOf(value.toString()) }
         if (valueText == "0") valueText = ""
 
         Box(modifier = Modifier) {
@@ -210,10 +207,6 @@ fun NumberInput(
                             },
                             maxLines = 1,
                             placeholder = { Text(text = title) },
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            )
                         )
                     }
                     val newValue = valueText.toIntOrNull()

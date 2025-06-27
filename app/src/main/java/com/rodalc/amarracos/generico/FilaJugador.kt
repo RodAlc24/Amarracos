@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -89,7 +88,6 @@ fun FilaJugador(
                 Icon(
                     Icons.Rounded.Remove,
                     contentDescription = "Quitar 1 a $jugador",
-                    tint = ButtonDefaults.textButtonColors().contentColor
                 )
             }
             Box(
@@ -124,7 +122,6 @@ fun FilaJugador(
                 Icon(
                     Icons.Rounded.Add,
                     contentDescription = "Añadir uno a $jugador",
-                    tint = ButtonDefaults.textButtonColors().contentColor
                 )
             }
         }

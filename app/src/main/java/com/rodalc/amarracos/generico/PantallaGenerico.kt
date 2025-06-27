@@ -120,7 +120,7 @@ fun PantallaGenerico(navController: NavController) {
                                 Icon(
                                     Icons.Rounded.Remove,
                                     "Quitar jugador",
-                                    tint = if (jugadores.size > 2) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
+                                    tint = if (jugadores.size > 2) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor //TODO
                                 )
                             }
                             Spacer(modifier = Modifier.width(10.dp))
@@ -139,7 +139,7 @@ fun PantallaGenerico(navController: NavController) {
                                 Icon(
                                     Icons.Rounded.Add,
                                     "Añadir jugador",
-                                    tint = if (jugadores.size < 100) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor
+                                    tint = if (jugadores.size < 100) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor //TODO
                                 )
                             }
                         }

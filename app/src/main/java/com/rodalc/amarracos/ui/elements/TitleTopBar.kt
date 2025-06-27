@@ -28,16 +28,12 @@ fun TitleTopBar(
     actions: @Composable () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.primary,
-        ),
         title = {
             Text(
                 text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontSize = MaterialTheme.typography.titleLarge.fontSize
+                style = MaterialTheme.typography.titleLarge,
             )
         },
         navigationIcon = {
@@ -46,7 +42,6 @@ fun TitleTopBar(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Navegar a la pantalla anterior",
-                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }

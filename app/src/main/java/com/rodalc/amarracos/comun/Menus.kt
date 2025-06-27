@@ -43,7 +43,6 @@ fun OptionsMenu(
             Icon(
                 Icons.Default.MoreVert,
                 contentDescription = "More options",
-                tint = MaterialTheme.colorScheme.primary
             )
         }
         DropdownMenu(
@@ -53,7 +52,7 @@ fun OptionsMenu(
         ) {
             DropdownMenuItem(
                 leadingIcon = @Composable {
-                    Icon(Icons.Outlined.SsidChart, contentDescription = "Ver resultados", tint = MaterialTheme.colorScheme.primary)
+                    Icon(Icons.Outlined.SsidChart, contentDescription = "Ver resultados")
                 },
                 text = { Text("Finalizar y ver resultados") },
                 onClick = {
@@ -64,7 +63,7 @@ fun OptionsMenu(
             if (undoEnabled) {
                 DropdownMenuItem(
                     leadingIcon = @Composable {
-                        Icon(Icons.AutoMirrored.Outlined.Undo, contentDescription = "Deshacer", tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.AutoMirrored.Outlined.Undo, contentDescription = "Deshacer")
                     },
                     text = { Text("Deshacer") },
                     onClick = {
@@ -92,17 +91,15 @@ fun SortMenu() {
             Icon(
                 Icons.Outlined.SwapVert,
                 contentDescription = "Ordenar",
-                tint = MaterialTheme.colorScheme.primary
             )
         }
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            containerColor = MaterialTheme.colorScheme.primaryContainer
         ) {
             DropdownMenuItem(
                 leadingIcon = @Composable {
-                    Icon(Icons.Outlined.RadioButtonChecked, contentDescription = "Predeterminado", tint = MaterialTheme.colorScheme.primary)
+                    Icon(Icons.Outlined.RadioButtonChecked, contentDescription = "Predeterminado")
                 },
                 text = { Text("Predeterminado") },
                 onClick = {
@@ -112,7 +109,7 @@ fun SortMenu() {
             )
             DropdownMenuItem(
                 leadingIcon = @Composable {
-                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Nombre", tint = MaterialTheme.colorScheme.primary)
+                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Nombre")
                 },
                 text = { Text("Por nombre") },
                 onClick = {
@@ -122,7 +119,7 @@ fun SortMenu() {
             )
             DropdownMenuItem(
                 leadingIcon = @Composable {
-                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Puntos", tint = MaterialTheme.colorScheme.primary)
+                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Puntos")
                 },
                 text = { Text("Por puntos") },
                 onClick = {

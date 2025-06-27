@@ -56,7 +56,6 @@ import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.core.common.LegendItem
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
-import kotlin.collections.forEachIndexed
 
 val LegendLabelKey = ExtraStore.Key<Set<String>>()
 

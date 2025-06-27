@@ -77,7 +77,10 @@ internal fun rememberMarker(
                         back = ShapeComponent(fill(color.copy(alpha = 0.15f)), CorneredShape.Pill),
                         front =
                             LayeredComponent(
-                                back = ShapeComponent(fill = fill(color), shape = CorneredShape.Pill),
+                                back = ShapeComponent(
+                                    fill = fill(color),
+                                    shape = CorneredShape.Pill
+                                ),
                                 front = indicatorFrontComponent,
                                 padding = insets(5.dp),
                             ),

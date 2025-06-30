@@ -36,7 +36,7 @@ import com.rodalc.amarracos.mus.MusDefaultConfigManager
 import com.rodalc.amarracos.pocha.Pocha
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import com.rodalc.amarracos.ui.tabs.MusTabScreen
-import com.rodalc.amarracos.ui.tabs.PochaTabScreen
+import com.rodalc.amarracos.ui.tabs.GenericoTabScreen
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 @Composable
@@ -127,7 +127,7 @@ fun MainScreen(
                             )
                         )
                     }
-                    PochaTabScreen(
+                    GenericoTabScreen(
                         jugadores = jugadores,
                         canLoad = Pocha.canLoadState(context),
                         addJugador = { jugadores = jugadores + Jugador(jugadores.size + 1) },
@@ -154,7 +154,7 @@ fun MainScreen(
                             )
                         )
                     }
-                    PochaTabScreen(
+                    GenericoTabScreen(
                         jugadores = jugadores,
                         canLoad = Generico.canLoadState(context),
                         addJugador = { jugadores = jugadores + Jugador(jugadores.size + 1) },

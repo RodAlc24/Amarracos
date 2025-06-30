@@ -30,8 +30,8 @@ import com.rodalc.amarracos.ui.theme.AmarracosTheme
 import com.rodalc.amarracos.utils.ToastRateLimiter
 
 /**
- * Composable function for the Pocha tab screen.
- * This screen allows users to configure and start a new Pocha game or load a saved one.
+ * Composable function for the Generico and Pocha tab screen.
+ * This screen allows users to configure and start a new Generico or Pocha game or load a saved one.
  *
  * @param jugadores A list of [Jugador] objects representing the players in the game.
  * @param modifier A [Modifier] for this composable. Defaults to [Modifier].
@@ -42,7 +42,7 @@ import com.rodalc.amarracos.utils.ToastRateLimiter
  * @param onLoadClick A lambda function to be invoked when the "Cargar partida guardada" (Load saved game) button is clicked. Defaults to an empty lambda.
  */
 @Composable
-fun PochaTabScreen(
+fun GenericoTabScreen(
     jugadores: List<Jugador>,
     modifier: Modifier = Modifier,
     canLoad: Boolean = false,
@@ -100,6 +100,6 @@ fun PochaTabScreen(
 @Composable
 fun PreviewPochaTabScreen() {
     AmarracosTheme(darkTheme = true) {
-        PochaTabScreen(jugadores = listOf(Jugador(1), Jugador(2), Jugador(3)))
+        GenericoTabScreen(jugadores = listOf(Jugador(1), Jugador(2), Jugador(3)))
     }
 }

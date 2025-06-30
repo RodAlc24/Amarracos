@@ -4,12 +4,11 @@ package com.rodalc.amarracos.ui.mainScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.PrimaryTabRow
@@ -21,13 +20,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.rodalc.amarracos.mus.Mus
+import com.rodalc.amarracos.mus.MusDefaultConfigManager
 import com.rodalc.amarracos.ui.elements.TitleTopBar
+import com.rodalc.amarracos.ui.tabs.MusTabScreen
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 @Composable
@@ -50,24 +54,12 @@ fun MainScreen(
                 }
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                navigate(
-                    when (selectedIndex) {
-                        1 -> Screens.SCREEN_POCHA.name
-                        2 -> Screens.SCREEN_GENERICO.name
-                        else -> Screens.SCREEN_MUS.name // 0 or any number out of range
-                    }
-                )
-            }) {
-                Icon(Icons.Outlined.Check, contentDescription = "Empezar el juego")
-            }
-        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             PrimaryTabRow(
                 selectedTabIndex = selectedIndex,
@@ -76,6 +68,7 @@ fun MainScreen(
                     Tab(
                         selected = index == selectedIndex,
                         onClick = {
+                            navController.popBackStack()
                             navController.navigate(route = destination.name)
                             selectedIndex = index
                         },
@@ -89,13 +82,34 @@ fun MainScreen(
                     )
                 }
             }
+            val context = LocalContext.current
             NavHost(
                 navController = navController,
                 startDestination = Tabs.TAB_MUS.name,
-                modifier = Modifier.fillMaxSize()
+                contentAlignment = Alignment.TopCenter
             ) {
                 composable(route = Tabs.TAB_MUS.name) {
-                    Text("Mus")
+                    MusTabScreen(
+                        canLoad = Mus.canLoadState(context),
+                        onStartClick = { nombreBuenos, nombreMalos, puntos ->
+                            Mus.discardBackup(context)
+                            Mus.reset()
+                            Mus.getBuenos().nombre = nombreBuenos
+                            Mus.getMalos().nombre = nombreMalos
+                            MusDefaultConfigManager.setBuenos(Mus.getBuenos().nombre)
+                            MusDefaultConfigManager.setMalos(Mus.getMalos().nombre)
+                            MusDefaultConfigManager.saveState(context)
+                            Mus.setPuntos(puntos)
+                            Mus.saveState(context)
+                            navigate(Screens.SCREEN_MUS.name)
+                        },
+                        onLoadClick = {
+                            Mus.loadState(context)
+                            navigate(Screens.SCREEN_MUS.name)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                    )
                 }
                 composable(route = Tabs.TAB_POCHA.name) {
                     Text("Pocha")

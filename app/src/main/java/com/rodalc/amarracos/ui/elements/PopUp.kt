@@ -1,4 +1,4 @@
-package com.rodalc.amarracos.utils
+package com.rodalc.amarracos.ui.elements
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -94,7 +94,7 @@ fun PreviewPopUp() {
             optionB = "Opción B",
             onClickA = {},
             onClickB = {},
-            )
+        )
     }
 }
 

@@ -32,19 +32,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.rodalc.amarracos.utils.PopUp
 import com.rodalc.amarracos.storage.DataStoreManager
+import com.rodalc.amarracos.ui.elements.PopUp
 
 /**
  * Punto de entrada para el mus.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PantallaMus(navigation: NavController) {
-    var showConfig by rememberSaveable { mutableStateOf(true) }
+fun PantallaMus() {
     val context = LocalContext.current
-    var canLoad by rememberSaveable { mutableStateOf(Mus.canLoadState(context)) }
     val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     // Keep screen on. Only if user has selected it
@@ -64,11 +61,7 @@ fun PantallaMus(navigation: NavController) {
         }
     }
 
-    if (showConfig) {
-        PantallaConfiguracion(canLoad, navigation, context) { showConfig = it }
-    } else {
-        PlantillaMus(landscape)
-    }
+    PlantillaMus(landscape)
 }
 
 /**

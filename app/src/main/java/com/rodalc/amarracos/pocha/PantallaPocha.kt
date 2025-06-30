@@ -45,8 +45,9 @@ import com.rodalc.amarracos.comun.FilaJugadorNombres
 import com.rodalc.amarracos.comun.Jugador
 import com.rodalc.amarracos.comun.Plantilla
 import com.rodalc.amarracos.comun.Ronda
-import com.rodalc.amarracos.main.ToastRateLimiter
+import com.rodalc.amarracos.utils.ToastRateLimiter
 import com.rodalc.amarracos.storage.DataStoreManager
+import com.rodalc.amarracos.ui.mainScreen.Screens
 
 /**
  * Gestiona toda la pantalla para el juego de la pocha.
@@ -183,7 +184,7 @@ fun PantallaPocha(navController: NavController) {
             Plantilla(
                 title = "Pocha",
                 navController = navController,
-                pantallaResultadosId = "pantallaResultadosPocha",
+                pantallaResultadosId = Screens.SCREEN_RES_POCHA.name,
                 header = {
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
@@ -224,7 +225,7 @@ fun PantallaPocha(navController: NavController) {
             Plantilla(
                 title = "Pocha",
                 navController = navController,
-                pantallaResultadosId = "pantallaResultadosPocha",
+                pantallaResultadosId = Screens.SCREEN_RES_POCHA.name,
                 header = {
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(

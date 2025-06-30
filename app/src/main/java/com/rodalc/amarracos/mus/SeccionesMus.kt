@@ -38,7 +38,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.rodalc.amarracos.main.repeatingClickable
+import com.rodalc.amarracos.utils.repeatingClickable
 
 /**
  * Conjunto de botones y puntos para cada pareja

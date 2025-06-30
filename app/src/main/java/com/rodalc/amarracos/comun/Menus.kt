@@ -21,7 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.rodalc.amarracos.main.ToastRateLimiter
+import com.rodalc.amarracos.utils.ToastRateLimiter
 
 /**
  * Menu con las opciones (deshacer, ver resultados, etc.)

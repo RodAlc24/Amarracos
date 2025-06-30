@@ -38,7 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.rodalc.amarracos.main.ToastRateLimiter
+import com.rodalc.amarracos.utils.ToastRateLimiter
 import com.rodalc.amarracos.storage.DataStoreManager
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import kotlinx.coroutines.async
@@ -75,7 +75,7 @@ fun PantallaConfiguracion(
         topBar = {
             TitleTopBar(
                 title = "Mus",
-                backButtonAction = { navController.popBackStack() },
+                upButtonOnClick = { navController.popBackStack() },
             )
         },
         floatingActionButton = {

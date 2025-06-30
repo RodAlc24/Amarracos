@@ -38,6 +38,7 @@ import com.rodalc.amarracos.comun.Jugador
 import com.rodalc.amarracos.comun.Plantilla
 import com.rodalc.amarracos.comun.Ronda
 import com.rodalc.amarracos.storage.DataStoreManager
+import com.rodalc.amarracos.ui.mainScreen.Screens
 
 /**
  * Gestiona toda la pantalla para el marcador de puntos.
@@ -76,7 +77,7 @@ fun PantallaGenerico(navController: NavController) {
                 title = "Generico",
                 options = false,
                 navController = navController,
-                pantallaResultadosId = "pantallaResultadosGenerico",
+                pantallaResultadosId = Screens.SCREEN_RES_GEN.name,
                 header = {
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(
@@ -172,7 +173,7 @@ fun PantallaGenerico(navController: NavController) {
             Plantilla(
                 title = "Generico",
                 navController = navController,
-                pantallaResultadosId = "pantallaResultadosGenerico",
+                pantallaResultadosId = Screens.SCREEN_RES_GEN.name,
                 lineJugador = { jugador ->
                     FilaJugador(
                         jugador = jugador,
@@ -197,7 +198,7 @@ fun PantallaGenerico(navController: NavController) {
             Plantilla(
                 title = "Generico",
                 navController = navController,
-                pantallaResultadosId = "pantallaResultadosGenerico",
+                pantallaResultadosId = Screens.SCREEN_RES_GEN.name,
                 lineJugador = { jugador ->
                     FilaJugador(
                         jugador = jugador,

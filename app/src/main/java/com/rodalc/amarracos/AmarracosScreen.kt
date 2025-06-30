@@ -1,0 +1,76 @@
+package com.rodalc.amarracos
+
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.rodalc.amarracos.comun.PantallaResultados
+import com.rodalc.amarracos.generico.PantallaGenerico
+import com.rodalc.amarracos.mus.PantallaMus
+import com.rodalc.amarracos.pocha.PantallaPocha
+import com.rodalc.amarracos.ui.mainScreen.MainScreen
+import com.rodalc.amarracos.ui.mainScreen.Screens
+import com.rodalc.amarracos.ui.mainScreen.SettingsScreen
+import com.rodalc.amarracos.ui.theme.AmarracosTheme
+
+/**
+ * Main Composable of the application that manages navigation between different screens.
+ * It uses a [NavHost] to define routes and their corresponding screens.
+ *
+ * The available screens are:
+ * - [Screens.SCREEN_START]: Main screen ([MainScreen]).
+ * - [Screens.SCREEN_MUS]: Screen for the Mus game ([PantallaMus]).
+ * - [Screens.SCREEN_POCHA]: Screen for the Pocha game ([PantallaPocha]).
+ * - [Screens.SCREEB_GENERICO]: Screen for a generic game ([PantallaGenerico]).
+ * - [Screens.SCREEN_CONFIG]: Configuration screen ([SettingsScreen]).
+ * - "pantallaResultadosPocha": Results screen for Pocha ([PantallaResultados]).
+ * - "pantallaResultadosGenerico": Results screen for the generic game ([PantallaResultados]).
+ */
+@Composable
+fun AmarracosScreen() {
+    val navController = rememberNavController()
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentScreen = Screens.valueOf(backStackEntry?.destination?.route ?: Screens.SCREEN_START.name)
+
+    NavHost(navController = navController, startDestination = Screens.SCREEN_START.name) {
+        composable(Screens.SCREEN_START.name) {
+            MainScreen(navigate = { navController.navigate(it) })
+        }
+        composable(Screens.SCREEN_MUS.name) { PantallaMus(navController) }
+        composable(Screens.SCREEN_POCHA.name) { PantallaPocha(navController) }
+        composable(Screens.SCREEN_GENERICO.name) { PantallaGenerico(navController) }
+        composable(Screens.SCREEN_CONFIG.name) { SettingsScreen(navigateUp = { navController.navigateUp() }) }
+        composable(Screens.SCREEN_RES_POCHA.name) {
+            PantallaResultados(
+                pocha = true,
+                navController
+            )
+        }
+        composable(Screens.SCREEN_RES_GEN.name) {
+            PantallaResultados(
+                pocha = false,
+                navController
+            )
+        }
+
+    }
+}
+
+/**
+ * Función auxiliar para Preview
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(
+    showBackground = true,
+    device = "id:pixel", backgroundColor = 0xFFFFFFFF
+)
+@Composable
+fun PreviewAmarracosApp() {
+    AmarracosTheme {
+        AmarracosScreen()
+    }
+}

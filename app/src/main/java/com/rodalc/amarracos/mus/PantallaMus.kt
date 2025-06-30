@@ -33,7 +33,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.rodalc.amarracos.main.PopUp
+import com.rodalc.amarracos.utils.PopUp
 import com.rodalc.amarracos.storage.DataStoreManager
 
 /**

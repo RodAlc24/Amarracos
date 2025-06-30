@@ -12,7 +12,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
-import com.rodalc.amarracos.main.ToastRateLimiter
+import com.rodalc.amarracos.utils.ToastRateLimiter
 
 /**
  * Fila para poner los nombres de cada jugador.

@@ -29,8 +29,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.rodalc.amarracos.comun.Jugador
 import com.rodalc.amarracos.comun.Ronda
-import com.rodalc.amarracos.main.NumberInput
-import com.rodalc.amarracos.main.repeatingClickable
+import com.rodalc.amarracos.utils.NumberInput
+import com.rodalc.amarracos.utils.repeatingClickable
 
 /**
  * Crea una fila con la información de un jugador, además de unos botones de - y + para aumentar y disminuir el valor correspondiente.

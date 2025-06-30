@@ -10,21 +10,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 /**
  * Barra de título para las pantallas.
  *
  * @param title El título de la pantalla
- * @param backButtonAction La acción a realizar al pulsar el botón de retroceso
+ * @param upButtonOnClick La acción a realizar al pulsar el botón de retroceso
  * @param actions Las acciones a realizar a la derecha de la barra de título
  */
 @Composable
 fun TitleTopBar(
     title: String,
-    backButtonAction: (() -> Unit)? = null,
+    showUpButton: Boolean = false,
+    upButtonOnClick: () -> Unit = {},
     actions: @Composable () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
@@ -37,8 +39,8 @@ fun TitleTopBar(
             )
         },
         navigationIcon = {
-            if (backButtonAction != null) {
-                IconButton(onClick = { backButtonAction() }) {
+            if (showUpButton) {
+                IconButton(onClick = { upButtonOnClick() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Navegar a la pantalla anterior",
@@ -48,4 +50,17 @@ fun TitleTopBar(
         },
         actions = { actions() }
     )
+}
+
+@Preview
+@Composable
+fun PreviewTitleTopBar() {
+    AmarracosTheme {
+        TitleTopBar(
+            title = "Amarracos",
+            showUpButton = true,
+            upButtonOnClick = {},
+            actions = {}
+        )
+    }
 }

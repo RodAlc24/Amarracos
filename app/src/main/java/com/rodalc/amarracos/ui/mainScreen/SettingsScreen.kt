@@ -1,28 +1,29 @@
-package com.rodalc.amarracos.main
+package com.rodalc.amarracos.ui.mainScreen
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Mail
 import androidx.compose.material.icons.outlined.StarOutline
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -35,36 +36,47 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.core.net.toUri
 import com.rodalc.amarracos.R
 import com.rodalc.amarracos.storage.DataStoreManager
 import com.rodalc.amarracos.ui.elements.TitleTopBar
+import com.rodalc.amarracos.ui.theme.AmarracosTheme
 import kotlinx.coroutines.async
 
 /**
- * Pantalla con los ajustes generales de la aplicación y los créditos.
+ * This screen contains the configuration of the app.
+ *
+ * @param modifier The modifier.
+ * @param navigateUp The function to execute when the up button is clicked.
  */
 @Composable
-fun PantallaAjustes(navController: NavController) {
+fun SettingsScreen(
+    modifier: Modifier = Modifier,
+    navigateUp: () -> Unit = {},
+) {
     val context = LocalContext.current
     val gitHub = "https://github.com/RodAlc24/Amarracos"
-    val mus = "https://www.nhfournier.es/como-jugar/mus/"
-    val pocha = "https://www.nhfournier.es/como-jugar/pocha/"
     val mail = "weibull.apps@gmail.com"
     val googlePlay = "market://details?id=com.rodalc.amarracos"
     val webGooglePlay = "https://play.google.com/store/apps/details?id=com.rodalc.amarracos"
 
-    val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
+    val screenState by DataStoreManager.readDataStore(
+        context,
+        DataStoreManager.Key.KEEP_SCREEN_ON
+    )
         .collectAsState(initial = true)
 
     val coreutineScope = rememberCoroutineScope()
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             TitleTopBar(
                 title = "Ajustes",
-                backButtonAction = { navController.popBackStack() },
+                showUpButton = true,
+                upButtonOnClick = navigateUp
             )
         },
     ) { padding ->
@@ -76,11 +88,22 @@ fun PantallaAjustes(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
-                Elemento(
+                SettingsElement(
                     icon = Icons.Outlined.Bolt,
-                    title = "Mantener la pantalla encendida durante las partidas"
+                    title = "Mantener la pantalla encendida durante las partidas",
+                    clickable = true,
+                    onClick = {
+                        coreutineScope.async {
+                            DataStoreManager.setDataStore(
+                                context,
+                                DataStoreManager.Key.KEEP_SCREEN_ON,
+                                !screenState
+                            )
+                        }
+                    }
                 ) {
                     Switch(
+                        modifier = modifier.padding(start = 8.dp),
                         checked = screenState,
                         onCheckedChange = {
                             coreutineScope.async {
@@ -95,54 +118,33 @@ fun PantallaAjustes(navController: NavController) {
                 }
             }
             item {
-                Elemento(
-                    icon = Icons.AutoMirrored.Outlined.HelpOutline,
-                    title = "Cómo jugar al mus"
+                SettingsElement(
+                    icon = Icons.Outlined.Link,
+                    title = "Repositorio de GitHub",
+                    clickable = true,
+                    onClick = {
+                        context.startActivity(
+                            Intent(
+                                Intent.ACTION_VIEW,
+                                gitHub.toUri()
+                            )
+                        )
+                    }
                 ) {
-                    IconButton(onClick = {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(mus)))
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                            contentDescription = "Abrir en internet"
-                        )
-                    }
+                    Icon(
+                        modifier = modifier.padding(start = 8.dp),
+                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                        contentDescription = "Abrir en internet"
+                    )
                 }
             }
             item {
-                Elemento(
-                    icon = Icons.AutoMirrored.Outlined.HelpOutline,
-                    title = "Cómo jugar a la pocha"
-                ) {
-                    IconButton(onClick = {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(pocha)))
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                            contentDescription = "Abrir en internet"
-                        )
-                    }
-                }
-            }
-            item {
-                Elemento(icon = Icons.Outlined.Link, title = "Repositorio de GitHub") {
-                    IconButton(onClick = {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(gitHub)))
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                            contentDescription = "Abrir en internet"
-                        )
-                    }
-                }
-            }
-            item {
-                Elemento(
+                SettingsElement(
                     icon = Icons.Outlined.StarOutline,
-                    title = "Calificar Amarracos en Google Play"
-                ) {
-                    IconButton(onClick = {
-                        val uri: Uri = Uri.parse(googlePlay)
+                    title = "Calificar Amarracos en Google Play",
+                    clickable = true,
+                    onClick = {
+                        val uri: Uri = googlePlay.toUri()
                         val goToMarket = Intent(Intent.ACTION_VIEW, uri)
                         // To count with Play market backstack, After pressing back button,
                         // to taken back to our application, we need to add following flags to intent.
@@ -157,40 +159,42 @@ fun PantallaAjustes(navController: NavController) {
                             context.startActivity(
                                 Intent(
                                     Intent.ACTION_VIEW,
-                                    Uri.parse(webGooglePlay)
+                                    webGooglePlay.toUri()
                                 )
                             )
                         }
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                            contentDescription = "Abrir en internet"
-                        )
                     }
+                ) {
+                    Icon(
+                        modifier = modifier.padding(start = 8.dp),
+                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                        contentDescription = "Abrir en internet"
+                    )
                 }
             }
             item {
-                Elemento(
+                SettingsElement(
                     icon = Icons.Outlined.Mail,
-                    title = "Contacto: $mail"
-                ) {
-                    IconButton(onClick = {
+                    title = "Contacto: $mail",
+                    clickable = true,
+                    onClick = {
                         context.startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse("mailto:$mail")
+                                "mailto:$mail".toUri()
                             )
                         )
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                            contentDescription = "Abrir en el correo"
-                        )
                     }
+                ) {
+                    Icon(
+                        modifier = modifier.padding(start = 8.dp),
+                        imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                        contentDescription = "Abrir en el correo"
+                    )
                 }
             }
             item {
-                Elemento(
+                SettingsElement(
                     icon = Icons.Outlined.Info,
                     title = "Versión: ${stringResource(R.string.versionCode)}"
                 )
@@ -199,27 +203,65 @@ fun PantallaAjustes(navController: NavController) {
     }
 }
 
+/**
+ * Defines a Row with a configuration option.
+ *
+ * @param icon The icon of the option.
+ * @param title The title of the option.
+ * @param modifier The modifier.
+ * @param function The function to execute when the option is clicked.
+ */
 @Composable
-fun Elemento(
+private fun SettingsElement(
     icon: ImageVector,
     title: String,
+    modifier: Modifier = Modifier,
+    clickable: Boolean = false,
+    onClick: () -> Unit = {},
     function: @Composable () -> Unit = {}
 ) {
-    Spacer(modifier = Modifier.height(15.dp))
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround,
-        modifier = Modifier.fillMaxWidth(0.9f)
+    Card(
+        modifier = modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .fillMaxWidth()
+            .clickable(enabled = clickable, onClick = onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Icon(imageVector = icon, contentDescription = icon.name)
-        Spacer(modifier = Modifier.width(10.dp))
-        Text(
-            text = title,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround,
             modifier = Modifier
-                .weight(1f),
-        )
-        function()
+                .fillMaxWidth()
+                .padding(16.dp)
+                .sizeIn(72.dp),
+        ) {
+            Icon(imageVector = icon, contentDescription = icon.name, tint = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = title,
+                modifier = Modifier
+                    .weight(1f),
+            )
+            function()
+        }
     }
-    Spacer(modifier = Modifier.height(15.dp))
-    HorizontalDivider()
+}
+
+@Preview
+@Composable
+fun PreviewSettingsElement() {
+    AmarracosTheme {
+        SettingsElement(
+            icon = Icons.Outlined.Bolt,
+            title = "Mantener la pantalla encendida durante las partidas"
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewSettingsScreen() {
+    AmarracosTheme {
+        SettingsScreen()
+    }
 }

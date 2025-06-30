@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -120,12 +119,19 @@ fun MainScreen(
                     )
                 }
                 composable(route = Tabs.TAB_POCHA.name) {
-                    var jugadores by rememberSaveable { mutableStateOf(listOf(Jugador(1), Jugador(2))) }
+                    var jugadores by rememberSaveable {
+                        mutableStateOf(
+                            listOf(
+                                Jugador(1),
+                                Jugador(2)
+                            )
+                        )
+                    }
                     PochaTabScreen(
                         jugadores = jugadores,
                         canLoad = Pocha.canLoadState(context),
-                        addJugador = {jugadores = jugadores + Jugador(jugadores.size + 1)},
-                        removeJugador = {jugadores = jugadores.dropLast(1)},
+                        addJugador = { jugadores = jugadores + Jugador(jugadores.size + 1) },
+                        removeJugador = { jugadores = jugadores.dropLast(1) },
                         onStartClick = {
                             Pocha.discardBackup(context)
                             Pocha.setJugadores(jugadores)
@@ -140,12 +146,19 @@ fun MainScreen(
                     )
                 }
                 composable(route = Tabs.TAB_GENERICO.name) {
-                    var jugadores by rememberSaveable { mutableStateOf(listOf(Jugador(1), Jugador(2))) }
+                    var jugadores by rememberSaveable {
+                        mutableStateOf(
+                            listOf(
+                                Jugador(1),
+                                Jugador(2)
+                            )
+                        )
+                    }
                     PochaTabScreen(
                         jugadores = jugadores,
                         canLoad = Generico.canLoadState(context),
-                        addJugador = {jugadores = jugadores + Jugador(jugadores.size + 1)},
-                        removeJugador = {jugadores = jugadores.dropLast(1)},
+                        addJugador = { jugadores = jugadores + Jugador(jugadores.size + 1) },
+                        removeJugador = { jugadores = jugadores.dropLast(1) },
                         onStartClick = {
                             Generico.discardBackup(context)
                             Generico.setJugadores(jugadores)

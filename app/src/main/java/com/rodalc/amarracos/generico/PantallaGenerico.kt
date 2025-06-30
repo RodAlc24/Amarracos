@@ -2,24 +2,10 @@ package com.rodalc.amarracos.generico
 
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Done
-import androidx.compose.material.icons.rounded.Remove
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
@@ -28,13 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.rodalc.amarracos.comun.FilaJugadorNombres
-import com.rodalc.amarracos.comun.Jugador
 import com.rodalc.amarracos.comun.Plantilla
 import com.rodalc.amarracos.comun.Ronda
 import com.rodalc.amarracos.storage.DataStoreManager
@@ -93,8 +74,7 @@ fun PantallaGenerico(navController: NavController) {
             )
         }
 
-        //Ronda.CONTEO -> {
-        else -> {
+        Ronda.CONTEO -> {
             Plantilla(
                 title = "Generico",
                 navController = navController,

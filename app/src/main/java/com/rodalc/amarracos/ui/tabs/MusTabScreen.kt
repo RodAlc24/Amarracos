@@ -1,18 +1,12 @@
 package com.rodalc.amarracos.ui.tabs
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -67,98 +61,79 @@ fun MusTabScreen(
     val coreutineScope = rememberCoroutineScope()
     MusDefaultConfigManager.loadState(context)
 
-    Column(
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.verticalScroll(rememberScrollState())
+    AbstractTabScreen(
+        modifier = modifier,
+        canLoad = canLoad,
+        onStartClick = {
+            onStartClick(
+                if (nombreBuenos != "") nombreBuenos else labelBuenos,
+                if (nombreMalos != "") nombreMalos else labelMalos,
+                if (puntos30) 30 else 40
+            )
+        },
+        onLoadClick = onLoadClick
     ) {
-        Spacer(Modifier.height(50.dp))
-        Card {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(16.dp)
-            ) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .padding(vertical = 16.dp)
-                        .fillMaxWidth(0.9f),
-                    value = nombreBuenos,
-                    onValueChange = {
-                        if (it.length <= 10) {
-                            nombreBuenos = it
-                        } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
-                    },
-                    maxLines = 1,
-                    placeholder = { Text(text = labelBuenos) },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                )
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f),
-                    value = nombreMalos,
-                    onValueChange = {
-                        if (it.length <= 10) {
-                            nombreMalos = it
-                        } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
-                    },
-                    maxLines = 1,
-                    placeholder = { Text(text = labelMalos) },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                )
-                Spacer(Modifier.height(20.dp))
-                Text(text = "Puntos para ganar:", modifier = Modifier.padding(horizontal = 16.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    RadioButton(
-                        selected = puntos30,
-                        onClick = {
-                            coreutineScope.async {
-                                DataStoreManager.setDataStore(
-                                    context,
-                                    DataStoreManager.Key.MUS_A_30,
-                                    true
-                                )
-                            }
-                        },
-                    )
-                    Text(text = "30", modifier = Modifier.padding(end = 20.dp))
-                    RadioButton(
-                        selected = !puntos30,
-                        onClick = {
-                            coreutineScope.async {
-                                DataStoreManager.setDataStore(
-                                    context,
-                                    DataStoreManager.Key.MUS_A_30,
-                                    false
-                                )
-                            }
-                        }
-                    )
-                    Text(text = "40", modifier = Modifier.padding(end = 20.dp))
-                }
-                Spacer(Modifier.height(20.dp))
-                Button(
-                    onClick = {
-                        onStartClick(
-                            if (nombreBuenos != "") nombreBuenos else labelBuenos,
-                            if (nombreMalos != "") nombreMalos else labelMalos,
-                            if (puntos30) 30 else 40
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(0.9f),
-                ) { Text("Empezar nueva partida") }
-            }
-        }
+        OutlinedTextField(
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .fillMaxWidth(0.9f),
+            value = nombreBuenos,
+            onValueChange = {
+                if (it.length <= 10) {
+                    nombreBuenos = it
+                } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
+            },
+            maxLines = 1,
+            placeholder = { Text(text = labelBuenos) },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        )
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth(0.9f),
+            value = nombreMalos,
+            onValueChange = {
+                if (it.length <= 10) {
+                    nombreMalos = it
+                } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
+            },
+            maxLines = 1,
+            placeholder = { Text(text = labelMalos) },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        )
         Spacer(Modifier.height(20.dp))
-        OutlinedButton(
-            onClick = { onLoadClick() },
-            enabled = canLoad,
+        Text(text = "Puntos para ganar:", modifier = Modifier.padding(horizontal = 16.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
-        ) { Text("Cargar partida guardada") }
+        ) {
+            RadioButton(
+                selected = puntos30,
+                onClick = {
+                    coreutineScope.async {
+                        DataStoreManager.setDataStore(
+                            context,
+                            DataStoreManager.Key.MUS_A_30,
+                            true
+                        )
+                    }
+                },
+            )
+            Text(text = "30", modifier = Modifier.padding(end = 20.dp))
+            RadioButton(
+                selected = !puntos30,
+                onClick = {
+                    coreutineScope.async {
+                        DataStoreManager.setDataStore(
+                            context,
+                            DataStoreManager.Key.MUS_A_30,
+                            false
+                        )
+                    }
+                }
+            )
+            Text(text = "40", modifier = Modifier.padding(end = 20.dp))
+        }
     }
 }
 

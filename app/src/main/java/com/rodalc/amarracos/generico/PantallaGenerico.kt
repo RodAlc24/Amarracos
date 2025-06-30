@@ -48,10 +48,7 @@ import com.rodalc.amarracos.ui.mainScreen.Screens
 @Composable
 fun PantallaGenerico(navController: NavController) {
     val context = LocalContext.current
-    var state by rememberSaveable { mutableStateOf(Ronda.NOMBRES) }
-    var canLoad by rememberSaveable { mutableStateOf(Generico.canLoadState(context)) }
-    var jugadores by rememberSaveable { mutableStateOf(listOf(Jugador(1), Jugador(2))) }
-    var recuperar by rememberSaveable { mutableStateOf(canLoad) }
+    var state by rememberSaveable { mutableStateOf(Ronda.JUEGO) }
 
 
     // Keep screen on. Only if user has selected it
@@ -72,103 +69,6 @@ fun PantallaGenerico(navController: NavController) {
     }
 
     when (state) {
-        Ronda.NOMBRES -> {
-            Plantilla(
-                title = "Generico",
-                options = false,
-                navController = navController,
-                pantallaResultadosId = Screens.SCREEN_RES_GEN.name,
-                header = {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .clickable(onClick = { recuperar = true })
-                    ) {
-                        RadioButton(
-                            selected = recuperar,
-                            onClick = { recuperar = true },
-                            enabled = canLoad
-                        )
-                        Text(text = "Recuperar partida guardada")
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .clickable(onClick = { recuperar = false })
-                    ) {
-                        RadioButton(selected = !recuperar, onClick = { recuperar = false })
-                        Text(text = "Nueva partida")
-                    }
-                    if (!recuperar) {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        HorizontalDivider()
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            IconButton(
-                                onClick = { jugadores = jugadores.dropLast(1).toMutableList() },
-                                enabled = jugadores.size > 2
-                            ) {
-                                Icon(
-                                    Icons.Rounded.Remove,
-                                    "Quitar jugador",
-                                    tint = if (jugadores.size > 2) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor //TODO
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Box(
-                                modifier = Modifier.width(30.dp),
-                                contentAlignment = Alignment.Center
-                            ) { Text(text = jugadores.size.toString()) }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            IconButton(
-                                onClick = {
-                                    jugadores =
-                                        (jugadores + Jugador(jugadores.size + 1)).toMutableList()
-                                },
-                                enabled = jugadores.size < 100
-                            ) {
-                                Icon(
-                                    Icons.Rounded.Add,
-                                    "Añadir jugador",
-                                    tint = if (jugadores.size < 100) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor //TODO
-                                )
-                            }
-                        }
-                    }
-                },
-                lineJugador = {
-                    if (!recuperar) FilaJugadorNombres(
-                        jugador = it,
-                        numJugadores = jugadores.size,
-                        context = context
-                    )
-                },
-                floatingIcon = { Icon(Icons.Rounded.Done, contentDescription = "Hecho") },
-                nextRound = {
-                    if (recuperar) {
-                        Generico.loadState(context)
-                        jugadores = Generico.getJugadores()
-                    } else {
-                        Generico.discardBackup(context)
-                        Generico.setJugadores(jugadores)
-                        Generico.saveState(context)
-                    }
-                    state = Ronda.JUEGO
-                },
-                jugadores = jugadores,
-            )
-        }
-
         Ronda.JUEGO -> {
             Plantilla(
                 title = "Generico",
@@ -186,7 +86,6 @@ fun PantallaGenerico(navController: NavController) {
                 floatingIcon = { Icon(Icons.Rounded.Add, contentDescription = "Añadir") },
                 undo = {
                     Generico.popState()
-                    jugadores = Generico.getJugadores()
                     state = Ronda.CONTEO
                 },
                 undoEnabled = Generico.canUndo(),
@@ -194,7 +93,8 @@ fun PantallaGenerico(navController: NavController) {
             )
         }
 
-        Ronda.CONTEO -> {
+        //Ronda.CONTEO -> {
+        else -> {
             Plantilla(
                 title = "Generico",
                 navController = navController,

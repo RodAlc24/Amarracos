@@ -57,11 +57,8 @@ import com.rodalc.amarracos.ui.mainScreen.Screens
 @Composable
 fun PantallaPocha(navController: NavController) {
     val context = LocalContext.current
-    var state by rememberSaveable { mutableStateOf(Ronda.NOMBRES) }
+    var state by rememberSaveable { mutableStateOf(Ronda.JUEGO) }
     var duplica by rememberSaveable { mutableStateOf(Pocha.getDuplica()) }
-    var canLoad by rememberSaveable { mutableStateOf(Pocha.canLoadState(context)) }
-    var jugadores by remember { mutableStateOf(listOf(Jugador(1), Jugador(2))) }
-    var recuperar by rememberSaveable { mutableStateOf(canLoad) }
 
     // Keep screen on. Only if user has selected it
     val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
@@ -81,105 +78,6 @@ fun PantallaPocha(navController: NavController) {
     }
 
     when (state) {
-        Ronda.NOMBRES -> {
-            Plantilla(
-                title = "Pocha",
-                options = false,
-                navController = navController,
-                pantallaResultadosId = "pantallaResultadosPocha",
-                header = {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .clickable(onClick = { recuperar = true })
-                    ) {
-                        RadioButton(
-                            selected = recuperar,
-                            onClick = { recuperar = true },
-                            enabled = canLoad
-                        )
-                        Text(text = "Recuperar partida guardada")
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .clickable(onClick = { recuperar = false })
-                    ) {
-                        RadioButton(selected = !recuperar, onClick = { recuperar = false })
-                        Text(text = "Nueva partida")
-                    }
-                    if (!recuperar) {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        HorizontalDivider()
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            IconButton(
-                                onClick = { jugadores = jugadores.dropLast(1).toMutableList() },
-                                enabled = jugadores.size > 2
-                            ) {
-                                Icon(
-                                    Icons.Rounded.Remove,
-                                    "Quitar jugador",
-                                    tint = if (jugadores.size > 2) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor //TODO
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Box(
-                                modifier = Modifier.width(30.dp),
-                                contentAlignment = Alignment.Center
-                            ) { Text(text = jugadores.size.toString()) }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            IconButton(
-                                onClick = {
-                                    jugadores =
-                                        (jugadores + Jugador(jugadores.size + 1)).toMutableList()
-                                },
-                                enabled = jugadores.size < 100
-                            ) {
-                                Icon(
-                                    Icons.Rounded.Add,
-                                    "Añadir jugador",
-                                    tint = if (jugadores.size < 100) ButtonDefaults.textButtonColors().contentColor else ButtonDefaults.textButtonColors().disabledContentColor //TODO
-                                )
-                            }
-                        }
-                    }
-                },
-                lineJugador = {
-                    if (!recuperar) {
-                        FilaJugadorNombres(
-                            jugador = it,
-                            numJugadores = jugadores.size,
-                            context = context
-                        )
-                    }
-                },
-                floatingIcon = { Icon(Icons.Rounded.Done, contentDescription = "Hecho") },
-                nextRound = {
-                    if (recuperar) {
-                        Pocha.loadState(context)
-                        jugadores = Pocha.getJugadores()
-                    } else {
-                        Pocha.discardBackup(context)
-                        Pocha.setJugadores(jugadores)
-                        Pocha.saveState(context)
-                    }
-                    state = Ronda.JUEGO
-                },
-                jugadores = jugadores
-            )
-        }
-
         Ronda.JUEGO -> {
             Plantilla(
                 title = "Pocha",
@@ -212,7 +110,6 @@ fun PantallaPocha(navController: NavController) {
                 floatingIcon = { Icon(Icons.Rounded.Add, contentDescription = "Nueva ronda") },
                 undo = {
                     Pocha.popState()
-                    jugadores = Pocha.getJugadores()
                     duplica = Pocha.getDuplica()
                     state = Ronda.CONTEO
                 },
@@ -221,7 +118,8 @@ fun PantallaPocha(navController: NavController) {
             )
         }
 
-        Ronda.CONTEO -> {
+        //Ronda.CONTEO -> {
+        else -> {
             Plantilla(
                 title = "Pocha",
                 navController = navController,

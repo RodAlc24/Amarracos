@@ -18,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -28,10 +30,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.rodalc.amarracos.comun.Jugador
+import com.rodalc.amarracos.generico.Generico
 import com.rodalc.amarracos.mus.Mus
 import com.rodalc.amarracos.mus.MusDefaultConfigManager
+import com.rodalc.amarracos.pocha.Pocha
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import com.rodalc.amarracos.ui.tabs.MusTabScreen
+import com.rodalc.amarracos.ui.tabs.PochaTabScreen
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 @Composable
@@ -91,6 +97,8 @@ fun MainScreen(
                 composable(route = Tabs.TAB_MUS.name) {
                     MusTabScreen(
                         canLoad = Mus.canLoadState(context),
+                        labelBuenos = MusDefaultConfigManager.getBuenos(),
+                        labelMalos = MusDefaultConfigManager.getMalos(),
                         onStartClick = { nombreBuenos, nombreMalos, puntos ->
                             Mus.discardBackup(context)
                             Mus.reset()
@@ -112,10 +120,44 @@ fun MainScreen(
                     )
                 }
                 composable(route = Tabs.TAB_POCHA.name) {
-                    Text("Pocha")
+                    var jugadores by rememberSaveable { mutableStateOf(listOf(Jugador(1), Jugador(2))) }
+                    PochaTabScreen(
+                        jugadores = jugadores,
+                        canLoad = Pocha.canLoadState(context),
+                        addJugador = {jugadores = jugadores + Jugador(jugadores.size + 1)},
+                        removeJugador = {jugadores = jugadores.dropLast(1)},
+                        onStartClick = {
+                            Pocha.discardBackup(context)
+                            Pocha.setJugadores(jugadores)
+                            Pocha.saveState(context)
+                            navigate(Screens.SCREEN_POCHA.name)
+                        },
+                        onLoadClick = {
+                            Pocha.loadState(context)
+                            navigate(Screens.SCREEN_POCHA.name)
+                        },
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    )
                 }
                 composable(route = Tabs.TAB_GENERICO.name) {
-                    Text("Generico")
+                    var jugadores by rememberSaveable { mutableStateOf(listOf(Jugador(1), Jugador(2))) }
+                    PochaTabScreen(
+                        jugadores = jugadores,
+                        canLoad = Generico.canLoadState(context),
+                        addJugador = {jugadores = jugadores + Jugador(jugadores.size + 1)},
+                        removeJugador = {jugadores = jugadores.dropLast(1)},
+                        onStartClick = {
+                            Generico.discardBackup(context)
+                            Generico.setJugadores(jugadores)
+                            Generico.saveState(context)
+                            navigate(Screens.SCREEN_GENERICO.name)
+                        },
+                        onLoadClick = {
+                            Generico.loadState(context)
+                            navigate(Screens.SCREEN_GENERICO.name)
+                        },
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    )
                 }
             }
         }

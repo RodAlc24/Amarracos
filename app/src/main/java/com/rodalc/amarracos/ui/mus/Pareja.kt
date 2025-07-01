@@ -30,6 +30,7 @@ fun Pareja(
     modifier: Modifier = Modifier,
     increment: (Int) -> Unit = {},
     landscape: Boolean = false,
+    extraContent: @Composable () -> Unit = {}
 ) {
     val display = @Composable {
         TextButton(
@@ -85,6 +86,8 @@ fun Pareja(
                 )
             }
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        extraContent()
     }
 }
 

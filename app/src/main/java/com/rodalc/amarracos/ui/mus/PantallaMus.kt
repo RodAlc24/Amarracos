@@ -16,6 +16,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -24,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rodalc.amarracos.data.mus.MusViewModel
 import com.rodalc.amarracos.storage.DataStoreManager
+import com.rodalc.amarracos.ui.elements.PopUp
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
@@ -35,7 +39,9 @@ fun PantallaMus(
 ) {
     val landscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     val uiState = musViewModel.uiState.collectAsState()
+    val canUndo = musViewModel.canUndo.collectAsState()
     val context = LocalContext.current
+    var ordago by rememberSaveable { mutableStateOf(false) }
 
     val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
         .collectAsState(initial = true)
@@ -66,7 +72,14 @@ fun PantallaMus(
                 )
             },
             landscape = landscape
-        )
+        ) {
+            if (landscape) {
+                ButtonUndo(
+                    enabled = canUndo.value,
+                    onClick = { musViewModel.undo(context) }
+                )
+            }
+        }
         Envites(
             viewModel = musViewModel,
             modifier = if (landscape) Modifier.fillMaxHeight() else Modifier.fillMaxWidth(),
@@ -84,7 +97,13 @@ fun PantallaMus(
                 )
             },
             landscape = landscape
-        )
+        ) {
+            if (landscape) {
+                ButtonOrdago(
+                    onClick = { ordago = true }
+                )
+            }
+        }
     }
 
     Scaffold(
@@ -115,15 +134,53 @@ fun PantallaMus(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 content(false)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ButtonUndo(
+                        enabled = canUndo.value,
+                        onClick = { musViewModel.undo(context) }
+                    )
+                    ButtonOrdago(
+                        onClick = { ordago = true }
+                    )
+                }
             }
         }
+    }
+
+    if (ordago) {
+        PopUp(
+            title = "Órdago",
+            optionA = uiState.value.nombreBuenos,
+            optionB = uiState.value.nombreMalos,
+            onClickA = {
+                musViewModel.ganadorJuego(winner = MusViewModel.Teams.BUENOS, context = context)
+                ordago = false
+            },
+            onClickB = {
+                musViewModel.ganadorJuego(winner = MusViewModel.Teams.MALOS, context = context)
+                ordago = false
+            },
+            onDismiss = { ordago = false }
+        )
     }
 }
 
 
-@Preview
+@Preview(device = "id:pixel_5")
 @Composable
-fun PantallaMusPreview() {
+fun PantallaMusPortraitPreview() {
+    AmarracosTheme {
+        PantallaMus()
+    }
+}
+
+@Preview(device = "spec:parent=pixel_5,orientation=landscape")
+@Composable
+fun PantallaMusLandscapePreview() {
     AmarracosTheme {
         PantallaMus()
     }

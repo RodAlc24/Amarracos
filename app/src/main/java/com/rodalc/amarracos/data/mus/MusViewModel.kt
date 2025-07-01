@@ -1,6 +1,7 @@
 package com.rodalc.amarracos.data.mus
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rodalc.amarracos.data.mus.MusViewModel.Teams.BUENOS
 import com.rodalc.amarracos.data.mus.MusViewModel.Teams.MALOS
@@ -20,6 +21,11 @@ import kotlinx.serialization.json.Json
 class MusViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MusUiState())
     val uiState: StateFlow<MusUiState> = _uiState.asStateFlow()
+
+    private val undoStack = mutableListOf<MusUiState>()
+
+    private val _canUndo = MutableStateFlow(undoStack.isNotEmpty())
+    val canUndo: StateFlow<Boolean> = _canUndo.asStateFlow()
 
     /**
      * Represents the different types of bets (envites) in a game of Mus.
@@ -81,6 +87,7 @@ class MusViewModel : ViewModel() {
             juegosMalos += 1
         }
 
+        pushUndo()
         _uiState.update { currentState ->
             currentState.copy(
                 puntosBuenos = 0,
@@ -153,6 +160,7 @@ class MusViewModel : ViewModel() {
         } else if (puntosMalos >= uiState.value.puntosParaGanar) {
             ganadorJuego(winner = MALOS, context = context)
         } else {
+            pushUndo()
             _uiState.update { currentState ->
                 currentState.copy(
                     puntosBuenos = puntosBuenos,
@@ -178,6 +186,7 @@ class MusViewModel : ViewModel() {
      * @param context The Android context required for saving the state.
      */
     fun incrementEnvite(envite: Envites, increment: Int = 1, context: Context) {
+        pushUndo()
         _uiState.update { currentState ->
             currentState.copy(
                 enviteGrande = currentState.enviteGrande + if (envite == Envites.GRANDE) increment else 0,
@@ -210,6 +219,7 @@ class MusViewModel : ViewModel() {
         } else if (puntosMalos >= uiState.value.puntosParaGanar) {
             ganadorJuego(winner = MALOS, context = context)
         } else {
+            pushUndo()
             _uiState.update { currentState ->
                 currentState.copy(
                     puntosBuenos = puntosBuenos,
@@ -261,7 +271,43 @@ class MusViewModel : ViewModel() {
      * @param context The Android context, used by `StateSaverManager` to access application storage.
      * @return `true` if the saved game state file ("mus.json") exists, `false` otherwise.
      */
-    fun canLoadState(context: Context):Boolean {
+    fun canLoadState(context: Context): Boolean {
         return StateSaverManager.fileExists(filename = "mus.json", context = context)
+    }
+
+    /**
+     * Pushes the current UI state onto the undo stack.
+     *
+     * This function is typically called before making a change to the UI state
+     * that might need to be undone. It adds a copy of the current `uiState.value`
+     * to the `undoStack` list.
+     */
+    private fun pushUndo() {
+        undoStack.add(uiState.value)
+        _canUndo.update { undoStack.isNotEmpty() }
+    }
+
+    /**
+     * Reverts the game state to the previous state stored in the undo stack.
+     *
+     * This function checks if there are any states in the `undoStack`.
+     * If the stack is not empty, it removes the last state from the stack and updates
+     * the `_uiState` to this reverted state. After updating the UI state,
+     * it calls `saveState` to persist the changes.
+     *
+     * @param context The Android context required for saving the state after reverting.
+     */
+    fun undo(context: Context) {
+        Log.d("UNDO", _canUndo.value.toString())
+        if (_canUndo.value) {
+            Log.d("UNDO", undoStack.toString())
+            Log.d("UNDO", undoStack.size.toString())
+            _uiState.update {
+                undoStack.removeAt(undoStack.lastIndex)
+            }
+            Log.d("UNDO", undoStack.size.toString())
+            saveState(context = context)
+            _canUndo.update { undoStack.isNotEmpty() }
+        }
     }
 }

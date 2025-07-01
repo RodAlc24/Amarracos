@@ -1,7 +1,6 @@
 package com.rodalc.amarracos.data.mus
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.rodalc.amarracos.data.mus.MusViewModel.Teams.BUENOS
 import com.rodalc.amarracos.data.mus.MusViewModel.Teams.MALOS
@@ -298,14 +297,10 @@ class MusViewModel : ViewModel() {
      * @param context The Android context required for saving the state after reverting.
      */
     fun undo(context: Context) {
-        Log.d("UNDO", _canUndo.value.toString())
         if (_canUndo.value) {
-            Log.d("UNDO", undoStack.toString())
-            Log.d("UNDO", undoStack.size.toString())
             _uiState.update {
                 undoStack.removeAt(undoStack.lastIndex)
             }
-            Log.d("UNDO", undoStack.size.toString())
             saveState(context = context)
             _canUndo.update { undoStack.isNotEmpty() }
         }

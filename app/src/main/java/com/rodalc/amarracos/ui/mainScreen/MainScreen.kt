@@ -2,7 +2,6 @@
 
 package com.rodalc.amarracos.ui.mainScreen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +33,6 @@ import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.comun.Jugador
 import com.rodalc.amarracos.data.mus.MusViewModel
 import com.rodalc.amarracos.generico.Generico
-import com.rodalc.amarracos.mus.MusDefaultConfigManager
 import com.rodalc.amarracos.pocha.Pocha
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import com.rodalc.amarracos.ui.tabs.GenericoTabScreen
@@ -100,8 +97,8 @@ fun MainScreen(
                 composable(route = Tabs.TAB_MUS.name) {
                     MusTabScreen(
                         canLoad = musViewModel.canLoadState(context),
-                        labelBuenos = MusDefaultConfigManager.getBuenos(),
-                        labelMalos = MusDefaultConfigManager.getMalos(),
+                        labelBuenos = "Buenos", //TODO
+                        labelMalos = "Malos", //TODO
                         onStartClick = { nombreBuenos, nombreMalos, puntos ->
                             musViewModel.startGame(
                                 nombreBuenos = nombreBuenos,

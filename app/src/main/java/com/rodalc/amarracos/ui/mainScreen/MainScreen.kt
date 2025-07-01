@@ -31,6 +31,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.comun.Jugador
+import com.rodalc.amarracos.data.mus.MusDefaultConfig
 import com.rodalc.amarracos.data.mus.MusViewModel
 import com.rodalc.amarracos.generico.Generico
 import com.rodalc.amarracos.pocha.Pocha
@@ -97,9 +98,18 @@ fun MainScreen(
                 composable(route = Tabs.TAB_MUS.name) {
                     MusTabScreen(
                         canLoad = musViewModel.canLoadState(context),
-                        labelBuenos = "Buenos", //TODO
-                        labelMalos = "Malos", //TODO
+                        labelBuenos = MusDefaultConfig.load(context).nameBuenos,
+                        labelMalos = MusDefaultConfig.load(context).nameMalos,
+                        puntos30 = MusDefaultConfig.load(context).puntos30,
                         onStartClick = { nombreBuenos, nombreMalos, puntos ->
+                            MusDefaultConfig.save(
+                                context = context,
+                                defaultMus = MusDefaultConfig.DefaultMus(
+                                    nameBuenos = nombreBuenos,
+                                    nameMalos = nombreMalos,
+                                    puntos30 = puntos
+                                )
+                            )
                             musViewModel.startGame(
                                 nombreBuenos = nombreBuenos,
                                 nombreMalos = nombreMalos,

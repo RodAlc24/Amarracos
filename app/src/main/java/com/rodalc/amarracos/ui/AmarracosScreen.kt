@@ -8,8 +8,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.comun.PantallaResultados
+import com.rodalc.amarracos.data.mus.MusViewModel
 import com.rodalc.amarracos.generico.PantallaGenerico
-import com.rodalc.amarracos.mus.PantallaMus
+import com.rodalc.amarracos.ui.mus.PantallaMus
 import com.rodalc.amarracos.pocha.PantallaPocha
 import com.rodalc.amarracos.ui.mainScreen.MainScreen
 import com.rodalc.amarracos.ui.mainScreen.Screens
@@ -35,11 +36,14 @@ fun AmarracosScreen() {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = Screens.valueOf(backStackEntry?.destination?.route ?: Screens.SCREEN_START.name)
 
+    val musViewModel = MusViewModel()
+
     NavHost(navController = navController, startDestination = Screens.SCREEN_START.name) {
         composable(Screens.SCREEN_START.name) {
-            MainScreen(navigate = { navController.navigate(it) })
+            MainScreen(navigate = { navController.navigate(it) },
+                musViewModel = musViewModel)
         }
-        composable(Screens.SCREEN_MUS.name) { PantallaMus() }
+        composable(Screens.SCREEN_MUS.name) { PantallaMus(musViewModel = musViewModel) }
         composable(Screens.SCREEN_POCHA.name) { PantallaPocha(navController) }
         composable(Screens.SCREEN_GENERICO.name) { PantallaGenerico(navController) }
         composable(Screens.SCREEN_CONFIG.name) { SettingsScreen(navigateUp = { navController.navigateUp() }) }

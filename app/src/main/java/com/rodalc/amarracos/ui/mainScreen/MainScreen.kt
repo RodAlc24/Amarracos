@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -30,18 +31,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.comun.Jugador
+import com.rodalc.amarracos.data.mus.MusViewModel
 import com.rodalc.amarracos.generico.Generico
-import com.rodalc.amarracos.mus.Mus
 import com.rodalc.amarracos.mus.MusDefaultConfigManager
 import com.rodalc.amarracos.pocha.Pocha
 import com.rodalc.amarracos.ui.elements.TitleTopBar
-import com.rodalc.amarracos.ui.tabs.MusTabScreen
 import com.rodalc.amarracos.ui.tabs.GenericoTabScreen
+import com.rodalc.amarracos.ui.tabs.MusTabScreen
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
+    musViewModel: MusViewModel = MusViewModel(),
     navigate: (String) -> Unit = {},
 ) {
     val navController = rememberNavController()
@@ -95,23 +97,18 @@ fun MainScreen(
             ) {
                 composable(route = Tabs.TAB_MUS.name) {
                     MusTabScreen(
-                        canLoad = Mus.canLoadState(context),
+                        canLoad = false,
                         labelBuenos = MusDefaultConfigManager.getBuenos(),
                         labelMalos = MusDefaultConfigManager.getMalos(),
                         onStartClick = { nombreBuenos, nombreMalos, puntos ->
-                            Mus.discardBackup(context)
-                            Mus.reset()
-                            Mus.getBuenos().nombre = nombreBuenos
-                            Mus.getMalos().nombre = nombreMalos
-                            MusDefaultConfigManager.setBuenos(Mus.getBuenos().nombre)
-                            MusDefaultConfigManager.setMalos(Mus.getMalos().nombre)
-                            MusDefaultConfigManager.saveState(context)
-                            Mus.setPuntos(puntos)
-                            Mus.saveState(context)
+                            musViewModel.startGame(
+                                nombreBuenos = nombreBuenos,
+                                nombreMalos = nombreMalos,
+                                puntos30 = puntos
+                            )
                             navigate(Screens.SCREEN_MUS.name)
                         },
                         onLoadClick = {
-                            Mus.loadState(context)
                             navigate(Screens.SCREEN_MUS.name)
                         },
                         modifier = Modifier

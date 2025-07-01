@@ -1,6 +1,8 @@
 package com.rodalc.amarracos.data.mus
 
 import androidx.lifecycle.ViewModel
+import com.rodalc.amarracos.data.mus.MusViewModel.Teams.BUENOS
+import com.rodalc.amarracos.data.mus.MusViewModel.Teams.MALOS
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,14 +45,14 @@ class MusViewModel : ViewModel() {
      *
      * @param nombreBuenos The name of the "good" team.
      * @param nombreMalos The name of the "bad" team.
-     * @param puntosParaGanar The number of points required to win the game.
+     * @param puntos30 Indicates whether 30 points should be used for winning the game.
      */
-    fun startGame(nombreBuenos: String, nombreMalos: String, puntosParaGanar: Int) {
+    fun startGame(nombreBuenos: String, nombreMalos: String, puntos30: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(
                 nombreBuenos = nombreBuenos,
                 nombreMalos = nombreMalos,
-                puntosParaGanar = puntosParaGanar
+                puntosParaGanar = if (puntos30) 30 else 40
             )
         }
     }
@@ -101,7 +103,7 @@ class MusViewModel : ViewModel() {
      * @param envite The type of envite that was won (e.g., GRANDE, CHICA).
      * @param team The team that won the envite (BUENOS or MALOS).
      */
-    fun updateEnvites(envite: Envites, team: Teams) {
+    fun updateEnvite(envite: Envites, team: Teams) {
         var increment = 0
         var enviteGrande = uiState.value.enviteGrande
         var enviteChica = uiState.value.enviteChica
@@ -153,6 +155,17 @@ class MusViewModel : ViewModel() {
                     enviteJuego = enviteJuego,
                 )
             }
+        }
+    }
+
+    fun incrementEnvite(envite: Envites, increment: Int = 1) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                enviteGrande = currentState.enviteGrande + if (envite == Envites.GRANDE) increment else 0,
+                enviteChica = currentState.enviteChica + if (envite == Envites.CHICA) increment else 0,
+                envitePares = currentState.envitePares + if (envite == Envites.PARES) increment else 0,
+                enviteJuego = currentState.enviteJuego + if (envite == Envites.JUEGO) increment else 0,
+            )
         }
     }
 }

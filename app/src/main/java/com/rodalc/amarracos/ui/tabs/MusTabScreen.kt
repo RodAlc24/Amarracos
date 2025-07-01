@@ -11,11 +11,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,11 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.rodalc.amarracos.mus.MusDefaultConfigManager
-import com.rodalc.amarracos.storage.DataStoreManager
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 import com.rodalc.amarracos.utils.ToastRateLimiter
-import kotlinx.coroutines.async
 
 /**
  * Composable function for the Mus game setup screen.
@@ -50,16 +45,15 @@ fun MusTabScreen(
     canLoad: Boolean = false,
     labelBuenos: String = "Buenos",
     labelMalos: String = "Malos",
-    onStartClick: (buenos: String, malos: String, puntos: Int) -> Unit = { _, _, _ -> },
+    puntos30: Boolean = true,
+    onStartClick: (buenos: String, malos: String, puntos30: Boolean) -> Unit = { _, _, _ -> },
     onLoadClick: () -> Unit = {},
 ) {
-    var nombreBuenos by remember { mutableStateOf("") }
-    var nombreMalos by remember { mutableStateOf("") }
+    var nombreBuenos by rememberSaveable { mutableStateOf("") }
+    var nombreMalos by rememberSaveable { mutableStateOf("") }
+    var puntos30 by rememberSaveable { mutableStateOf(puntos30) }
     val context = LocalContext.current
-    val puntos30 by DataStoreManager.readDataStore(context, DataStoreManager.Key.MUS_A_30)
-        .collectAsState(initial = true)
-    val coreutineScope = rememberCoroutineScope()
-    MusDefaultConfigManager.loadState(context)
+
 
     AbstractTabScreen(
         modifier = modifier,
@@ -68,7 +62,7 @@ fun MusTabScreen(
             onStartClick(
                 if (nombreBuenos != "") nombreBuenos else labelBuenos,
                 if (nombreMalos != "") nombreMalos else labelMalos,
-                if (puntos30) 30 else 40
+                puntos30
             )
         },
         onLoadClick = onLoadClick
@@ -109,28 +103,12 @@ fun MusTabScreen(
         ) {
             RadioButton(
                 selected = puntos30,
-                onClick = {
-                    coreutineScope.async {
-                        DataStoreManager.setDataStore(
-                            context,
-                            DataStoreManager.Key.MUS_A_30,
-                            true
-                        )
-                    }
-                },
+                onClick = { puntos30 = true }
             )
             Text(text = "30", modifier = Modifier.padding(end = 20.dp))
             RadioButton(
                 selected = !puntos30,
-                onClick = {
-                    coreutineScope.async {
-                        DataStoreManager.setDataStore(
-                            context,
-                            DataStoreManager.Key.MUS_A_30,
-                            false
-                        )
-                    }
-                }
+                onClick = { puntos30 = false }
             )
             Text(text = "40", modifier = Modifier.padding(end = 20.dp))
         }

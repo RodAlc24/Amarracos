@@ -12,10 +12,10 @@ import com.rodalc.amarracos.comun.PantallaResultados
 import com.rodalc.amarracos.data.mus.MusViewModel
 import com.rodalc.amarracos.generico.PantallaGenerico
 import com.rodalc.amarracos.pocha.PantallaPocha
-import com.rodalc.amarracos.ui.mainScreen.MainScreen
-import com.rodalc.amarracos.ui.mainScreen.Screens
-import com.rodalc.amarracos.ui.mainScreen.SettingsScreen
-import com.rodalc.amarracos.ui.mus.PantallaMus
+import com.rodalc.amarracos.ui.main.MainScreen
+import com.rodalc.amarracos.ui.main.Screens
+import com.rodalc.amarracos.ui.main.SettingsScreen
+import com.rodalc.amarracos.ui.mus.MusScreen
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 /**
@@ -24,7 +24,7 @@ import com.rodalc.amarracos.ui.theme.AmarracosTheme
  *
  * The available screens are:
  * - [Screens.SCREEN_START]: Main screen ([MainScreen]).
- * - [Screens.SCREEN_MUS]: Screen for the Mus game ([PantallaMus]).
+ * - [Screens.SCREEN_MUS]: Screen for the Mus game ([MusScreen]).
  * - [Screens.SCREEN_POCHA]: Screen for the Pocha game ([PantallaPocha]).
  * - [Screens.SCREEN_GENERICO]: Screen for a generic game ([PantallaGenerico]).
  * - [Screens.SCREEN_CONFIG]: Configuration screen ([SettingsScreen]).
@@ -48,7 +48,7 @@ fun AmarracosScreen() {
             )
         }
         composable(Screens.SCREEN_MUS.name) {
-            PantallaMus(
+            MusScreen(
                 musViewModel = musViewModel,
                 onUpButtonClick = { navController.navigateUp() },
                 )

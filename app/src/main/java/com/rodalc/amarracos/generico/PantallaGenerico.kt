@@ -19,7 +19,7 @@ import androidx.navigation.NavController
 import com.rodalc.amarracos.comun.Plantilla
 import com.rodalc.amarracos.comun.Ronda
 import com.rodalc.amarracos.storage.DataStoreManager
-import com.rodalc.amarracos.ui.mainScreen.Screens
+import com.rodalc.amarracos.ui.main.Screens
 
 /**
  * Gestiona toda la pantalla para el marcador de puntos.

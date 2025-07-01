@@ -15,8 +15,8 @@ import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.rodalc.amarracos.generico.Generico
 import com.rodalc.amarracos.pocha.Pocha
-import com.rodalc.amarracos.resultados.LegendLabelKey
-import com.rodalc.amarracos.resultados.Puntuaciones
+import com.rodalc.amarracos.ui.overview.LegendLabelKey
+import com.rodalc.amarracos.ui.overview.Puntuaciones
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import kotlinx.coroutines.runBlocking
 

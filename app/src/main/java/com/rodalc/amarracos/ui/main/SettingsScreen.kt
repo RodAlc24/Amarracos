@@ -1,4 +1,4 @@
-package com.rodalc.amarracos.ui.mainScreen
+package com.rodalc.amarracos.ui.main
 
 import android.content.ActivityNotFoundException
 import android.content.Intent

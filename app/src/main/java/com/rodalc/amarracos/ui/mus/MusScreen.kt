@@ -32,7 +32,7 @@ import com.rodalc.amarracos.ui.elements.TitleTopBar
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 @Composable
-fun PantallaMus(
+fun MusScreen(
     modifier: Modifier = Modifier,
     musViewModel: MusViewModel = viewModel(),
     onUpButtonClick: () -> Unit = {}
@@ -107,6 +107,7 @@ fun PantallaMus(
     }
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             TitleTopBar(
                 title = "Mus",
@@ -172,16 +173,16 @@ fun PantallaMus(
 
 @Preview(device = "id:pixel_5")
 @Composable
-fun PantallaMusPortraitPreview() {
+fun MusScreenPortraitPreview() {
     AmarracosTheme {
-        PantallaMus()
+        MusScreen()
     }
 }
 
 @Preview(device = "spec:parent=pixel_5,orientation=landscape")
 @Composable
-fun PantallaMusLandscapePreview() {
+fun MusScreenLandscapePreview() {
     AmarracosTheme {
-        PantallaMus()
+        MusScreen()
     }
 }

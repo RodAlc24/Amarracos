@@ -27,7 +27,7 @@
  *   - Style: 4-space indentation, multiline function calls instead of a single long line.
  */
 
-package com.rodalc.amarracos.resultados
+package com.rodalc.amarracos.ui.overview
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable

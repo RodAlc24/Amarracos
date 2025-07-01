@@ -19,11 +19,11 @@ Amarracos forma parte de los proyectos realizados por la asociación [LIMA-UAM](
 
 ## Licencia
 
-El código (salvo los archivos `Marker.kt` y `Grafico.kt`) está bajo la licencia MIT.  
+El código (salvo los archivos `Marker.kt` y `Chart.kt`) está bajo la licencia MIT.  
 Copyright (c) 2024-2025 Rodrigo Alcántara.
 
-`app/src/main/java/com/rodalc/amarracos/resultados/Grafico.kt`  
-`app/src/main/java/com/rodalc/amarracos/resultados/Marker.kt`  
+`app/src/main/java/com/rodalc/amarracos/ui/overview/Chart.kt`  
+`app/src/main/java/com/rodalc/amarracos/ui/overview/Marker.kt`  
 Están bajo la licencia Apache 2.0. (https://github.com/patrykandpatrick/vico).  
 Copyright 2025 by Patryk Goworowski and Patrick Michalik.
 

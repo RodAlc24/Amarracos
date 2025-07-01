@@ -1,4 +1,4 @@
-package com.rodalc.amarracos.ui.mainScreen
+package com.rodalc.amarracos.ui.main
 
 /**
  * This enums defines the routes of the tabs navigation.

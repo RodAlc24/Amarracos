@@ -58,7 +58,13 @@ fun PantallaMus(
             name = uiState.value.nombreBuenos,
             juegos = uiState.value.juegosBuenos,
             puntos = uiState.value.puntosBuenos,
-            increment = { musViewModel.incrementarPuntos(MusViewModel.Teams.BUENOS, it) },
+            increment = {
+                musViewModel.incrementarPuntos(
+                    team = MusViewModel.Teams.BUENOS,
+                    increment = it,
+                    context = context
+                )
+            },
             landscape = landscape
         )
         Envites(
@@ -70,7 +76,13 @@ fun PantallaMus(
             name = uiState.value.nombreMalos,
             juegos = uiState.value.juegosMalos,
             puntos = uiState.value.puntosMalos,
-            increment = { musViewModel.incrementarPuntos(MusViewModel.Teams.MALOS, it) },
+            increment = {
+                musViewModel.incrementarPuntos(
+                    team = MusViewModel.Teams.MALOS,
+                    increment = it,
+                    context = context
+                )
+            },
             landscape = landscape
         )
     }

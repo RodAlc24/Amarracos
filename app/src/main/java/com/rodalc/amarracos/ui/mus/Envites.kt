@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -184,6 +185,7 @@ fun Envites(
         Pair(uiState.value.envitePares, MusViewModel.Envites.PARES),
         Pair(uiState.value.enviteJuego, MusViewModel.Envites.JUEGO),
     )
+    val context = LocalContext.current
 
     val content = @Composable {
         listEnvites.forEach { item ->
@@ -193,14 +195,16 @@ fun Envites(
                 increment = {
                     viewModel.incrementEnvite(
                         envite = item.second,
-                        increment = it
+                        increment = it,
+                        context = context
                     )
                 },
                 modifier = if (landscape) Modifier else Modifier.padding(5.dp),
                 updateEnvite = {
                     viewModel.updateEnvite(
                         envite = item.second,
-                        team = it
+                        team = it,
+                        context = context
                     )
                 }
             )
@@ -246,10 +250,23 @@ fun EnviteColumnPreview() {
 @Preview
 @Composable
 fun EnvitesLandscapePreview() {
+    val context = LocalContext.current
     val viewModel: MusViewModel = viewModel()
-    viewModel.incrementEnvite(MusViewModel.Envites.GRANDE, 1)
-    viewModel.incrementEnvite(MusViewModel.Envites.CHICA, 23)
-    viewModel.incrementEnvite(MusViewModel.Envites.JUEGO, 15)
+    viewModel.incrementEnvite(
+        envite = MusViewModel.Envites.GRANDE,
+        increment = 1,
+        context = context
+    )
+    viewModel.incrementEnvite(
+        envite = MusViewModel.Envites.CHICA,
+        increment = 23,
+        context = context
+    )
+    viewModel.incrementEnvite(
+        envite = MusViewModel.Envites.JUEGO,
+        increment = 15,
+        context = context
+    )
     AmarracosTheme {
         Envites(landscape = true, viewModel = viewModel)
     }
@@ -259,9 +276,21 @@ fun EnvitesLandscapePreview() {
 @Composable
 fun EnvitesPortraitPreview() {
     val viewModel: MusViewModel = viewModel()
-    viewModel.incrementEnvite(MusViewModel.Envites.GRANDE, 1)
-    viewModel.incrementEnvite(MusViewModel.Envites.CHICA, 23)
-    viewModel.incrementEnvite(MusViewModel.Envites.JUEGO, 15)
+    viewModel.incrementEnvite(
+        envite = MusViewModel.Envites.GRANDE,
+        increment = 1,
+        context = LocalContext.current
+    )
+    viewModel.incrementEnvite(
+        envite = MusViewModel.Envites.CHICA,
+        increment = 23,
+        context = LocalContext.current
+    )
+    viewModel.incrementEnvite(
+        envite = MusViewModel.Envites.JUEGO,
+        increment = 15,
+        context = LocalContext.current
+    )
     AmarracosTheme {
         Envites(landscape = false, viewModel = viewModel)
     }

@@ -1,5 +1,7 @@
 package com.rodalc.amarracos.data.mus
 
+import kotlinx.serialization.Serializable
+
 /**
  * Data class representing the state of a Mus game.
  *
@@ -15,6 +17,7 @@ package com.rodalc.amarracos.data.mus
  * @property enviteJuego The current bet for the "Juego" phase.
  * @property puntosParaGanar The number of points required to win a game.
  */
+@Serializable
 data class MusUiState(
     val nombreBuenos: String = "Buenos",
     val nombreMalos: String = "Malos",

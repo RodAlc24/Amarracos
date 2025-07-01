@@ -1,12 +1,15 @@
 package com.rodalc.amarracos.data.mus
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.rodalc.amarracos.data.mus.MusViewModel.Teams.BUENOS
 import com.rodalc.amarracos.data.mus.MusViewModel.Teams.MALOS
+import com.rodalc.amarracos.storage.StateSaverManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.json.Json
 
 /**
  * ViewModel for the Mus game.
@@ -46,8 +49,9 @@ class MusViewModel : ViewModel() {
      * @param nombreBuenos The name of the "good" team.
      * @param nombreMalos The name of the "bad" team.
      * @param puntos30 Indicates whether 30 points should be used for winning the game.
+     * @param context The Android context required for saving the state.
      */
-    fun startGame(nombreBuenos: String, nombreMalos: String, puntos30: Boolean) {
+    fun startGame(nombreBuenos: String, nombreMalos: String, puntos30: Boolean, context: Context) {
         _uiState.update { currentState ->
             currentState.copy(
                 nombreBuenos = nombreBuenos,
@@ -55,6 +59,7 @@ class MusViewModel : ViewModel() {
                 puntosParaGanar = if (puntos30) 30 else 40
             )
         }
+        saveState(context = context)
     }
 
     /**
@@ -64,8 +69,9 @@ class MusViewModel : ViewModel() {
      * and resets all envite values to 0.
      *
      * @param winner The team that won the game.
+     * @param context The Android context required for saving the state.
      */
-    fun ganadorJuego(winner: Teams) {
+    fun ganadorJuego(winner: Teams, context: Context) {
         var juegosBuenos = uiState.value.juegosBuenos
         var juegosMalos = uiState.value.juegosMalos
 
@@ -87,6 +93,7 @@ class MusViewModel : ViewModel() {
                 enviteJuego = 0,
             )
         }
+        saveState(context = context)
     }
 
     /**
@@ -102,8 +109,9 @@ class MusViewModel : ViewModel() {
      *
      * @param envite The type of envite that was won (e.g., GRANDE, CHICA).
      * @param team The team that won the envite (BUENOS or MALOS).
+     * @param context The Android context required for saving the state.
      */
-    fun updateEnvite(envite: Envites, team: Teams) {
+    fun updateEnvite(envite: Envites, team: Teams, context: Context) {
         var increment: Int
         var enviteGrande = uiState.value.enviteGrande
         var enviteChica = uiState.value.enviteChica
@@ -141,9 +149,9 @@ class MusViewModel : ViewModel() {
         }
 
         if (puntosBuenos >= uiState.value.puntosParaGanar) {
-            ganadorJuego(BUENOS)
+            ganadorJuego(winner = BUENOS, context = context)
         } else if (puntosMalos >= uiState.value.puntosParaGanar) {
-            ganadorJuego(MALOS)
+            ganadorJuego(winner = MALOS, context = context)
         } else {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -155,6 +163,7 @@ class MusViewModel : ViewModel() {
                     enviteJuego = enviteJuego,
                 )
             }
+            saveState(context = context)
         }
     }
 
@@ -166,8 +175,9 @@ class MusViewModel : ViewModel() {
      *
      * @param envite The type of envite to increment (e.g., GRANDE, CHICA).
      * @param increment The amount by which to increment the envite's value. Defaults to 1.
+     * @param context The Android context required for saving the state.
      */
-    fun incrementEnvite(envite: Envites, increment: Int = 1) {
+    fun incrementEnvite(envite: Envites, increment: Int = 1, context: Context) {
         _uiState.update { currentState ->
             currentState.copy(
                 enviteGrande = currentState.enviteGrande + if (envite == Envites.GRANDE) increment else 0,
@@ -176,6 +186,7 @@ class MusViewModel : ViewModel() {
                 enviteJuego = currentState.enviteJuego + if (envite == Envites.JUEGO) increment else 0,
             )
         }
+        saveState(context = context)
     }
 
     /**
@@ -188,15 +199,16 @@ class MusViewModel : ViewModel() {
      *
      * @param team The team whose points are to be incremented (BUENOS or MALOS).
      * @param increment The number of points to add (defaults to 1).
+     * @param context The Android context required for saving the state.
      */
-    fun incrementarPuntos(team: Teams, increment: Int = 1) {
+    fun incrementarPuntos(team: Teams, increment: Int = 1, context: Context) {
         val puntosBuenos = uiState.value.puntosBuenos + if (team == BUENOS) increment else 0
         val puntosMalos = uiState.value.puntosMalos + if (team == MALOS) increment else 0
 
         if (puntosBuenos >= uiState.value.puntosParaGanar) {
-            ganadorJuego(BUENOS)
+            ganadorJuego(winner = BUENOS, context = context)
         } else if (puntosMalos >= uiState.value.puntosParaGanar) {
-            ganadorJuego(MALOS)
+            ganadorJuego(winner = MALOS, context = context)
         } else {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -204,6 +216,52 @@ class MusViewModel : ViewModel() {
                     puntosMalos = puntosMalos
                 )
             }
+            saveState(context = context)
         }
+    }
+
+    /**
+     * Saves the current UI state to a JSON file.
+     *
+     * This function serializes the current `_uiState` value into a JSON string
+     * and then writes it to a file named "mus.json" using the `StateSaverManager`.
+     *
+     * @param context The Android context required for file operations.
+     */
+    private fun saveState(context: Context) {
+        val json = Json.encodeToString(_uiState.value)
+        StateSaverManager.writteFile(filename = "mus.json", content = json, context = context)
+    }
+
+    /**
+     * Loads the game state from a file.
+     *
+     * This function reads the game state from a JSON file named "mus.json".
+     * If the file exists and contains valid data, the UI state is updated
+     * with the loaded game state.
+     *
+     * @param context The Android context required for reading the file.
+     */
+    fun loadState(context: Context) {
+        val temp = StateSaverManager.readFile(filename = "mus.json", context = context)
+        if (temp != null) {
+            _uiState.update {
+                Json.decodeFromString(temp)
+            }
+        }
+    }
+
+    /**
+     * Checks if a saved game state file exists.
+     *
+     * This function uses the `StateSaverManager` to determine if a file named "mus.json"
+     * exists in the application's storage. This file is expected to contain the saved
+     * state of a previous Mus game.
+     *
+     * @param context The Android context, used by `StateSaverManager` to access application storage.
+     * @return `true` if the saved game state file ("mus.json") exists, `false` otherwise.
+     */
+    fun canLoadState(context: Context):Boolean {
+        return StateSaverManager.fileExists(filename = "mus.json", context = context)
     }
 }

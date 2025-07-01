@@ -99,18 +99,20 @@ fun MainScreen(
             ) {
                 composable(route = Tabs.TAB_MUS.name) {
                     MusTabScreen(
-                        canLoad = false,
+                        canLoad = musViewModel.canLoadState(context),
                         labelBuenos = MusDefaultConfigManager.getBuenos(),
                         labelMalos = MusDefaultConfigManager.getMalos(),
                         onStartClick = { nombreBuenos, nombreMalos, puntos ->
                             musViewModel.startGame(
                                 nombreBuenos = nombreBuenos,
                                 nombreMalos = nombreMalos,
-                                puntos30 = puntos
+                                puntos30 = puntos,
+                                context = context
                             )
                             navigate(Screens.SCREEN_MUS.name)
                         },
                         onLoadClick = {
+                            musViewModel.loadState(context)
                             navigate(Screens.SCREEN_MUS.name)
                         },
                         modifier = Modifier

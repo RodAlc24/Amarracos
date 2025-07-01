@@ -19,14 +19,14 @@ import com.rodalc.amarracos.ui.theme.AmarracosTheme
  * Barra de título para las pantallas.
  *
  * @param title El título de la pantalla
- * @param upButtonOnClick La acción a realizar al pulsar el botón de retroceso
+ * @param onUpButtonClick La acción a realizar al pulsar el botón de retroceso
  * @param actions Las acciones a realizar a la derecha de la barra de título
  */
 @Composable
 fun TitleTopBar(
     title: String,
     showUpButton: Boolean = false,
-    upButtonOnClick: () -> Unit = {},
+    onUpButtonClick: () -> Unit = {},
     actions: @Composable () -> Unit = {},
 ) {
     CenterAlignedTopAppBar(
@@ -40,7 +40,7 @@ fun TitleTopBar(
         },
         navigationIcon = {
             if (showUpButton) {
-                IconButton(onClick = { upButtonOnClick() }) {
+                IconButton(onClick = { onUpButtonClick() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Navegar a la pantalla anterior",
@@ -59,7 +59,7 @@ fun PreviewTitleTopBar() {
         TitleTopBar(
             title = "Amarracos",
             showUpButton = true,
-            upButtonOnClick = {},
+            onUpButtonClick = {},
             actions = {}
         )
     }

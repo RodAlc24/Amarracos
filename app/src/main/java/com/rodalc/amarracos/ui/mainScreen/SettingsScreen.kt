@@ -76,7 +76,7 @@ fun SettingsScreen(
             TitleTopBar(
                 title = "Ajustes",
                 showUpButton = true,
-                upButtonOnClick = navigateUp
+                onUpButtonClick = navigateUp
             )
         },
     ) { padding ->

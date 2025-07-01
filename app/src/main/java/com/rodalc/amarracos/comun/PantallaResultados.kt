@@ -30,7 +30,7 @@ fun PantallaResultados(
         topBar = {
             TitleTopBar(
                 title = "Resultados",
-                upButtonOnClick = { navController.popBackStack() },
+                onUpButtonClick = { navController.popBackStack() },
             )
         },
     ) { padding ->

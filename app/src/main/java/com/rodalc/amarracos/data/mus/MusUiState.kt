@@ -16,8 +16,8 @@ package com.rodalc.amarracos.data.mus
  * @property puntosParaGanar The number of points required to win a game.
  */
 data class MusUiState(
-    val nombreBuenos: String = "",
-    val nombreMalos: String = "",
+    val nombreBuenos: String = "Buenos",
+    val nombreMalos: String = "Malos",
     val puntosBuenos: Int = 0,
     val puntosMalos: Int = 0,
     val juegosBuenos: Int = 0,

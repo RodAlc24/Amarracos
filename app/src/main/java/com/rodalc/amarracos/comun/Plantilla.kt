@@ -51,7 +51,7 @@ fun Plantilla(
         topBar = {
             TitleTopBar(
                 title = title,
-                upButtonOnClick = { navController.popBackStack() },
+                onUpButtonClick = { navController.popBackStack() },
                 actions = {
                     if (options) {
                         SortMenu()

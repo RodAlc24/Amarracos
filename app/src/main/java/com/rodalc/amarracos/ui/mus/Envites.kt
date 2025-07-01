@@ -1,6 +1,7 @@
 package com.rodalc.amarracos.ui.mus
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -135,7 +136,8 @@ private fun Envite(
     if (landscape) {
         Row(
             modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
             buttonBuenos()
             buttonRemove()
@@ -147,7 +149,8 @@ private fun Envite(
     } else {
         Column(
             modifier = modifier,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             buttonBuenos()
             buttonAdd()
@@ -193,6 +196,7 @@ fun Envites(
                         increment = it
                     )
                 },
+                modifier = if (landscape) Modifier else Modifier.padding(5.dp),
                 updateEnvite = {
                     viewModel.updateEnvite(
                         envite = item.second,
@@ -204,11 +208,19 @@ fun Envites(
     }
 
     if (landscape) {
-        Column(modifier = modifier) {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
             content()
         }
     } else {
-        Row(modifier = modifier) {
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             content()
         }
     }

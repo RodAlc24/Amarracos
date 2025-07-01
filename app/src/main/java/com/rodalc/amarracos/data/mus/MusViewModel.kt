@@ -69,7 +69,7 @@ class MusViewModel : ViewModel() {
         var juegosBuenos = uiState.value.juegosBuenos
         var juegosMalos = uiState.value.juegosMalos
 
-        if (winner == Teams.BUENOS) {
+        if (winner == BUENOS) {
             juegosBuenos += 1
         } else {
             juegosMalos += 1
@@ -104,7 +104,7 @@ class MusViewModel : ViewModel() {
      * @param team The team that won the envite (BUENOS or MALOS).
      */
     fun updateEnvite(envite: Envites, team: Teams) {
-        var increment = 0
+        var increment: Int
         var enviteGrande = uiState.value.enviteGrande
         var enviteChica = uiState.value.enviteChica
         var envitePares = uiState.value.envitePares
@@ -134,16 +134,16 @@ class MusViewModel : ViewModel() {
             }
         }
 
-        if (team == Teams.BUENOS) {
+        if (team == BUENOS) {
             puntosBuenos += increment
         } else {
             puntosMalos += increment
         }
 
         if (puntosBuenos >= uiState.value.puntosParaGanar) {
-            ganadorJuego(Teams.BUENOS)
+            ganadorJuego(BUENOS)
         } else if (puntosMalos >= uiState.value.puntosParaGanar) {
-            ganadorJuego(Teams.MALOS)
+            ganadorJuego(MALOS)
         } else {
             _uiState.update { currentState ->
                 currentState.copy(
@@ -158,6 +158,15 @@ class MusViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Increments the value of a specific envite (bet) by a given amount.
+     *
+     * This function updates the UI state by adding the `increment` value
+     * to the current value of the specified `envite`.
+     *
+     * @param envite The type of envite to increment (e.g., GRANDE, CHICA).
+     * @param increment The amount by which to increment the envite's value. Defaults to 1.
+     */
     fun incrementEnvite(envite: Envites, increment: Int = 1) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -166,6 +175,35 @@ class MusViewModel : ViewModel() {
                 envitePares = currentState.envitePares + if (envite == Envites.PARES) increment else 0,
                 enviteJuego = currentState.enviteJuego + if (envite == Envites.JUEGO) increment else 0,
             )
+        }
+    }
+
+    /**
+     * Increments the points for a specified team.
+     *
+     * This function adds the given increment (defaulting to 1) to the points of the specified team.
+     * After updating the points, it checks if either team has reached the points needed to win the game.
+     * If a team has won, it calls the `ganadorJuego` function.
+     * Otherwise, it updates the UI state with the new scores.
+     *
+     * @param team The team whose points are to be incremented (BUENOS or MALOS).
+     * @param increment The number of points to add (defaults to 1).
+     */
+    fun incrementarPuntos(team: Teams, increment: Int = 1) {
+        val puntosBuenos = uiState.value.puntosBuenos + if (team == BUENOS) increment else 0
+        val puntosMalos = uiState.value.puntosMalos + if (team == MALOS) increment else 0
+
+        if (puntosBuenos >= uiState.value.puntosParaGanar) {
+            ganadorJuego(BUENOS)
+        } else if (puntosMalos >= uiState.value.puntosParaGanar) {
+            ganadorJuego(MALOS)
+        } else {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    puntosBuenos = puntosBuenos,
+                    puntosMalos = puntosMalos
+                )
+            }
         }
     }
 }

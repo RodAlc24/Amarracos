@@ -2,16 +2,15 @@ package com.rodalc.amarracos.ui.mus
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,38 +28,62 @@ fun Pareja(
     juegos: Int,
     puntos: Int,
     modifier: Modifier = Modifier,
+    increment: (Int) -> Unit = {},
+    landscape: Boolean = false,
 ) {
+    val display = @Composable {
+        TextButton(
+            onClick = { increment(1) },
+            modifier = Modifier.width(110.dp)
+        ) {
+            Text(
+                text = puntos.toString(),
+                fontSize = 60.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(text = "$name: $juegos", fontSize = 25.sp)
+        Spacer(modifier = Modifier.height(10.dp))
+        if (landscape) {
+            display()
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(
-                onClick = {},
+            TextButton(
+                onClick = { increment(-1) },
                 enabled = puntos > 0,
                 modifier = Modifier
                     .padding(5.dp)
-                    .size(60.dp)
-            ) { Icon(Icons.Rounded.Remove, "Quitar un punto", Modifier.size(40.dp)) }
-            TextButton(
-                onClick = { },
-                modifier = Modifier.width(110.dp)
+                    .size(60.dp),
             ) {
-                Text(
-                    text = puntos.toString(),
-                    fontSize = 60.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
+                Icon(
+                    Icons.Rounded.Remove,
+                    "Quitar un punto",
+                    Modifier.size(40.dp),
                 )
             }
-            IconButton(
-                onClick = {},
+            if (!landscape) {
+                display()
+            }
+            TextButton(
+                onClick = { increment(1) },
                 modifier = Modifier
                     .padding(5.dp)
-                    .size(60.dp)
-            ) { Icon(Icons.Rounded.Add, "Añadir un punto", Modifier.size(40.dp)) }
+                    .size(60.dp),
+            ) {
+                Icon(
+                    Icons.Rounded.Add,
+                    "Añadir un punto",
+                    Modifier.size(40.dp),
+                )
+            }
         }
     }
 }
@@ -68,8 +91,16 @@ fun Pareja(
 
 @Preview
 @Composable
-fun ParejaPreview() {
+fun ParejaPortraitPreview() {
     AmarracosTheme {
-        Pareja(name = "Buenos", juegos = 2, puntos = 24)
+        Pareja(name = "Buenos", juegos = 2, puntos = 24, landscape = false)
+    }
+}
+
+@Preview
+@Composable
+fun ParejaLandscapePreview() {
+    AmarracosTheme {
+        Pareja(name = "Buenos", juegos = 2, puntos = 24, landscape = true)
     }
 }

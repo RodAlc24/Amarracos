@@ -6,7 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -51,17 +53,25 @@ fun PantallaMus(
         }
     }
 
-    val content = @Composable { landscape:Boolean ->
+    val content = @Composable { landscape: Boolean ->
         Pareja(
             name = uiState.value.nombreBuenos,
             juegos = uiState.value.juegosBuenos,
-            puntos = uiState.value.puntosBuenos
+            puntos = uiState.value.puntosBuenos,
+            increment = { musViewModel.incrementarPuntos(MusViewModel.Teams.BUENOS, it) },
+            landscape = landscape
         )
-        Envites(viewModel = musViewModel, modifier = modifier, landscape = landscape)
+        Envites(
+            viewModel = musViewModel,
+            modifier = if (landscape) Modifier.fillMaxHeight() else Modifier.fillMaxWidth(),
+            landscape = landscape
+        )
         Pareja(
             name = uiState.value.nombreMalos,
             juegos = uiState.value.juegosMalos,
-            puntos = uiState.value.puntosMalos
+            puntos = uiState.value.puntosMalos,
+            increment = { musViewModel.incrementarPuntos(MusViewModel.Teams.MALOS, it) },
+            landscape = landscape
         )
     }
 
@@ -76,7 +86,9 @@ fun PantallaMus(
     ) { innerPadding ->
         if (landscape) {
             Row(
-                modifier = Modifier.padding(innerPadding).fillMaxSize(),
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -84,7 +96,9 @@ fun PantallaMus(
             }
         } else {
             Column(
-                modifier = Modifier.padding(innerPadding).fillMaxSize(),
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {

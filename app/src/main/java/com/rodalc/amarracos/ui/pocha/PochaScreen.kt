@@ -45,6 +45,7 @@ import com.rodalc.amarracos.utils.ToastRateLimiter
 fun PochaScreen(
     modifier: Modifier = Modifier,
     pochaViewModel: GenericoViewModel = viewModel(),
+    isPocha: Boolean = true,
     onUpButtonClick: () -> Unit = {}
 ) {
     val uiState by pochaViewModel.uiState.collectAsState()
@@ -70,15 +71,15 @@ fun PochaScreen(
         modifier = modifier,
         topBar = {
             TitleTopBar(
-                title = "Pocha",
+                title = if (isPocha) "Pocha" else "Genérico",
                 showUpButton = true,
                 onUpButtonClick = onUpButtonClick,
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                if (uiState.rondaApuestas || !pochaViewModel.apuestasEqualVictorias()) {
-                    pochaViewModel.changeRound()
+                if (!isPocha || uiState.rondaApuestas || !pochaViewModel.apuestasEqualVictorias()) {
+                    pochaViewModel.changeRound(isPocha)
                 } else {
                     ToastRateLimiter.showToast(
                         context = context,
@@ -98,46 +99,57 @@ fun PochaScreen(
                 .fillMaxHeight(),
             columns = GridCells.Adaptive(minSize = 400.dp)
         ) {
-            stickyHeader {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    Card(
-                        modifier = Modifier
-//                        .fillMaxWidth(0.9f)
-                            .padding(8.dp)
-                            .clickable(onClick = { pochaViewModel.setDuplica(!uiState.duplica) }),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
+            if (isPocha) {
+                stickyHeader {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(16.dp)
+                        Card(
+                            modifier = Modifier
+//                        .fillMaxWidth(0.9f)
+                                .padding(8.dp)
+                                .clickable(onClick = { pochaViewModel.setDuplica(!uiState.duplica) }),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
                         ) {
-                            Text(text = "Duplicar puntuación: ")
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Switch(
-                                checked = uiState.duplica,
-                                onCheckedChange = { pochaViewModel.setDuplica(it) })
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Text(text = "Duplicar puntuación: ")
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Switch(
+                                    checked = uiState.duplica,
+                                    onCheckedChange = { pochaViewModel.setDuplica(it) })
+                            }
                         }
                     }
                 }
             }
             items(uiState.jugadores) { jugador ->
+                val pointType = if (isPocha) {
+                        if (uiState.rondaApuestas)
+                            GenericoViewModel.PointType.APUESTA
+                        else
+                            GenericoViewModel.PointType.VICTORIA
+                    } else {
+                        GenericoViewModel.PointType.INCREMENTO
+                    }
+
                 PlayerCard(
                     name = jugador.nombre,
-                    newPoints = jugador.apuesta,
-                    extraPoints = jugador.victoria,
+                    newPoints = if (isPocha) jugador.apuesta else jugador.incremento,
+                    extraPoints = if (isPocha) jugador.victoria else null,
                     totalPoints = jugador.puntos,
                     roundApuestas = uiState.rondaApuestas
                 ) { newPoints ->
                     pochaViewModel.updatePoints(
                         jugadorId = jugador.id,
                         newPoints = newPoints,
-                        pointType = if (uiState.rondaApuestas) GenericoViewModel.PointType.APUESTA else GenericoViewModel.PointType.VICTORIA
+                        pointType = pointType
                     )
                 }
             }

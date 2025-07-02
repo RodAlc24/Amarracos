@@ -39,7 +39,7 @@ fun PlayerCard(
     roundApuestas: Boolean = true,
     incrementPoints: (Int) -> Unit = {},
 ) {
-    val color = if (roundApuestas || extraPoints == newPoints) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
+    val color = if (extraPoints == null || roundApuestas || extraPoints == newPoints) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
     Card(
         modifier = modifier
             .fillMaxWidth(0.9f)

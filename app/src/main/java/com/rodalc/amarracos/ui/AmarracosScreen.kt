@@ -65,7 +65,13 @@ fun AmarracosScreen() {
                 onUpButtonClick = { navController.navigateUp() }
             )
         }
-        composable(Screens.SCREEN_GENERICO.name) { PantallaGenerico(navController) }
+        composable(Screens.SCREEN_GENERICO.name) {
+            PochaScreen(
+                pochaViewModel = genericoViewModel,
+                isPocha = false,
+                onUpButtonClick = { navController.navigateUp() }
+            )
+        }
         composable(Screens.SCREEN_CONFIG.name) { SettingsScreen(navigateUp = { navController.navigateUp() }) }
         composable(Screens.SCREEN_RES_POCHA.name) {
             PantallaResultados(

@@ -52,14 +52,14 @@ class GenericoViewModel : ViewModel() {
         }
     }
 
-    fun changeRound() {
+    fun changeRound(isPocha: Boolean) {
         val rondaApuestas = !_uiState.value.rondaApuestas
         var updatedJugadores = _uiState.value.jugadores
         var duplica = _uiState.value.duplica
 
-        if (!_uiState.value.rondaApuestas) {
+        if (!isPocha || !_uiState.value.rondaApuestas) {
             updatedJugadores = _uiState.value.jugadores.map { jugador ->
-                applyPoints(jugador, duplica)
+                applyPoints(jugador = jugador, duplica = duplica, isPocha = isPocha)
             }
             duplica = false
         }
@@ -75,15 +75,19 @@ class GenericoViewModel : ViewModel() {
 
     private fun applyPoints(
         jugador: JugadorGenericoUiState,
-        duplica: Boolean
+        duplica: Boolean,
+        isPocha: Boolean
     ): JugadorGenericoUiState {
         var increment =
-            if (jugador.apuesta == jugador.victoria)
-                (10 + 5 * jugador.apuesta)
+            if (!isPocha)
+                jugador.incremento
             else
-                (-5 * abs(jugador.apuesta - jugador.victoria))
+                if (jugador.apuesta == jugador.victoria)
+                    (10 + 5 * jugador.apuesta)
+                else
+                    (-5 * abs(jugador.apuesta - jugador.victoria))
 
-        if (duplica)
+        if (duplica && isPocha)
             increment *= 2
 
         return jugador.copy(

@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -30,12 +29,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.rodalc.amarracos.comun.Jugador
 import com.rodalc.amarracos.data.generico.GenericoViewModel
 import com.rodalc.amarracos.data.mus.MusDefaultConfig
 import com.rodalc.amarracos.data.mus.MusViewModel
-import com.rodalc.amarracos.generico.Generico
-import com.rodalc.amarracos.pocha.Pocha
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import com.rodalc.amarracos.ui.tabs.GenericoTabScreen
 import com.rodalc.amarracos.ui.tabs.MusTabScreen
@@ -133,7 +129,11 @@ fun MainScreen(
                     GenericoTabScreen(
                         canLoad = pochaViewModel.canLoadState(context = context, isPocha = true),
                         onStartClick = {
-                            pochaViewModel.startGame(jugadores = it, context = context, isPocha = true)
+                            pochaViewModel.startGame(
+                                jugadores = it,
+                                context = context,
+                                isPocha = true
+                            )
                             navigate(Screens.SCREEN_POCHA.name)
                         },
                         onLoadClick = {
@@ -145,7 +145,10 @@ fun MainScreen(
                 }
                 composable(route = Tabs.TAB_GENERICO.name) {
                     GenericoTabScreen(
-                        canLoad = genericoViewModel.canLoadState(context = context, isPocha = false),
+                        canLoad = genericoViewModel.canLoadState(
+                            context = context,
+                            isPocha = false
+                        ),
                         onStartClick = {
                             genericoViewModel.startGame(jugadores = it, context = context)
                             navigate(Screens.SCREEN_GENERICO.name)

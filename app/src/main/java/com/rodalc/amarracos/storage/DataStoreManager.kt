@@ -14,7 +14,6 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 object DataStoreManager {
     enum class Key {
         KEEP_SCREEN_ON,
-        MUS_A_30,
     }
 
     fun readDataStore(context: Context, key: Key): Flow<Boolean> {

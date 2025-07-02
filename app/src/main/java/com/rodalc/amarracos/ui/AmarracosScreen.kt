@@ -11,8 +11,6 @@ import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.comun.PantallaResultados
 import com.rodalc.amarracos.data.generico.GenericoViewModel
 import com.rodalc.amarracos.data.mus.MusViewModel
-import com.rodalc.amarracos.generico.PantallaGenerico
-import com.rodalc.amarracos.pocha.PantallaPocha
 import com.rodalc.amarracos.ui.main.MainScreen
 import com.rodalc.amarracos.ui.main.Screens
 import com.rodalc.amarracos.ui.main.SettingsScreen
@@ -27,8 +25,8 @@ import com.rodalc.amarracos.ui.theme.AmarracosTheme
  * The available screens are:
  * - [Screens.SCREEN_START]: Main screen ([MainScreen]).
  * - [Screens.SCREEN_MUS]: Screen for the Mus game ([MusScreen]).
- * - [Screens.SCREEN_POCHA]: Screen for the Pocha game ([PantallaPocha]).
- * - [Screens.SCREEN_GENERICO]: Screen for a generic game ([PantallaGenerico]).
+ * - [Screens.SCREEN_POCHA]: Screen for the Pocha game ([PochaScreen]).
+ * - [Screens.SCREEN_GENERICO]: Screen for a generic game ([PochaScreen]).
  * - [Screens.SCREEN_CONFIG]: Configuration screen ([SettingsScreen]).
  * - [Screens.SCREEN_RES_POCHA]: Results screen for Pocha ([PantallaResultados]).
  * - [Screens.SCREEN_RES_GEN]: Results screen for the generic game ([PantallaResultados]).

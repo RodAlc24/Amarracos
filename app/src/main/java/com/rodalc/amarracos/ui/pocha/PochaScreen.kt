@@ -35,8 +35,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rodalc.amarracos.data.generico.GenericoViewModel
-import com.rodalc.amarracos.data.generico.JugadorGenericoUiState
 import com.rodalc.amarracos.storage.DataStoreManager
+import com.rodalc.amarracos.ui.elements.OptionsMenu
+import com.rodalc.amarracos.ui.elements.SortMenu
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 import com.rodalc.amarracos.utils.ToastRateLimiter
@@ -74,7 +75,12 @@ fun PochaScreen(
                 title = if (isPocha) "Pocha" else "Genérico",
                 showUpButton = true,
                 onUpButtonClick = onUpButtonClick,
-            )
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    SortMenu(sortBy = { pochaViewModel.sortPlayersBy(it) })
+                    OptionsMenu(undoEnabled = false, undo = {}, showResults = {})
+                }
+            }
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
@@ -174,16 +180,6 @@ fun PochaScreen(
 @Preview
 @Composable
 fun PreviewPochaScreen() {
-    val pochaViewModel: GenericoViewModel = viewModel()
-    pochaViewModel.startGame(
-        jugadores = listOf(
-            JugadorGenericoUiState(nombre = "Jugador 1"),
-            JugadorGenericoUiState(nombre = "Jugador 2"),
-            JugadorGenericoUiState(nombre = "Jugador 3")
-        ),
-        context = LocalContext.current
-    )
-
     AmarracosTheme {
         PochaScreen()
     }

@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import com.rodalc.amarracos.generico.Generico
-import com.rodalc.amarracos.pocha.Pocha
+import com.rodalc.amarracos.comun.Generico
+import com.rodalc.amarracos.comun.Pocha
 import com.rodalc.amarracos.ui.overview.LegendLabelKey
 import com.rodalc.amarracos.ui.overview.Puntuaciones
 import com.rodalc.amarracos.ui.elements.TitleTopBar

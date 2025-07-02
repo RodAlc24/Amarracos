@@ -1,4 +1,4 @@
-package com.rodalc.amarracos.comun
+package com.rodalc.amarracos.ui.elements
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
@@ -12,22 +12,22 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import com.rodalc.amarracos.utils.ToastRateLimiter
+import com.rodalc.amarracos.data.generico.GenericoViewModel
 
 /**
- * Menu con las opciones (deshacer, ver resultados, etc.)
+ * Displays a dropdown menu with options to show results and undo the last action.
  *
- * @param undoEnabled Si se puede deshacer
- * @param undo La acción de deshacer
+ * @param undoEnabled Whether the undo option should be enabled.
+ * @param undo Callback to be invoked when the undo option is selected.
+ * @param showResults Callback to be invoked when the show results option is selected.
  */
 @Composable
 fun OptionsMenu(
@@ -48,13 +48,12 @@ fun OptionsMenu(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            containerColor = MaterialTheme.colorScheme.primaryContainer
         ) {
             DropdownMenuItem(
                 leadingIcon = @Composable {
                     Icon(Icons.Outlined.SsidChart, contentDescription = "Ver resultados")
                 },
-                text = { Text("Finalizar y ver resultados") },
+                text = { Text("Ver resultados") },
                 onClick = {
                     expanded = false
                     showResults()
@@ -77,15 +76,20 @@ fun OptionsMenu(
 }
 
 /**
- * Menu con la opción de ordenar.
+ * Menu with sorting options.
+ *
+ * @param sortBy Function to call when a sort option is selected.
+ * @param modifier Modifier to apply to the menu component.
  */
 @Composable
-fun SortMenu() {
+fun SortMenu(
+    sortBy: (GenericoViewModel.SortType) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
     Box(
-        modifier = Modifier
+        modifier = modifier
     ) {
         IconButton(onClick = { expanded = !expanded }) {
             Icon(
@@ -98,33 +102,24 @@ fun SortMenu() {
             onDismissRequest = { expanded = false },
         ) {
             DropdownMenuItem(
-                leadingIcon = @Composable {
-                    Icon(Icons.Outlined.RadioButtonChecked, contentDescription = "Predeterminado")
-                },
                 text = { Text("Predeterminado") },
                 onClick = {
                     expanded = false
-                    ToastRateLimiter.showToast(context, "Próximamente")
+                    sortBy(GenericoViewModel.SortType.ID)
                 }
             )
             DropdownMenuItem(
-                leadingIcon = @Composable {
-                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Nombre")
-                },
                 text = { Text("Por nombre") },
                 onClick = {
                     expanded = false
-                    ToastRateLimiter.showToast(context, "Próximamente")
+                    sortBy(GenericoViewModel.SortType.NAME)
                 }
             )
             DropdownMenuItem(
-                leadingIcon = @Composable {
-                    Icon(Icons.Outlined.RadioButtonUnchecked, contentDescription = "Puntos")
-                },
                 text = { Text("Por puntos") },
                 onClick = {
                     expanded = false
-                    ToastRateLimiter.showToast(context, "Próximamente")
+                    sortBy(GenericoViewModel.SortType.POINTS)
                 }
             )
         }

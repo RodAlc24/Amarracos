@@ -15,8 +15,12 @@ object StateSaverManager {
     }
 
     fun writteFile(filename: String, content: String, context: Context) {
-        context.openFileOutput(filename, Context.MODE_PRIVATE).use {
-            it.write(content.toByteArray())
+        try {
+            context.openFileOutput(filename, Context.MODE_PRIVATE).use {
+                it.write(content.toByteArray())
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 

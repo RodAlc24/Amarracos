@@ -185,11 +185,28 @@ class GenericoViewModel : ViewModel() {
         return value == 0
     }
 
+    /**
+     * Saves the current game state to a file.
+     *
+     * The game state is serialized to JSON and saved to a file named "pocha.json" if it's a "Pocha" game,
+     * or "generico.json" otherwise.
+     *
+     * @param context The Android context required for file operations.
+     */
     private fun saveState(context: Context) {
         val json = Json.encodeToString(_uiState.value)
         StateSaverManager.writteFile(filename = if (_uiState.value.isPocha) "pocha.json" else "generico.json", context = context, content = json)
     }
 
+    /**
+     * Loads the game state from a file.
+     *
+     * This function reads the game state from a JSON file ("pocha.json" or "generico.json")
+     * and updates the UI state with the loaded data.
+     *
+     * @param context The Android context required for reading the file.
+     * @param isPocha A boolean indicating whether to load the "Pocha" game state or the generic game state.
+     */
     fun loadState(context: Context, isPocha: Boolean) {
         val temp = StateSaverManager.readFile(filename = if (isPocha) "pocha.json" else "generico.json", context = context)
         if (temp != null) {
@@ -199,7 +216,37 @@ class GenericoViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Checks if a saved game state can be loaded.
+     *
+     * This function determines whether a saved game state file exists for either a "Pocha" game
+     * or a generic game, based on the `isPocha` parameter.
+     *
+     * @param context The Android context used to access the file system.
+     * @param isPocha A boolean indicating if the game to check is a "Pocha" game.
+     *                If true, it checks for "pocha.json"; otherwise, it checks for "generico.json".
+     * @return `true` if a saved game state file exists, `false` otherwise.
+     */
     fun canLoadState(context: Context, isPocha: Boolean): Boolean {
         return StateSaverManager.fileExists(filename = if (isPocha) "pocha.json" else "generico.json", context = context)
+    }
+
+    enum class SortType {
+        NAME,
+        POINTS,
+        ID
+    }
+
+    fun sortPlayersBy(sortType: SortType) {
+        val sortedJugadores = _uiState.value.jugadores.sortedWith(compareBy { jugador ->
+            when (sortType) {
+                SortType.NAME -> jugador.nombre
+                SortType.POINTS -> jugador.puntos
+                SortType.ID -> jugador.id
+            }
+        })
+        _uiState.update { currentState ->
+            currentState.copy(jugadores = sortedJugadores)
+        }
     }
 }

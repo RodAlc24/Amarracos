@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -27,9 +28,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -99,7 +97,7 @@ fun PochaScreen(
                         modifier = Modifier
 //                        .fillMaxWidth(0.9f)
                             .padding(8.dp)
-                            .clickable(onClick = {pochaViewModel.setDuplica(!uiState.duplica)}),
+                            .clickable(onClick = { pochaViewModel.setDuplica(!uiState.duplica) }),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -110,14 +108,16 @@ fun PochaScreen(
                             modifier = Modifier.padding(16.dp)
                         ) {
                             Text(text = "Duplicar puntuación: ")
-                            //                       Spacer(modifier = Modifier.weight(1f))
-                            Switch(checked = uiState.duplica, onCheckedChange = { pochaViewModel.setDuplica(it) })
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Switch(
+                                checked = uiState.duplica,
+                                onCheckedChange = { pochaViewModel.setDuplica(it) })
                         }
                     }
                 }
             }
             items(uiState.jugadores) { jugador ->
-                PlayerRow(
+                PlayerCard(
                     name = jugador.nombre,
                     newPoints = jugador.apuesta,
                     extraPoints = jugador.victoria,

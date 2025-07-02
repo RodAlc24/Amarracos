@@ -14,7 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 @Composable
-fun PlayerRow(
+fun PlayerCard(
     modifier: Modifier = Modifier,
     name: String = "",
     newPoints: Int = 0,
@@ -37,11 +39,12 @@ fun PlayerRow(
     roundApuestas: Boolean = true,
     incrementPoints: (Int) -> Unit = {},
 ) {
+    val color = if (roundApuestas || extraPoints == newPoints) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
     Card(
         modifier = modifier
             .fillMaxWidth(0.9f)
             .padding(8.dp)
-            .clickable(onClick = { incrementPoints(1) })
+            .clickable(onClick = { incrementPoints(1) }),
     ) {
         Column(
             modifier = Modifier
@@ -62,12 +65,14 @@ fun PlayerRow(
                     modifier = Modifier
                         //                     .weight(1f) // Allocate space for the text
                         .clipToBounds(),
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    color = color
                 )
                 Spacer(modifier = Modifier.width(20.dp))
                 Text(
                     text = totalPoints.toString(),
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    color = color
                 )
             }
             Spacer(modifier = Modifier.height(15.dp))
@@ -91,7 +96,7 @@ fun PlayerRow(
                 Box(
                     modifier = Modifier.width(40.dp),
                     contentAlignment = Alignment.Center
-                ) { Text(text = newPoints.toString()) }
+                ) { Text(text = newPoints.toString(), color = color) }
                 TextButton(
                     onClick = { incrementPoints(1) },
                     enabled = newPoints < 99 && roundApuestas
@@ -119,7 +124,7 @@ fun PlayerRow(
                     Box(
                         modifier = Modifier.width(40.dp),
                         contentAlignment = Alignment.Center
-                    ) { Text(text = extraPoints.toString()) }
+                    ) { Text(text = extraPoints.toString(), color = color) }
                     TextButton(
                         onClick = { incrementPoints(1) },
                         enabled = extraPoints < 99 && !roundApuestas
@@ -135,7 +140,7 @@ fun PlayerRow(
 @Composable
 fun PreviewPlayerRow() {
     AmarracosTheme {
-        PlayerRow(
+        PlayerCard(
             name = "Jugador",
             newPoints = 14,
             totalPoints = 10,
@@ -148,7 +153,7 @@ fun PreviewPlayerRow() {
 @Composable
 fun PreviewExpandedPlayerRow() {
     AmarracosTheme {
-        PlayerRow(
+        PlayerCard(
             name = "Jugador",
             newPoints = 14,
             totalPoints = 10,

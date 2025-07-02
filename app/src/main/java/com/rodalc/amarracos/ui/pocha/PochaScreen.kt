@@ -51,6 +51,7 @@ fun PochaScreen(
 ) {
     val uiState by pochaViewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val canUndo = pochaViewModel.canUndo.collectAsState()
 
     val screenState by DataStoreManager.readDataStore(context, DataStoreManager.Key.KEEP_SCREEN_ON)
         .collectAsState(initial = true)
@@ -77,8 +78,8 @@ fun PochaScreen(
                 onUpButtonClick = onUpButtonClick,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    SortMenu(sortBy = { pochaViewModel.sortPlayersBy(it) })
-                    OptionsMenu(undoEnabled = false, undo = {}, showResults = {})
+                    SortMenu(sortBy = { pochaViewModel.sortPlayersBy(sortType = it, context = context) })
+                    OptionsMenu(undoEnabled = canUndo.value, undo = {pochaViewModel.undo(context)}, showResults = {})
                 }
             }
         },

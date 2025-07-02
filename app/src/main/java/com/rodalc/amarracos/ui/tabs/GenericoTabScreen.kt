@@ -49,19 +49,16 @@ fun GenericoTabScreen(
 ) {
     val context = LocalContext.current
 
-    var jugadores by rememberSaveable {
-        mutableStateOf(
-            listOf(
-                JugadorGenericoUiState(id = 1),
-                JugadorGenericoUiState(id = 2)
-            )
-        )
-    }
+    var jugadores by rememberSaveable { mutableStateOf(listOf(Pair(1, ""), Pair(2, "")))}
 
     AbstractTabScreen(
         modifier = modifier,
         canLoad = canLoad,
-        onStartClick = { onStartClick(jugadores) },
+        onStartClick = {
+            onStartClick(
+                jugadores.map { JugadorGenericoUiState(id = it.first, nombre = it.second.ifBlank { "Jugador ${it.first}" }) }
+            )
+        },
         onLoadClick = onLoadClick,
     ) {
         Row(
@@ -82,7 +79,7 @@ fun GenericoTabScreen(
             ) { Text(text = jugadores.size.toString()) }
             IconButton(
                 onClick = {
-                    jugadores = jugadores + JugadorGenericoUiState(id = jugadores.size + 1)
+                    jugadores = jugadores + Pair(jugadores.size + 1, "")
                 },
                 enabled = jugadores.size < 100,
                 colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
@@ -91,7 +88,7 @@ fun GenericoTabScreen(
             }
         }
         for (index in jugadores.indices) {
-            var nombre by rememberSaveable { mutableStateOf(jugadores[index].nombre) }
+            var nombre by rememberSaveable { mutableStateOf(jugadores[index].second) }
             OutlinedTextField(
                 modifier = Modifier
                     .padding(vertical = 8.dp)
@@ -100,12 +97,12 @@ fun GenericoTabScreen(
                 onValueChange = {
                     if (it.length <= 10) {
                         jugadores = jugadores.toMutableList()
-                            .apply { this[index] = this[index].copy(nombre = it) }
+                            .apply { this[index] = this[index].copy(second = it) }
                         nombre = it
                     } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
                 },
                 maxLines = 1,
-                placeholder = { Text(text = "Jugador ${jugadores[index].id}") },
+                placeholder = { Text(text = "Jugador ${jugadores[index].first}") },
                 keyboardOptions = KeyboardOptions(imeAction = if (index == jugadores.size - 1) ImeAction.Done else ImeAction.Next),
             )
         }

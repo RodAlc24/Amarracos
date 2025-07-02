@@ -79,7 +79,7 @@ fun PochaScreen(
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 if (!isPocha || uiState.rondaApuestas || !pochaViewModel.apuestasEqualVictorias()) {
-                    pochaViewModel.changeRound(isPocha)
+                    pochaViewModel.changeRound(isPocha, context)
                 } else {
                     ToastRateLimiter.showToast(
                         context = context,
@@ -109,7 +109,12 @@ fun PochaScreen(
                             modifier = Modifier
 //                        .fillMaxWidth(0.9f)
                                 .padding(8.dp)
-                                .clickable(onClick = { pochaViewModel.setDuplica(!uiState.duplica) }),
+                                .clickable(onClick = {
+                                    pochaViewModel.setDuplica(
+                                        duplica = !uiState.duplica,
+                                        context = context
+                                    )
+                                }),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -123,7 +128,12 @@ fun PochaScreen(
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Switch(
                                     checked = uiState.duplica,
-                                    onCheckedChange = { pochaViewModel.setDuplica(it) })
+                                    onCheckedChange = {
+                                        pochaViewModel.setDuplica(
+                                            duplica = it,
+                                            context = context
+                                        )
+                                    })
                             }
                         }
                     }
@@ -131,13 +141,13 @@ fun PochaScreen(
             }
             items(uiState.jugadores) { jugador ->
                 val pointType = if (isPocha) {
-                        if (uiState.rondaApuestas)
-                            GenericoViewModel.PointType.APUESTA
-                        else
-                            GenericoViewModel.PointType.VICTORIA
-                    } else {
-                        GenericoViewModel.PointType.INCREMENTO
-                    }
+                    if (uiState.rondaApuestas)
+                        GenericoViewModel.PointType.APUESTA
+                    else
+                        GenericoViewModel.PointType.VICTORIA
+                } else {
+                    GenericoViewModel.PointType.INCREMENTO
+                }
 
                 PlayerCard(
                     name = jugador.nombre,
@@ -149,7 +159,8 @@ fun PochaScreen(
                     pochaViewModel.updatePoints(
                         jugadorId = jugador.id,
                         newPoints = newPoints,
-                        pointType = pointType
+                        pointType = pointType,
+                        context = context
                     )
                 }
             }
@@ -169,7 +180,8 @@ fun PreviewPochaScreen() {
             JugadorGenericoUiState(nombre = "Jugador 1"),
             JugadorGenericoUiState(nombre = "Jugador 2"),
             JugadorGenericoUiState(nombre = "Jugador 3")
-        )
+        ),
+        context = LocalContext.current
     )
 
     AmarracosTheme {

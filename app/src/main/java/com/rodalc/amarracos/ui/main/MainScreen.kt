@@ -131,12 +131,13 @@ fun MainScreen(
                 }
                 composable(route = Tabs.TAB_POCHA.name) {
                     GenericoTabScreen(
-                        canLoad = false,
+                        canLoad = pochaViewModel.canLoadState(context = context, isPocha = true),
                         onStartClick = {
-                            pochaViewModel.startGame(jugadores = it)
+                            pochaViewModel.startGame(jugadores = it, context = context, isPocha = true)
                             navigate(Screens.SCREEN_POCHA.name)
                         },
                         onLoadClick = {
+                            pochaViewModel.loadState(context = context, isPocha = true)
                             navigate(Screens.SCREEN_POCHA.name)
                         },
                         modifier = Modifier.fillMaxWidth(0.8f)
@@ -144,12 +145,13 @@ fun MainScreen(
                 }
                 composable(route = Tabs.TAB_GENERICO.name) {
                     GenericoTabScreen(
-                        canLoad = false,
+                        canLoad = genericoViewModel.canLoadState(context = context, isPocha = false),
                         onStartClick = {
-                            genericoViewModel.startGame(jugadores = it)
+                            genericoViewModel.startGame(jugadores = it, context = context)
                             navigate(Screens.SCREEN_GENERICO.name)
                         },
                         onLoadClick = {
+                            genericoViewModel.loadState(context = context, isPocha = false)
                             navigate(Screens.SCREEN_GENERICO.name)
                         },
                         modifier = Modifier.fillMaxWidth(0.8f)

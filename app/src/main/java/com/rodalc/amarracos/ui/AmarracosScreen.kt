@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.rodalc.amarracos.comun.PantallaResultados
+import com.rodalc.amarracos.data.generico.GenericoViewModel
 import com.rodalc.amarracos.data.mus.MusViewModel
 import com.rodalc.amarracos.generico.PantallaGenerico
 import com.rodalc.amarracos.pocha.PantallaPocha
@@ -16,6 +17,7 @@ import com.rodalc.amarracos.ui.main.MainScreen
 import com.rodalc.amarracos.ui.main.Screens
 import com.rodalc.amarracos.ui.main.SettingsScreen
 import com.rodalc.amarracos.ui.mus.MusScreen
+import com.rodalc.amarracos.ui.pocha.PochaScreen
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 /**
@@ -39,21 +41,30 @@ fun AmarracosScreen() {
         Screens.valueOf(backStackEntry?.destination?.route ?: Screens.SCREEN_START.name)
 
     val musViewModel: MusViewModel = viewModel()
+    val genericoViewModel: GenericoViewModel = viewModel()
+    val pochaViewModel: GenericoViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = Screens.SCREEN_START.name) {
         composable(Screens.SCREEN_START.name) {
             MainScreen(
                 navigate = { navController.navigate(it) },
-                musViewModel = musViewModel
+                musViewModel = musViewModel,
+                genericoViewModel = genericoViewModel,
+                pochaViewModel = pochaViewModel
             )
         }
         composable(Screens.SCREEN_MUS.name) {
             MusScreen(
                 musViewModel = musViewModel,
                 onUpButtonClick = { navController.navigateUp() },
-                )
+            )
         }
-        composable(Screens.SCREEN_POCHA.name) { PantallaPocha(navController) }
+        composable(Screens.SCREEN_POCHA.name) {
+            PochaScreen(
+                pochaViewModel = pochaViewModel,
+                onUpButtonClick = { navController.navigateUp() }
+            )
+        }
         composable(Screens.SCREEN_GENERICO.name) { PantallaGenerico(navController) }
         composable(Screens.SCREEN_CONFIG.name) { SettingsScreen(navigateUp = { navController.navigateUp() }) }
         composable(Screens.SCREEN_RES_POCHA.name) {

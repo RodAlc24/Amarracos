@@ -1,6 +1,10 @@
 package com.rodalc.amarracos.ui.tabs
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,21 +52,24 @@ fun AbstractTabScreen(
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier
+                    .padding(16.dp)
+                    .animateContentSize()
             ) {
                 content()
-                Spacer(Modifier.height(20.dp))
-                Button(
-                    onClick = { onStartClick() },
-                    modifier = Modifier.fillMaxWidth(0.9f),
-                ) { Text("Empezar nueva partida") }
             }
         }
+        Spacer(Modifier.height(20.dp))
+        Button(
+            onClick = { onStartClick() },
+            modifier = Modifier.fillMaxWidth(),
+        ) { Text("Empezar nueva partida") }
         Spacer(Modifier.height(20.dp))
         OutlinedButton(
             onClick = { onLoadClick() },
             enabled = canLoad,
             modifier = Modifier.fillMaxWidth()
         ) { Text("Cargar partida guardada") }
+        Spacer(Modifier.height(20.dp))
     }
 }

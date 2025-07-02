@@ -100,4 +100,14 @@ class GenericoViewModel : ViewModel() {
             currentState.copy(duplica = duplica)
         }
     }
+
+    fun apuestasEqualVictorias(): Boolean {
+        var value = 0
+
+        uiState.value.jugadores.forEach {
+            value += it.apuesta - it.victoria
+        }
+
+        return value == 0
+    }
 }

@@ -39,6 +39,7 @@ import com.rodalc.amarracos.data.generico.JugadorGenericoUiState
 import com.rodalc.amarracos.storage.DataStoreManager
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
+import com.rodalc.amarracos.utils.ToastRateLimiter
 
 @Composable
 fun PochaScreen(
@@ -75,7 +76,16 @@ fun PochaScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { pochaViewModel.changeRound() }) {
+            FloatingActionButton(onClick = {
+                if (uiState.rondaApuestas || !pochaViewModel.apuestasEqualVictorias()) {
+                    pochaViewModel.changeRound()
+                } else {
+                    ToastRateLimiter.showToast(
+                        context = context,
+                        message = "Las apuestas no pueden coincidir con el número de rondas jugadas"
+                    )
+                }
+            }) {
                 Icon(Icons.Rounded.Done, contentDescription = "Hecho")
             }
 

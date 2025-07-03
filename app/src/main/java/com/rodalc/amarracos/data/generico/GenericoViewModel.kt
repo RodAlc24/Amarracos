@@ -99,7 +99,7 @@ class GenericoViewModel : ViewModel() {
                     jugador
                 }
             }
-            pushUndo()
+            //pushUndo()
             _uiState.update { currentState ->
                 currentState.copy(jugadores = updatedJugadores)
             }
@@ -118,7 +118,7 @@ class GenericoViewModel : ViewModel() {
      *                In Pocha, scoring rules might differ.
      */
     fun changeRound(isPocha: Boolean, context: Context) {
-        val rondaApuestas = !_uiState.value.rondaApuestas
+        val rondaApuestas = if (isPocha) !_uiState.value.rondaApuestas else true
         var updatedJugadores = _uiState.value.jugadores
         var duplica = _uiState.value.duplica
 
@@ -182,7 +182,7 @@ class GenericoViewModel : ViewModel() {
      * @param context The Android context required for saving the state.
      */
     fun setDuplica(duplica: Boolean, context: Context) {
-        pushUndo()
+        //pushUndo()
         _uiState.update { currentState ->
             currentState.copy(duplica = duplica)
         }
@@ -325,7 +325,7 @@ class GenericoViewModel : ViewModel() {
                 ID -> jugador.id
             }
         })
-        pushUndo()
+        //pushUndo()
         _uiState.update { currentState ->
             currentState.copy(jugadores = sortedJugadores)
         }

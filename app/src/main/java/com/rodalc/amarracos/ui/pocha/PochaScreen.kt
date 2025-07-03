@@ -104,7 +104,7 @@ fun PochaScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 8.dp)
                 .fillMaxHeight(),
-            columns = GridCells.Adaptive(minSize = 400.dp)
+            columns = GridCells.Adaptive(minSize = 350.dp)
         ) {
             if (isPocha) {
                 stickyHeader {

@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,13 +33,14 @@ import com.rodalc.amarracos.ui.theme.AmarracosTheme
 fun PlayerCard(
     modifier: Modifier = Modifier,
     name: String = "",
-    newPoints: Int = 0,
     totalPoints: Int = 0,
+    newPoints: Int = 0,
     extraPoints: Int? = null,
     roundApuestas: Boolean = true,
     incrementPoints: (Int) -> Unit = {},
 ) {
-    val color = if (extraPoints == null || roundApuestas || extraPoints == newPoints) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
+    val color =
+        if (extraPoints == null || roundApuestas || extraPoints == newPoints) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
     Card(
         modifier = modifier
             .fillMaxWidth(0.9f)
@@ -76,63 +77,76 @@ fun PlayerCard(
                 )
             }
             Spacer(modifier = Modifier.height(15.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(0.9f),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Apuestas: ",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f) // Allocate space for the text
-                        .clipToBounds()
+            if (extraPoints == null) { // Generico
+                RowPoints(
+                    title = "Puntos",
+                    points = newPoints,
+                    onClickIncrement = { incrementPoints(it) },
+                    playerName = name,
+                    removeEnabled = newPoints > -999,
+                    addEnabled = newPoints < 999
                 )
-                TextButton(
-                    onClick = { incrementPoints(-1) },
-                    enabled = newPoints > 0 && roundApuestas
-                ) { Icon(Icons.Rounded.Remove, contentDescription = "Quitar 1 a $name") }
-                Box(
-                    modifier = Modifier.width(40.dp),
-                    contentAlignment = Alignment.Center
-                ) { Text(text = newPoints.toString(), color = color) }
-                TextButton(
-                    onClick = { incrementPoints(1) },
-                    enabled = newPoints < 99 && roundApuestas
-                ) { Icon(Icons.Rounded.Add, contentDescription = "Añadir uno a $name") }
-
-            }
-            if (extraPoints != null) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(0.9f),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Victorias: ",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .weight(1f) // Allocate space for the text
-                            .clipToBounds()
-                    )
-                    TextButton(
-                        onClick = { incrementPoints(-1) },
-                        enabled = extraPoints > 0 && !roundApuestas
-                    ) { Icon(Icons.Rounded.Remove, contentDescription = "Quitar 1 a $name") }
-                    Box(
-                        modifier = Modifier.width(40.dp),
-                        contentAlignment = Alignment.Center
-                    ) { Text(text = extraPoints.toString(), color = color) }
-                    TextButton(
-                        onClick = { incrementPoints(1) },
-                        enabled = extraPoints < 99 && !roundApuestas
-                    ) { Icon(Icons.Rounded.Add, contentDescription = "Añadir uno a $name") }
-
-                }
+            } else { // Pocha
+                RowPoints(
+                    title = "Apuestas",
+                    points = newPoints,
+                    onClickIncrement = { incrementPoints(it) },
+                    playerName = name,
+                    removeEnabled = newPoints > 0 && roundApuestas,
+                    addEnabled = newPoints < 99 && roundApuestas,
+                    textColor = color
+                )
+                RowPoints(
+                    title = "Victorias",
+                    points = extraPoints,
+                    onClickIncrement = { incrementPoints(it) },
+                    playerName = name,
+                    removeEnabled = extraPoints > 0 && !roundApuestas,
+                    addEnabled = extraPoints < 99 && !roundApuestas,
+                    textColor = color
+                )
             }
         }
+    }
+}
+
+
+@Composable
+fun RowPoints(
+    title: String,
+    points: Int,
+    onClickIncrement: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    playerName: String = "Jugador",
+    removeEnabled: Boolean = true,
+    addEnabled: Boolean = true,
+    textColor: Color = MaterialTheme.colorScheme.onSurface
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(0.9f),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "$title: ",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .weight(1f) // Allocate space for the text
+                .clipToBounds()
+        )
+        TextButton(
+            onClick = { onClickIncrement(-1) },
+            enabled = removeEnabled
+        ) { Icon(Icons.Rounded.Remove, contentDescription = "Quitar 1 a $playerName") }
+        Box(
+            modifier = Modifier.width(40.dp),
+            contentAlignment = Alignment.Center
+        ) { Text(text = points.toString(), color = textColor) }
+        TextButton(
+            onClick = { onClickIncrement(1) },
+            enabled = addEnabled
+        ) { Icon(Icons.Rounded.Add, contentDescription = "Añadir uno a $playerName") }
     }
 }
 
@@ -141,7 +155,8 @@ fun PlayerCard(
 fun PreviewPlayerRow() {
     AmarracosTheme {
         PlayerCard(
-            name = "Jugador",
+            modifier = Modifier.width(350.dp),
+            name = "mmmmmmmmmm",
             newPoints = 14,
             totalPoints = 10,
             extraPoints = 2,
@@ -149,15 +164,3 @@ fun PreviewPlayerRow() {
     }
 }
 
-@Preview
-@Composable
-fun PreviewExpandedPlayerRow() {
-    AmarracosTheme {
-        PlayerCard(
-            name = "Jugador",
-            newPoints = 14,
-            totalPoints = 10,
-            extraPoints = 2,
-            incrementPoints = {})
-    }
-}

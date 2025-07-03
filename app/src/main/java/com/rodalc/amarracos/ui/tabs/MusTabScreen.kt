@@ -25,18 +25,20 @@ import com.rodalc.amarracos.ui.theme.AmarracosTheme
 import com.rodalc.amarracos.utils.ToastRateLimiter
 
 /**
- * Composable function for the Mus game setup screen.
+ * Displays the setup screen for a Mus game.
  *
- * This screen allows users to configure and start a new Mus game or load a previously saved one.
- * It includes input fields for team names, a selection for the target score (30 or 40 points),
- * and buttons to start a new game or load an existing one.
+ * This screen provides options to:
+ * - Enter names for the two teams (e.g., "Buenos", "Malos").
+ * - Select the target score for the game (30 or 40 points).
+ * - Start a new game with the configured settings.
+ * - Load a previously saved game (if available).
  *
- * @param modifier Modifier for customizing the layout and appearance of the screen.
- * @param canLoad Boolean indicating whether a saved game is available to load.
- *                Controls the enabled state of the "Load saved game" button.
- * @param onStartClick Lambda function to be invoked when the "Start new game" button is clicked.
- *                     It receives the names of the "good" team, the "bad" team, and the target score.
- *                     Default names are used if the input fields are empty.
+ * @param modifier The [Modifier] to be applied to the layout.
+ * @param canLoad A boolean indicating whether a saved game can be loaded. This controls the enabled state of the "Load saved game" button.
+ * @param labelBuenos The default label for the "good" team's name input field.
+ * @param labelMalos The default label for the "bad" team's name input field.
+ * @param puntos30 A boolean indicating the default selection for the target score (true for 30 points, false for 40 points).
+ * @param onStartClick A lambda function called when the "Start new game" button is clicked. It passes the names of the "good" and "bad" teams, and whether the target score is 30 points.
  * @param onLoadClick Lambda function to be invoked when the "Load saved game" button is clicked.
  */
 @Composable

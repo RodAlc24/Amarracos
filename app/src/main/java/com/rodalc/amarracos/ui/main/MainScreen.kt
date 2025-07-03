@@ -37,6 +37,20 @@ import com.rodalc.amarracos.ui.tabs.GenericoTabScreen
 import com.rodalc.amarracos.ui.tabs.MusTabScreen
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
+/**
+ * Composable function for the main screen of the application.
+ * This screen displays a tab layout for different game modes (Mus, Pocha, Generic).
+ * It uses a [Scaffold] to provide a top app bar with a title and a settings icon.
+ * The main content area uses a [PrimaryTabRow] to switch between different game tabs.
+ * Each tab hosts a specific game screen ([MusTabScreen] or [GenericoTabScreen])
+ * and handles starting new games or loading existing ones.
+ *
+ * @param modifier Optional [Modifier] for the root composable.
+ * @param musViewModel The [MusViewModel] used for the Mus game tab.
+ * @param genericoViewModel The [GenericoViewModel] used for the Generic game tab.
+ * @param pochaViewModel The [GenericoViewModel] used for the Pocha game tab.
+ * @param navigate A lambda function to handle navigation to other screens. It takes a route string as a parameter.
+ */
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,

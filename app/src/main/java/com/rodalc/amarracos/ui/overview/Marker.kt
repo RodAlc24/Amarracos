@@ -18,7 +18,8 @@
  *   File: sample/compose/src/main/kotlin/com/patrykandpatrick/vico/sample/compose/Marker.kt
  *   Commit: 490597d9dc18d4ee6716c81df08cbde155d40c0d
  *
- * No changes have been made.
+ * The changes made are as follows:
+ *  Cocumentation
  */
 
 package com.rodalc.amarracos.ui.overview
@@ -42,6 +43,15 @@ import com.patrykandpatrick.vico.core.common.component.ShapeComponent
 import com.patrykandpatrick.vico.core.common.component.TextComponent
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 
+/**
+ * Creates and remembers a [CartesianMarker] that can be used to highlight points on a chart.
+ *
+ * This function utilizes Material Design components and styling to create a visually appealing marker.
+ *
+ * @param valueFormatter The formatter to be used for the marker's label. Defaults to [DefaultCartesianMarker.ValueFormatter.default].
+ * @param showIndicator Determines whether to show an indicator (a circular shape) on the marker. Defaults to `true`.
+ * @return A [CartesianMarker] instance.
+ */
 @Composable
 internal fun rememberMarker(
     valueFormatter: DefaultCartesianMarker.ValueFormatter =

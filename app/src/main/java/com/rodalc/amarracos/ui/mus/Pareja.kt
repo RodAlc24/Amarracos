@@ -22,6 +22,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
+/**
+ * Composable function that displays the score of a pair in a Mus game.
+ *
+ * @param name The name of the pair.
+ * @param juegos The number of games won by the pair.
+ * @param puntos The current points of the pair.
+ * @param modifier The modifier to be applied to the layout.
+ * @param increment A callback function to increment or decrement the points.
+ * @param landscape A boolean indicating whether the layout should be optimized for landscape mode.
+ * @param extraContent An optional composable function to display additional content.
+ */
 @Composable
 fun Pareja(
     name: String,

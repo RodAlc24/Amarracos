@@ -16,11 +16,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 /**
- * Barra de título para las pantallas.
+ * Title bar for screens.
  *
- * @param title El título de la pantalla
- * @param onUpButtonClick La acción a realizar al pulsar el botón de retroceso
- * @param actions Las acciones a realizar a la derecha de la barra de título
+ * @param title The title of the screen.
+ * @param showUpButton Whether to show the up button.
+ * @param onUpButtonClick The action to perform when the up button is clicked.
+ * @param actions The actions to perform on the right side of the title bar.
  */
 @Composable
 fun TitleTopBar(

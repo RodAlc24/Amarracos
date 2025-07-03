@@ -42,6 +42,16 @@ import com.rodalc.amarracos.ui.elements.TitleTopBar
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 import com.rodalc.amarracos.utils.ToastRateLimiter
 
+/**
+ * Composable function that represents the screen for the Pocha game.
+ * It displays the players, their scores, and allows the user to input bets and victories.
+ *
+ * @param modifier Modifier to be applied to the layout.
+ * @param pochaViewModel ViewModel for managing the game state.
+ * @param isPocha Boolean indicating whether the game is Pocha or a generic game.
+ * @param onUpButtonClick Callback function for when the up button is clicked.
+ * @param showResults Callback function for when the show results button is clicked.
+ */
 @Composable
 fun PochaScreen(
     modifier: Modifier = Modifier,
@@ -79,8 +89,17 @@ fun PochaScreen(
                 onUpButtonClick = onUpButtonClick,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    SortMenu(sortBy = { pochaViewModel.sortPlayersBy(sortType = it, context = context) })
-                    OptionsMenu(undoEnabled = canUndo.value, undo = {pochaViewModel.undo(context)}, showResults = showResults)
+                    SortMenu(sortBy = {
+                        pochaViewModel.sortPlayersBy(
+                            sortType = it,
+                            context = context
+                        )
+                    })
+                    OptionsMenu(
+                        undoEnabled = canUndo.value,
+                        undo = { pochaViewModel.undo(context) },
+                        showResults = showResults
+                    )
                 }
             }
         },

@@ -20,7 +20,7 @@
  *
  * It contains only the function previously known as JetpackComposeAITestScores.
  * The changes made are as follows:
- *   - Function name
+ *   - Function name and documentation
  *   - Colors
  *   - VerticalLegend -> HorizontalLegend
  *   - When accessing the colors, use: index -> index % 20
@@ -59,6 +59,12 @@ import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 
 val LegendLabelKey = ExtraStore.Key<Set<String>>()
 
+/**
+ * Composable function that displays a line chart.
+ *
+ * @param modelProducer The [CartesianChartModelProducer] that provides the data for the chart.
+ * @param modifier The modifier to be applied to the chart.
+ */
 @Composable
 fun Chart(
     modelProducer: CartesianChartModelProducer,

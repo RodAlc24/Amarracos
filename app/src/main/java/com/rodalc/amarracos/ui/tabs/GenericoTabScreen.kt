@@ -49,14 +49,18 @@ fun GenericoTabScreen(
 ) {
     val context = LocalContext.current
 
-    var jugadores by rememberSaveable { mutableStateOf(listOf(Pair(1, ""), Pair(2, "")))}
+    var jugadores by rememberSaveable { mutableStateOf(listOf(Pair(1, ""), Pair(2, ""))) }
 
     AbstractTabScreen(
         modifier = modifier,
         canLoad = canLoad,
         onStartClick = {
             onStartClick(
-                jugadores.map { JugadorGenericoUiState(id = it.first, nombre = it.second.ifBlank { "Jugador ${it.first}" }) }
+                jugadores.map {
+                    JugadorGenericoUiState(
+                        id = it.first,
+                        nombre = it.second.ifBlank { "Jugador ${it.first}" })
+                }
             )
         },
         onLoadClick = onLoadClick,

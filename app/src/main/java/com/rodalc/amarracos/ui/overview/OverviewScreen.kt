@@ -17,6 +17,13 @@ import com.rodalc.amarracos.data.generico.JugadorGenericoUiState
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import kotlinx.coroutines.runBlocking
 
+/**
+ * Composable function that displays the overview screen.
+ * This screen shows a line chart with the historical points of each player.
+ *
+ * @param jugadores The list of players with their historical points.
+ * @param onUpButtonClick The callback to be invoked when the up button is clicked.
+ */
 @Composable
 fun OverviewScreen(
     jugadores: List<JugadorGenericoUiState>,

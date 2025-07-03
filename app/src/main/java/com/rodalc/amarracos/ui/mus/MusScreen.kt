@@ -31,6 +31,20 @@ import com.rodalc.amarracos.ui.elements.PopUp
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
+/**
+ * Composable function for the Mus game screen.
+ *
+ * This function displays the game interface, including the scores for both teams,
+ * buttons for bets, and options for undoing actions or calling an "órdago".
+ * It adapts its layout based on the device orientation (portrait or landscape).
+ *
+ * The screen also includes a feature to keep the screen on if the corresponding setting is enabled.
+ * An "órdago" popup is shown when the "Órdago" button is clicked, allowing the user to select the winner of the game.
+ *
+ * @param modifier Modifier for customizing the layout and appearance of the screen.
+ * @param musViewModel ViewModel for managing the game state and logic.
+ * @param onUpButtonClick Lambda function to be executed when the up button in the top bar is clicked.
+ */
 @Composable
 fun MusScreen(
     modifier: Modifier = Modifier,

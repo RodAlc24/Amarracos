@@ -19,9 +19,18 @@ import kotlin.math.abs
 /**
  * ViewModel for managing the state of a generic game.
  *
- * This ViewModel handles the logic for starting a game, updating player points,
- * changing rounds, applying points based on game rules, and managing "duplica" state.
- * It exposes the game state through a [StateFlow] of [GenericoUiState].
+ * This ViewModel is responsible for the business logic of a generic game, which can be configured
+ * for different game types (e.g., "Pocha"). It manages the game state, including player information,
+ * scores, rounds, and game-specific rules like "duplica".
+ *
+ * Key functionalities include:
+ * - Starting a new game with a list of players.
+ * - Updating player points based on different point types (total, bet, win, increment).
+ * - Managing game rounds and applying points according to round-specific rules.
+ * - Handling "duplica" state, which can modify point calculations.
+ * - Saving and loading game state to persist progress.
+ * - Providing undo functionality to revert the last action.
+ * - Sorting players based on different criteria (name, points, ID).
  */
 class GenericoViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(GenericoUiState())
@@ -38,7 +47,7 @@ class GenericoViewModel : ViewModel() {
      * This function initializes the game state with the provided list of players.
      * If a player's name is blank, it assigns a default name in the format "Jugador {id}".
      *
-     * @param jugadores A list of [JugadorGenericoUiState] objects representing the players in the game.
+     * @param jugadores A list of [JugadorGenericoUiState] objects representing the players.
      * @param context The Android context required for saving the state.
      * @param isPocha A boolean indicating if the current game is a "Pocha" game.
      */
@@ -78,8 +87,8 @@ class GenericoViewModel : ViewModel() {
      * Updates the points of a specific player.
      *
      * @param jugadorId The ID of the player whose points are to be updated.
-     * @param newPoints The number of points to add.
-     * @param pointType The type of points to update (TOTAL, APUESTA, VICTORIA, INCREMENTO).
+     * @param newPoints The number of points to add (can be negative for subtraction).
+     * @param pointType The type of points to update, as defined by [PointType].
      * @param context The Android context required for saving the state.
      */
     fun updatePoints(jugadorId: Int, newPoints: Int, pointType: PointType, context: Context) {
@@ -114,8 +123,8 @@ class GenericoViewModel : ViewModel() {
      * It handles the application of points based on whether the game is a "Pocha" game
      * and whether the current round is for betting or playing.
      *
-     * @param isPocha A boolean indicating if the current game is a "Pocha" game.
-     *                In Pocha, scoring rules might differ.
+     * @param isPocha A boolean indicating if the current game is a "Pocha" game. In "Pocha", scoring rules might differ, and rounds can be split into betting and playing phases.
+     * @param context The Android context required for saving the state.
      */
     fun changeRound(isPocha: Boolean, context: Context) {
         val rondaApuestas = if (isPocha) !_uiState.value.rondaApuestas else true
@@ -144,9 +153,10 @@ class GenericoViewModel : ViewModel() {
      * Applies points to a player based on their bets and victories.
      *
      * @param jugador The player to apply points to.
-     * @param duplica Whether to double the points.
-     * @param isPocha Whether the current round is a "Pocha" round.
-     * @return The updated player with the new points.
+     * @param duplica A boolean indicating whether to double the points (specific to "Pocha" rules).
+     * @param isPocha A boolean indicating if the current game is a "Pocha" game. This affects
+     *                how points are calculated (e.g., bonus for matching bets and victories).
+     * @return The updated [JugadorGenericoUiState] with the new points and updated history.
      */
     private fun applyPoints(
         jugador: JugadorGenericoUiState,
@@ -170,7 +180,12 @@ class GenericoViewModel : ViewModel() {
             victoria = 0,
             incremento = 0,
             puntos = jugador.puntos + increment,
-            historicoPuntos = jugador.historicoPuntos.plus(Pair(jugador.historicoPuntos.size, jugador.puntos + increment))
+            historicoPuntos = jugador.historicoPuntos.plus(
+                Pair(
+                    jugador.historicoPuntos.size,
+                    jugador.puntos + increment
+                )
+            )
         )
 
     }
@@ -191,9 +206,10 @@ class GenericoViewModel : ViewModel() {
     }
 
     /**
-     * Comprueba si la suma de las apuestas de todos los jugadores es igual a la suma de las victorias de todos los jugadores.
+     * Checks if the sum of all players' bets equals the sum of all players' victories.
+     * This is typically used in games like "Pocha" to ensure that the total bets match the total wins.
      *
-     * @return True si la suma de las apuestas es igual a la suma de las victorias, False en caso contrario.
+     * @return `true` if the sum of bets equals the sum of victories, `false` otherwise.
      */
     fun apuestasEqualVictorias(): Boolean {
         var value = 0

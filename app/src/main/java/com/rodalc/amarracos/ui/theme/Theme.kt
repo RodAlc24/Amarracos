@@ -246,6 +246,15 @@ private val highContrastDarkColorScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDarkHighContrast,
 )
 
+/**
+ * A class that holds all the colors for a specific color role, e.g. primary, secondary, tertiary,
+ * error.
+ *
+ * @property color The main color of the role.
+ * @property onColor The color to use for content on top of [color].
+ * @property colorContainer The container color of the role.
+ * @property onColorContainer The color to use for content on top of [colorContainer].
+ */
 @Immutable
 data class ColorFamily(
     val color: Color,
@@ -258,6 +267,18 @@ val unspecified_scheme = ColorFamily(
     Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
 )
 
+/**
+ * Composable function that applies the Amarracos theme to its [content].
+ *
+ * This function determines the appropriate color scheme based on the system's dark theme setting
+ * and whether dynamic coloring is enabled (available on Android 12+). It also sets up edge-to-edge
+ * display for a more immersive user experience.
+ *
+ * @param darkTheme Whether to use the dark theme. Defaults to the system's dark theme setting.
+ * @param dynamicColor Whether to use dynamic coloring, which adapts to the user's wallpaper.
+ *                     This is only available on Android 12 and above. Defaults to `false`.
+ * @param content The composable content to which the theme will be applied.
+ */
 @Composable
 fun AmarracosTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -289,8 +310,13 @@ fun AmarracosTheme(
 }
 
 /**
- * Sets up edge-to-edge for the window of this [view]. The system icon colors are set to either
- * light or dark depending on whether the [darkTheme] is enabled or not.
+ * Configures the window of the given view for edge-to-edge display.
+ *
+ * This function adjusts the system UI elements like the status bar and navigation bar
+ * to allow the app's content to extend to the edges of the screen. The appearance of
+ * system icons (e.g., status bar icons, navigation bar buttons) is also updated based on the [darkTheme] setting.
+ * @param view The view whose window will be configured for edge-to-edge display.
+ * @param darkTheme A boolean indicating whether the dark theme is enabled. This determines the appearance of system icons.
  */
 private fun setUpEdgeToEdge(view: View, darkTheme: Boolean) {
     val window = (view.context as Activity).window

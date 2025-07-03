@@ -209,7 +209,9 @@ fun SettingsScreen(
  * @param icon The icon of the option.
  * @param title The title of the option.
  * @param modifier The modifier.
- * @param function The function to execute when the option is clicked.
+ * @param clickable If the option is clickable.
+ * @param onClick The function to execute when the option is clicked.
+ * @param function The composable function to execute at the end of the row.
  */
 @Composable
 private fun SettingsElement(
@@ -235,7 +237,11 @@ private fun SettingsElement(
                 .padding(16.dp)
                 .sizeIn(72.dp),
         ) {
-            Icon(imageVector = icon, contentDescription = icon.name, tint = MaterialTheme.colorScheme.primary)
+            Icon(
+                imageVector = icon,
+                contentDescription = icon.name,
+                tint = MaterialTheme.colorScheme.primary
+            )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = title,

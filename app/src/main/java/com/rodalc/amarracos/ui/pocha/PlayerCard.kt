@@ -29,6 +29,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
+/**
+ * A Composable function that displays a player card with their name, total points, and current points.
+ * It also allows incrementing/decrementing points based on the game type (generic or Pocha).
+ *
+ * @param modifier Modifier for styling the card.
+ * @param name The name of the player.
+ * @param totalPoints The total points accumulated by the player.
+ * @param newPoints The points scored in the current round.
+ * @param extraPoints Optional points for Pocha game (victories). If null, it's a generic game.
+ * @param roundApuestas Boolean indicating if it's the betting round in Pocha.
+ * @param incrementPoints Lambda function to handle point changes.
+ */
 @Composable
 fun PlayerCard(
     modifier: Modifier = Modifier,
@@ -111,6 +123,19 @@ fun PlayerCard(
 }
 
 
+/**
+ * A composable function that displays a row with a title, points, and buttons to increment/decrement the points.
+ *
+ * @param title The title to display for the points.
+ * @param points The current points value.
+ * @param onClickIncrement A lambda function to be called when the increment/decrement buttons are clicked.
+ * It receives an integer representing the amount to increment/decrement by (e.g., 1 for increment, -1 for decrement).
+ * @param modifier Optional [Modifier] for this composable.
+ * @param playerName The name of the player, used in content descriptions for accessibility. Defaults to "Jugador".
+ * @param removeEnabled A boolean indicating whether the remove button should be enabled. Defaults to true.
+ * @param addEnabled A boolean indicating whether the add button should be enabled. Defaults to true.
+ * @param textColor The color of the points text. Defaults to `MaterialTheme.colorScheme.onSurface`.
+ */
 @Composable
 fun RowPoints(
     title: String,

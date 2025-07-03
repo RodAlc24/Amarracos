@@ -169,7 +169,8 @@ class GenericoViewModel : ViewModel() {
             apuesta = 0,
             victoria = 0,
             incremento = 0,
-            puntos = jugador.puntos + increment
+            puntos = jugador.puntos + increment,
+            historicoPuntos = jugador.historicoPuntos.plus(Pair(jugador.historicoPuntos.size, jugador.puntos + increment))
         )
 
     }
@@ -318,13 +319,18 @@ class GenericoViewModel : ViewModel() {
      * @param context The Android context required for saving the state.
      */
     fun sortPlayersBy(sortType: SortType, context: Context) {
-        val sortedJugadores = _uiState.value.jugadores.sortedWith(compareBy { jugador ->
+        var sortedJugadores = _uiState.value.jugadores.sortedWith(compareBy { jugador ->
             when (sortType) {
                 NAME -> jugador.nombre
                 POINTS -> jugador.puntos
                 ID -> jugador.id
             }
         })
+
+        if (sortType == POINTS) {
+            sortedJugadores = sortedJugadores.reversed()
+        }
+
         //pushUndo()
         _uiState.update { currentState ->
             currentState.copy(jugadores = sortedJugadores)

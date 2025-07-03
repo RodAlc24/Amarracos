@@ -47,7 +47,8 @@ fun PochaScreen(
     modifier: Modifier = Modifier,
     pochaViewModel: GenericoViewModel = viewModel(),
     isPocha: Boolean = true,
-    onUpButtonClick: () -> Unit = {}
+    onUpButtonClick: () -> Unit = {},
+    showResults: () -> Unit = {},
 ) {
     val uiState by pochaViewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -79,7 +80,7 @@ fun PochaScreen(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     SortMenu(sortBy = { pochaViewModel.sortPlayersBy(sortType = it, context = context) })
-                    OptionsMenu(undoEnabled = canUndo.value, undo = {pochaViewModel.undo(context)}, showResults = {})
+                    OptionsMenu(undoEnabled = canUndo.value, undo = {pochaViewModel.undo(context)}, showResults = showResults)
                 }
             }
         },

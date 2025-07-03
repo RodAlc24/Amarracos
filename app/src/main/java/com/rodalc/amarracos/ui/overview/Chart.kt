@@ -60,7 +60,7 @@ import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 val LegendLabelKey = ExtraStore.Key<Set<String>>()
 
 @Composable
-fun Puntuaciones(
+fun Chart(
     modelProducer: CartesianChartModelProducer,
     modifier: Modifier = Modifier,
 ) {

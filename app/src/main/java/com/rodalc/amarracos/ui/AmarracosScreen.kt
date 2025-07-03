@@ -1,6 +1,7 @@
 package com.rodalc.amarracos.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -8,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.rodalc.amarracos.comun.PantallaResultados
+import com.rodalc.amarracos.ui.overview.OverviewScreen
 import com.rodalc.amarracos.data.generico.GenericoViewModel
 import com.rodalc.amarracos.data.mus.MusViewModel
 import com.rodalc.amarracos.ui.main.MainScreen
@@ -28,8 +29,8 @@ import com.rodalc.amarracos.ui.theme.AmarracosTheme
  * - [Screens.SCREEN_POCHA]: Screen for the Pocha game ([PochaScreen]).
  * - [Screens.SCREEN_GENERICO]: Screen for a generic game ([PochaScreen]).
  * - [Screens.SCREEN_CONFIG]: Configuration screen ([SettingsScreen]).
- * - [Screens.SCREEN_RES_POCHA]: Results screen for Pocha ([PantallaResultados]).
- * - [Screens.SCREEN_RES_GEN]: Results screen for the generic game ([PantallaResultados]).
+ * - [Screens.SCREEN_RES_POCHA]: Results screen for Pocha ([OverviewScreen]).
+ * - [Screens.SCREEN_RES_GEN]: Results screen for the generic game ([OverviewScreen]).
  */
 @Composable
 fun AmarracosScreen() {
@@ -41,6 +42,7 @@ fun AmarracosScreen() {
     val musViewModel: MusViewModel = viewModel()
     val genericoViewModel: GenericoViewModel = viewModel()
     val pochaViewModel: GenericoViewModel = viewModel()
+
 
     NavHost(navController = navController, startDestination = Screens.SCREEN_START.name) {
         composable(Screens.SCREEN_START.name) {
@@ -60,27 +62,31 @@ fun AmarracosScreen() {
         composable(Screens.SCREEN_POCHA.name) {
             PochaScreen(
                 pochaViewModel = pochaViewModel,
-                onUpButtonClick = { navController.navigateUp() }
+                onUpButtonClick = { navController.navigateUp() },
+                showResults = { navController.navigate(Screens.SCREEN_RES_POCHA.name) }
             )
         }
         composable(Screens.SCREEN_GENERICO.name) {
             PochaScreen(
                 pochaViewModel = genericoViewModel,
                 isPocha = false,
-                onUpButtonClick = { navController.navigateUp() }
+                onUpButtonClick = { navController.navigateUp() },
+                showResults = { navController.navigate(Screens.SCREEN_RES_GEN.name) }
             )
         }
         composable(Screens.SCREEN_CONFIG.name) { SettingsScreen(navigateUp = { navController.navigateUp() }) }
         composable(Screens.SCREEN_RES_POCHA.name) {
-            PantallaResultados(
-                pocha = true,
-                navController
+            val pochaState by pochaViewModel.uiState.collectAsState()
+            OverviewScreen(
+                jugadores = pochaState.jugadores,
+                onUpButtonClick = { navController.navigateUp() },
             )
         }
         composable(Screens.SCREEN_RES_GEN.name) {
-            PantallaResultados(
-                pocha = false,
-                navController
+            val genericoState by genericoViewModel.uiState.collectAsState()
+            OverviewScreen(
+                jugadores = genericoState.jugadores,
+                onUpButtonClick = { navController.navigateUp() },
             )
         }
     }

@@ -1,6 +1,7 @@
 package com.rodalc.amarracos.ui.pocha
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -28,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
+import com.rodalc.amarracos.utils.repeatingClickable
 
 /**
  * A Composable function that displays a player card with their name, total points, and current points.
@@ -53,11 +56,26 @@ fun PlayerCard(
 ) {
     val color =
         if (extraPoints == null || roundApuestas || extraPoints == newPoints) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
-    Card(
-        modifier = modifier
+
+    val myModifier = if (extraPoints != null) {
+        modifier
             .fillMaxWidth(0.9f)
             .padding(8.dp)
-            .clickable(onClick = { incrementPoints(1) }),
+            .clickable(onClick = { incrementPoints(1) })
+    } else {
+        modifier
+            .fillMaxWidth(0.9f)
+            .padding(8.dp)
+            .repeatingClickable(
+                interactionSource = remember { MutableInteractionSource() },
+                minDelayMillis = 20,
+                onClick = { incrementPoints(1) }
+            )
+            .clickable(onClick = { incrementPoints(1) })
+    }
+
+    Card(
+        modifier = myModifier
     ) {
         Column(
             modifier = Modifier

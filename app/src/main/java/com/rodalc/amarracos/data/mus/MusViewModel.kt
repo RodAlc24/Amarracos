@@ -26,6 +26,8 @@ class MusViewModel : ViewModel() {
     private val _canUndo = MutableStateFlow(undoStack.isNotEmpty())
     val canUndo: StateFlow<Boolean> = _canUndo.asStateFlow()
 
+    private val filename = "mus2.json"
+
     /**
      * Represents the different types of bets (envites) in a game of Mus.
      * Each enum constant corresponds to a specific betting phase of the game.
@@ -233,26 +235,26 @@ class MusViewModel : ViewModel() {
      * Saves the current UI state to a JSON file.
      *
      * This function serializes the current `_uiState` value into a JSON string
-     * and then writes it to a file named "mus.json" using the `StateSaverManager`.
+     * and then writes it to a file named $filename using the `StateSaverManager`.
      *
      * @param context The Android context required for file operations.
      */
     private fun saveState(context: Context) {
         val json = Json.encodeToString(_uiState.value)
-        StateSaverManager.writteFile(filename = "mus.json", content = json, context = context)
+        StateSaverManager.writteFile(filename = filename, content = json, context = context)
     }
 
     /**
      * Loads the game state from a file.
      *
-     * This function reads the game state from a JSON file named "mus.json".
+     * This function reads the game state from a JSON file named $filename.
      * If the file exists and contains valid data, the UI state is updated
      * with the loaded game state.
      *
      * @param context The Android context required for reading the file.
      */
     fun loadState(context: Context) {
-        val temp = StateSaverManager.readFile(filename = "mus.json", context = context)
+        val temp = StateSaverManager.readFile(filename = filename, context = context)
         if (temp != null) {
             _uiState.update {
                 Json.decodeFromString(temp)
@@ -263,15 +265,15 @@ class MusViewModel : ViewModel() {
     /**
      * Checks if a saved game state file exists.
      *
-     * This function uses the `StateSaverManager` to determine if a file named "mus.json"
+     * This function uses the `StateSaverManager` to determine if a file named $filename
      * exists in the application's storage. This file is expected to contain the saved
      * state of a previous Mus game.
      *
      * @param context The Android context, used by `StateSaverManager` to access application storage.
-     * @return `true` if the saved game state file ("mus.json") exists, `false` otherwise.
+     * @return `true` if the saved game state file exists, `false` otherwise.
      */
     fun canLoadState(context: Context): Boolean {
-        return StateSaverManager.fileExists(filename = "mus.json", context = context)
+        return StateSaverManager.fileExists(filename = filename, context = context)
     }
 
     /**

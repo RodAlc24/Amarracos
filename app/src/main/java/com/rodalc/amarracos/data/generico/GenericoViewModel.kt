@@ -41,6 +41,9 @@ class GenericoViewModel : ViewModel() {
     private val _canUndo = MutableStateFlow(undoStack.isNotEmpty())
     val canUndo = _canUndo.asStateFlow()
 
+    private val filenamePocha = "pocha2.json"
+    private val filenameGenerico = "generico2.json"
+
     /**
      * Starts the game with the given list of players.
      *
@@ -224,15 +227,15 @@ class GenericoViewModel : ViewModel() {
     /**
      * Saves the current game state to a file.
      *
-     * The game state is serialized to JSON and saved to a file named "pocha.json" if it's a "Pocha" game,
-     * or "generico.json" otherwise.
+     * The game state is serialized to JSON and saved to a file named $filenamePocha if it's a "Pocha" game,
+     * or $filenameGenerico if otherwise.
      *
      * @param context The Android context required for file operations.
      */
     private fun saveState(context: Context) {
         val json = Json.encodeToString(_uiState.value)
         StateSaverManager.writteFile(
-            filename = if (_uiState.value.isPocha) "pocha.json" else "generico.json",
+            filename = if (_uiState.value.isPocha) filenamePocha else filenameGenerico,
             context = context,
             content = json
         )
@@ -241,7 +244,7 @@ class GenericoViewModel : ViewModel() {
     /**
      * Loads the game state from a file.
      *
-     * This function reads the game state from a JSON file ("pocha.json" or "generico.json")
+     * This function reads the game state from a JSON file ($filenamePocha or $filenameGenerico)
      * and updates the UI state with the loaded data.
      *
      * @param context The Android context required for reading the file.
@@ -249,7 +252,7 @@ class GenericoViewModel : ViewModel() {
      */
     fun loadState(context: Context, isPocha: Boolean) {
         val temp = StateSaverManager.readFile(
-            filename = if (isPocha) "pocha.json" else "generico.json",
+            filename = if (isPocha) filenamePocha else filenameGenerico,
             context = context
         )
         if (temp != null) {
@@ -267,12 +270,12 @@ class GenericoViewModel : ViewModel() {
      *
      * @param context The Android context used to access the file system.
      * @param isPocha A boolean indicating if the game to check is a "Pocha" game.
-     *                If true, it checks for "pocha.json"; otherwise, it checks for "generico.json".
+     *                If true, it checks for $filenamePocha; otherwise, it checks for $filenameGenerico.
      * @return `true` if a saved game state file exists, `false` otherwise.
      */
     fun canLoadState(context: Context, isPocha: Boolean): Boolean {
         return StateSaverManager.fileExists(
-            filename = if (isPocha) "pocha.json" else "generico.json",
+            filename = if (isPocha) filenamePocha else filenameGenerico,
             context = context
         )
     }

@@ -98,10 +98,10 @@ class GenericoViewModel : ViewModel() {
         val newJugador = _uiState.value.jugadores.find { it.id == jugadorId }
         if (newJugador != null) {
             val updatedJugador = newJugador.copy(
-                apuesta = newJugador.apuesta + if (pointType == APUESTA) newPoints else 0,
-                victoria = newJugador.victoria + if (pointType == VICTORIA) newPoints else 0,
-                incremento = newJugador.incremento + if (pointType == INCREMENTO) newPoints else 0,
-                puntos = newJugador.puntos + if (pointType == TOTAL) newPoints else 0
+                apuesta = if (pointType == APUESTA) newPoints else newJugador.apuesta,
+                victoria = if (pointType == VICTORIA) newPoints else newJugador.victoria,
+                incremento = if (pointType == INCREMENTO) newPoints else newJugador.incremento,
+                puntos = if (pointType == TOTAL) newPoints else newJugador.puntos
             )
 
             val updatedJugadores = _uiState.value.jugadores.map { jugador ->

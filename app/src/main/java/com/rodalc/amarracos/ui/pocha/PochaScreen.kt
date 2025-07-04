@@ -176,8 +176,11 @@ fun PochaScreen(
                     GenericoViewModel.PointType.INCREMENTO
                 }
 
+                val isLastPlayer = uiState.jugadores.last() == jugador
+
                 PlayerCard(
                     name = jugador.nombre,
+                    isLastPlayer = isLastPlayer,
                     newPoints = if (isPocha) jugador.apuesta else jugador.incremento,
                     extraPoints = if (isPocha) jugador.victoria else null,
                     totalPoints = jugador.puntos,

@@ -11,20 +11,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,21 +46,23 @@ import com.rodalc.amarracos.utils.repeatingClickable
  *
  * @param modifier Modifier for styling the card.
  * @param name The name of the player.
+ * @param isLastPlayer Boolean indicating if this is the last player in a list.
  * @param totalPoints The total points accumulated by the player.
  * @param newPoints The points scored in the current round.
  * @param extraPoints Optional points for Pocha game (victories). If null, it's a generic game.
  * @param roundApuestas Boolean indicating if it's the betting round in Pocha.
- * @param incrementPoints Lambda function to handle point changes.
+ * @param changePoints Lambda function to handle point changes.
  */
 @Composable
 fun PlayerCard(
     modifier: Modifier = Modifier,
     name: String = "",
+    isLastPlayer: Boolean = false,
     totalPoints: Int = 0,
     newPoints: Int = 0,
     extraPoints: Int? = null,
     roundApuestas: Boolean = true,
-    incrementPoints: (Int) -> Unit = {},
+    changePoints: (Int) -> Unit = {},
 ) {
     val color =
         if (extraPoints == null || roundApuestas || extraPoints == newPoints) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
@@ -61,17 +71,18 @@ fun PlayerCard(
         modifier
             .fillMaxWidth(0.9f)
             .padding(8.dp)
-            .clickable(onClick = { incrementPoints(1) })
+            .clickable(
+                onClick = { changePoints(if (roundApuestas) newPoints + 1 else (extraPoints + 1)) },
+                enabled = if (roundApuestas) newPoints < 99 else extraPoints < 99
+            )
     } else {
         modifier
             .fillMaxWidth(0.9f)
             .padding(8.dp)
-            .repeatingClickable(
-                interactionSource = remember { MutableInteractionSource() },
-                minDelayMillis = 20,
-                onClick = { incrementPoints(1) }
+            .clickable(
+                onClick = { changePoints(newPoints + 1) },
+                enabled = newPoints < 9999
             )
-            .clickable(onClick = { incrementPoints(1) })
     }
 
     Card(
@@ -108,19 +119,19 @@ fun PlayerCard(
             }
             Spacer(modifier = Modifier.height(15.dp))
             if (extraPoints == null) { // Generico
-                RowPoints(
-                    title = "Puntos",
+                RowPointsWithTextField(
                     points = newPoints,
-                    onClickIncrement = { incrementPoints(it) },
+                    changePoints = { changePoints(it) },
                     playerName = name,
-                    removeEnabled = newPoints > -999,
-                    addEnabled = newPoints < 999
+                    isLastPlayer = isLastPlayer,
+                    removeEnabled = newPoints > -9999,
+                    addEnabled = newPoints < 9999
                 )
             } else { // Pocha
                 RowPoints(
                     title = "Apuestas",
                     points = newPoints,
-                    onClickIncrement = { incrementPoints(it) },
+                    changePoints = { changePoints(it) },
                     playerName = name,
                     removeEnabled = newPoints > 0 && roundApuestas,
                     addEnabled = newPoints < 99 && roundApuestas,
@@ -129,7 +140,7 @@ fun PlayerCard(
                 RowPoints(
                     title = "Victorias",
                     points = extraPoints,
-                    onClickIncrement = { incrementPoints(it) },
+                    changePoints = { changePoints(it) },
                     playerName = name,
                     removeEnabled = extraPoints > 0 && !roundApuestas,
                     addEnabled = extraPoints < 99 && !roundApuestas,
@@ -146,7 +157,7 @@ fun PlayerCard(
  *
  * @param title The title to display for the points.
  * @param points The current points value.
- * @param onClickIncrement A lambda function to be called when the increment/decrement buttons are clicked.
+ * @param changePoints A lambda function to be called when the increment/decrement buttons are clicked.
  * It receives an integer representing the amount to increment/decrement by (e.g., 1 for increment, -1 for decrement).
  * @param modifier Optional [Modifier] for this composable.
  * @param playerName The name of the player, used in content descriptions for accessibility. Defaults to "Jugador".
@@ -155,10 +166,10 @@ fun PlayerCard(
  * @param textColor The color of the points text. Defaults to `MaterialTheme.colorScheme.onSurface`.
  */
 @Composable
-fun RowPoints(
+private fun RowPoints(
     title: String,
     points: Int,
-    onClickIncrement: (Int) -> Unit,
+    changePoints: (Int) -> Unit,
     modifier: Modifier = Modifier,
     playerName: String = "Jugador",
     removeEnabled: Boolean = true,
@@ -179,7 +190,7 @@ fun RowPoints(
                 .clipToBounds()
         )
         TextButton(
-            onClick = { onClickIncrement(-1) },
+            onClick = { changePoints(points - 1) },
             enabled = removeEnabled
         ) { Icon(Icons.Rounded.Remove, contentDescription = "Quitar 1 a $playerName") }
         Box(
@@ -187,15 +198,90 @@ fun RowPoints(
             contentAlignment = Alignment.Center
         ) { Text(text = points.toString(), color = textColor) }
         TextButton(
-            onClick = { onClickIncrement(1) },
+            onClick = { changePoints(points + 1) },
             enabled = addEnabled
         ) { Icon(Icons.Rounded.Add, contentDescription = "Añadir uno a $playerName") }
     }
 }
 
+/**
+ * A Composable function that displays a row with an [OutlinedTextField] for points,
+ * and buttons to increment/decrement the points.
+ *
+ * This composable is typically used when direct input of points is desired,
+ * alongside button-based adjustments.
+ *
+ * @param points The current points value.
+ * @param changePoints A lambda function to be called when the points are changed,
+ * either via the text field or the increment/decrement buttons. It receives the new points value.
+ * @param modifier Optional [Modifier] for this composable.
+ * @param playerName The name of the player, used in content descriptions for accessibility. Defaults to "Jugador".
+ * @param isLastPlayer A boolean indicating if this is the last player in a list. This influences the keyboard's IME action (Done vs Next). Defaults to false.
+ * @param removeEnabled A boolean indicating whether the remove button should be enabled. Defaults to true.
+ * @param addEnabled A boolean indicating whether the add button should be enabled. Defaults to true.
+ */
+@Composable
+private fun RowPointsWithTextField(
+    points: Int,
+    changePoints: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    playerName: String = "Jugador",
+    isLastPlayer: Boolean = false,
+    removeEnabled: Boolean = true,
+    addEnabled: Boolean = true,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(0.9f),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        var isError by rememberSaveable { mutableStateOf(false) }
+        TextButton(
+            onClick = { changePoints(points - 1) },
+            enabled = removeEnabled,
+            modifier = Modifier.repeatingClickable(
+                interactionSource = remember { MutableInteractionSource() },
+                minDelayMillis = 20,
+                onClick = { changePoints(points - 1) },
+                enabled = removeEnabled
+            )
+        ) { Icon(Icons.Rounded.Remove, contentDescription = "Quitar 1 a $playerName") }
+        OutlinedTextField(
+            value = if (points == 0) "" else points.toString(),
+            placeholder = { Text(text = points.toString()) },
+            isError = isError,
+            onValueChange = {
+                val newPoints = it.toIntOrNull() ?: points
+                if (newPoints in -9999..9999) {
+                    changePoints(newPoints)
+                    isError = false
+                } else {
+                    isError = true
+                }
+            },
+            modifier = Modifier.width(100.dp),
+            keyboardOptions = KeyboardOptions(
+                imeAction = if (isLastPlayer) ImeAction.Done else ImeAction.Next,
+                keyboardType = KeyboardType.Number
+            ),
+        )
+        TextButton(
+            onClick = { changePoints(points + 1) },
+            enabled = addEnabled,
+            modifier = Modifier.repeatingClickable(
+                interactionSource = remember { MutableInteractionSource() },
+                minDelayMillis = 20,
+                onClick = { changePoints(points + 1) },
+                enabled = addEnabled
+            )
+        ) { Icon(Icons.Rounded.Add, contentDescription = "Añadir uno a $playerName") }
+    }
+
+}
+
 @Preview
 @Composable
-fun PreviewPlayerRow() {
+fun PreviewPlayerCard() {
     AmarracosTheme {
         PlayerCard(
             modifier = Modifier.width(350.dp),
@@ -203,7 +289,37 @@ fun PreviewPlayerRow() {
             newPoints = 14,
             totalPoints = 10,
             extraPoints = 2,
-            incrementPoints = {})
+            changePoints = {})
     }
 }
 
+@Preview
+@Composable
+fun PreviewRowPoints() {
+    AmarracosTheme {
+        RowPoints(
+            title = "Puntos",
+            points = 14,
+            changePoints = {},
+            modifier = Modifier.width(350.dp),
+            playerName = "Jugador",
+            removeEnabled = true,
+            addEnabled = true
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewRowPointsWithTextField() {
+    AmarracosTheme {
+        RowPointsWithTextField(
+            points = 14,
+            changePoints = {},
+            modifier = Modifier.width(350.dp),
+            playerName = "Jugador",
+            removeEnabled = true,
+            addEnabled = true
+        )
+    }
+}

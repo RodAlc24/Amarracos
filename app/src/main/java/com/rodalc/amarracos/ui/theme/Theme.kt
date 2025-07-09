@@ -1,8 +1,6 @@
 package com.rodalc.amarracos.ui.theme
 
-import android.app.Activity
 import android.os.Build
-import android.view.View
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -10,13 +8,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -247,27 +239,6 @@ private val highContrastDarkColorScheme = darkColorScheme(
 )
 
 /**
- * A class that holds all the colors for a specific color role, e.g. primary, secondary, tertiary,
- * error.
- *
- * @property color The main color of the role.
- * @property onColor The color to use for content on top of [color].
- * @property colorContainer The container color of the role.
- * @property onColorContainer The color to use for content on top of [colorContainer].
- */
-@Immutable
-data class ColorFamily(
-    val color: Color,
-    val onColor: Color,
-    val colorContainer: Color,
-    val onColorContainer: Color
-)
-
-val unspecified_scheme = ColorFamily(
-    Color.Unspecified, Color.Unspecified, Color.Unspecified, Color.Unspecified
-)
-
-/**
  * Composable function that applies the Amarracos theme to its [content].
  *
  * This function determines the appropriate color scheme based on the system's dark theme setting
@@ -295,39 +266,10 @@ fun AmarracosTheme(
         darkTheme -> darkScheme
         else -> lightScheme
     }
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            setUpEdgeToEdge(view, darkTheme)
-        }
-    }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = AppTypography,
         content = content
     )
-}
-
-/**
- * Configures the window of the given view for edge-to-edge display.
- *
- * This function adjusts the system UI elements like the status bar and navigation bar
- * to allow the app's content to extend to the edges of the screen. The appearance of
- * system icons (e.g., status bar icons, navigation bar buttons) is also updated based on the [darkTheme] setting.
- * @param view The view whose window will be configured for edge-to-edge display.
- * @param darkTheme A boolean indicating whether the dark theme is enabled. This determines the appearance of system icons.
- */
-private fun setUpEdgeToEdge(view: View, darkTheme: Boolean) {
-    val window = (view.context as Activity).window
-    WindowCompat.setDecorFitsSystemWindows(window, false)
-    window.statusBarColor = Color.Transparent.toArgb()
-    val navigationBarColor = when {
-        Build.VERSION.SDK_INT >= 29 -> Color.Transparent.toArgb()
-        else -> Color(0xFF, 0xFF, 0xFF, 0x63).toArgb()
-    }
-    window.navigationBarColor = navigationBarColor
-    val controller = WindowCompat.getInsetsController(window, view)
-    controller.isAppearanceLightStatusBars = !darkTheme
-    controller.isAppearanceLightNavigationBars = !darkTheme
 }

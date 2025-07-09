@@ -267,7 +267,6 @@ fun EnviteColumnPreview() {
 @Preview(apiLevel = 35, showSystemUi = false, showBackground = true)
 @Composable
 fun EnvitesLandscapePreview() {
-    val context = LocalContext.current
     val viewModel: MusViewModel = viewModel()
     AmarracosTheme {
         Envites(landscape = true, viewModel = viewModel)

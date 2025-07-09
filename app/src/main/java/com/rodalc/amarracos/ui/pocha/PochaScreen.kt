@@ -31,9 +31,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.data.generico.GenericoViewModel
 import com.rodalc.amarracos.storage.DataStoreManager
 import com.rodalc.amarracos.ui.elements.OptionsMenu
@@ -84,7 +86,7 @@ fun PochaScreen(
         modifier = modifier,
         topBar = {
             TitleTopBar(
-                title = if (isPocha) "Pocha" else "Genérico",
+                title = stringResource(if (isPocha) R.string.title_pocha else R.string.title_generico),
                 showUpButton = true,
                 onUpButtonClick = onUpButtonClick,
             ) {
@@ -110,11 +112,11 @@ fun PochaScreen(
                 } else {
                     ToastRateLimiter.showToast(
                         context = context,
-                        message = "Las apuestas no pueden coincidir con el número de rondas jugadas"
+                        message = context.getString(R.string.toast_error_bets)
                     )
                 }
             }) {
-                Icon(Icons.Rounded.Done, contentDescription = "Hecho")
+                Icon(Icons.Rounded.Done, contentDescription = stringResource(R.string.desc_done))
             }
 
         }
@@ -151,7 +153,7 @@ fun PochaScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.padding(16.dp)
                             ) {
-                                Text(text = "Duplicar puntuación: ")
+                                Text(text = stringResource(R.string.text_double_points))
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Switch(
                                     checked = uiState.duplica,

@@ -18,9 +18,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 import com.rodalc.amarracos.utils.ToastRateLimiter
 
@@ -45,8 +47,8 @@ import com.rodalc.amarracos.utils.ToastRateLimiter
 fun MusTabScreen(
     modifier: Modifier = Modifier,
     canLoad: Boolean = false,
-    labelBuenos: String = "Buenos",
-    labelMalos: String = "Malos",
+    labelBuenos: String = stringResource(R.string.default_buenos),
+    labelMalos: String = stringResource(R.string.default_malos),
     puntos30: Boolean = true,
     onStartClick: (buenos: String, malos: String, puntos30: Boolean) -> Unit = { _, _, _ -> },
     onLoadClick: () -> Unit = {},
@@ -55,6 +57,7 @@ fun MusTabScreen(
     var nombreMalos by rememberSaveable { mutableStateOf("") }
     var puntos30 by rememberSaveable { mutableStateOf(puntos30) }
     val context = LocalContext.current
+    val nameTooLong = stringResource(R.string.toast_name_too_long)
 
 
     AbstractTabScreen(
@@ -77,7 +80,7 @@ fun MusTabScreen(
             onValueChange = {
                 if (it.length <= 10) {
                     nombreBuenos = it
-                } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
+                } else ToastRateLimiter.showToast(context, nameTooLong)
             },
             maxLines = 1,
             placeholder = { Text(text = labelBuenos) },
@@ -90,14 +93,17 @@ fun MusTabScreen(
             onValueChange = {
                 if (it.length <= 10) {
                     nombreMalos = it
-                } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
+                } else ToastRateLimiter.showToast(context, nameTooLong)
             },
             maxLines = 1,
             placeholder = { Text(text = labelMalos) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         )
         Spacer(Modifier.height(20.dp))
-        Text(text = "Puntos para ganar:", modifier = Modifier.padding(horizontal = 16.dp))
+        Text(
+            text = stringResource(R.string.text_points_to_win),
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,

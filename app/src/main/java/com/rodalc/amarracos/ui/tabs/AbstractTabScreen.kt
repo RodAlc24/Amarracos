@@ -16,7 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.rodalc.amarracos.R
 
 /**
  * A composable function that represents an abstract tab screen.
@@ -60,13 +62,13 @@ fun AbstractTabScreen(
         Button(
             onClick = { onStartClick() },
             modifier = Modifier.fillMaxWidth(),
-        ) { Text("Empezar nueva partida") }
+        ) { Text(stringResource(R.string.text_start_new)) }
         Spacer(Modifier.height(20.dp))
         OutlinedButton(
             onClick = { onLoadClick() },
             enabled = canLoad,
             modifier = Modifier.fillMaxWidth()
-        ) { Text("Cargar partida guardada") }
+        ) { Text(stringResource(R.string.text_load_game)) }
         Spacer(Modifier.height(20.dp))
     }
 }

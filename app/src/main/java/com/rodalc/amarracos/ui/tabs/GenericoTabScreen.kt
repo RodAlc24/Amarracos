@@ -24,9 +24,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.data.generico.JugadorGenericoUiState
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 import com.rodalc.amarracos.utils.ToastRateLimiter
@@ -50,6 +52,7 @@ fun GenericoTabScreen(
     val context = LocalContext.current
 
     var jugadores by rememberSaveable { mutableStateOf(listOf(Pair(1, ""), Pair(2, ""))) }
+    val defaultPlayerName = stringResource(R.string.default_player_name_format)
 
     AbstractTabScreen(
         modifier = modifier,
@@ -59,7 +62,8 @@ fun GenericoTabScreen(
                 jugadores.map {
                     JugadorGenericoUiState(
                         id = it.first,
-                        nombre = it.second.ifBlank { "Jugador ${it.first}" })
+                        nombre = it.second.ifBlank { defaultPlayerName.format(it.first) }
+                    )
                 }
             )
         },
@@ -68,14 +72,17 @@ fun GenericoTabScreen(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = "Jugadores:")
+            Text(text = stringResource(R.string.text_players))
             Spacer(Modifier.weight(1f))
             IconButton(
                 onClick = { jugadores = jugadores.dropLast(1) },
                 enabled = jugadores.size > 2,
                 colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
             ) {
-                Icon(Icons.Filled.Remove, contentDescription = "Quitar jugador")
+                Icon(
+                    Icons.Filled.Remove,
+                    contentDescription = stringResource(R.string.desc_remove_player)
+                )
             }
             Box(
                 modifier = Modifier.width(30.dp),
@@ -88,7 +95,10 @@ fun GenericoTabScreen(
                 enabled = jugadores.size < 100,
                 colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
             ) {
-                Icon(Icons.Filled.Add, contentDescription = "Añadir jugador")
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.desc_add_player)
+                )
             }
         }
         for (index in jugadores.indices) {
@@ -103,10 +113,13 @@ fun GenericoTabScreen(
                         jugadores = jugadores.toMutableList()
                             .apply { this[index] = this[index].copy(second = it) }
                         nombre = it
-                    } else ToastRateLimiter.showToast(context, "¡Pon un nombre más corto!")
+                    } else ToastRateLimiter.showToast(
+                        context,
+                        context.getString(R.string.toast_name_too_long)
+                    )
                 },
                 maxLines = 1,
-                placeholder = { Text(text = "Jugador ${jugadores[index].first}") },
+                placeholder = { Text(text = defaultPlayerName.format(jugadores[index].first)) },
                 keyboardOptions = KeyboardOptions(imeAction = if (index == jugadores.size - 1) ImeAction.Done else ImeAction.Next),
             )
         }

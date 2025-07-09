@@ -10,8 +10,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 /**
@@ -30,7 +32,7 @@ fun ButtonOrdago(
         modifier = modifier,
         onClick = onClick,
     ) {
-        Text(text = "Órdago")
+        Text(text = stringResource(R.string.text_ordago))
     }
 }
 
@@ -56,14 +58,15 @@ fun ButtonUndo(
         enabled = enabled,
     ) {
         Icon(
-            Icons.AutoMirrored.Rounded.Undo, contentDescription = "Deshacer",
+            Icons.AutoMirrored.Rounded.Undo,
+            contentDescription = stringResource(R.string.desc_undo),
             modifier = Modifier.size(30.dp),
         )
     }
 
 }
 
-@Preview
+@Preview(apiLevel = 35, showBackground = true)
 @Composable
 fun PreviewButtonOrdago() {
     AmarracosTheme {
@@ -71,7 +74,7 @@ fun PreviewButtonOrdago() {
     }
 }
 
-@Preview
+@Preview(apiLevel = 35, showSystemUi = false, showBackground = true)
 @Composable
 fun PreviewButtonUndo() {
     AmarracosTheme {

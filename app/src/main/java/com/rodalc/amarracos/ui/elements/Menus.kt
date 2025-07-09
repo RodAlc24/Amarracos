@@ -17,6 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.data.generico.GenericoViewModel
 
 /**
@@ -39,7 +41,7 @@ fun OptionsMenu(
         IconButton(onClick = { expanded = !expanded }) {
             Icon(
                 Icons.Default.MoreVert,
-                contentDescription = "More options",
+                contentDescription = stringResource(R.string.desc_more_options),
             )
         }
         DropdownMenu(
@@ -48,9 +50,12 @@ fun OptionsMenu(
         ) {
             DropdownMenuItem(
                 leadingIcon = @Composable {
-                    Icon(Icons.Outlined.SsidChart, contentDescription = "Ver resultados")
+                    Icon(
+                        Icons.Outlined.SsidChart,
+                        contentDescription = stringResource(R.string.desc_show_results)
+                    )
                 },
-                text = { Text("Ver resultados") },
+                text = { Text(stringResource(R.string.text_show_results)) },
                 onClick = {
                     expanded = false
                     showResults()
@@ -59,9 +64,12 @@ fun OptionsMenu(
             if (undoEnabled) {
                 DropdownMenuItem(
                     leadingIcon = @Composable {
-                        Icon(Icons.AutoMirrored.Outlined.Undo, contentDescription = "Deshacer")
+                        Icon(
+                            Icons.AutoMirrored.Outlined.Undo,
+                            contentDescription = stringResource(R.string.desc_undo)
+                        )
                     },
-                    text = { Text("Deshacer") },
+                    text = { Text(stringResource(R.string.text_undo)) },
                     onClick = {
                         undo()
                         expanded = false
@@ -91,7 +99,7 @@ fun SortMenu(
         IconButton(onClick = { expanded = !expanded }) {
             Icon(
                 Icons.Outlined.SwapVert,
-                contentDescription = "Ordenar",
+                contentDescription = stringResource(R.string.desc_sort),
             )
         }
         DropdownMenu(
@@ -99,21 +107,21 @@ fun SortMenu(
             onDismissRequest = { expanded = false },
         ) {
             DropdownMenuItem(
-                text = { Text("Predeterminado") },
+                text = { Text(stringResource(R.string.text_id_order)) },
                 onClick = {
                     expanded = false
                     sortBy(GenericoViewModel.SortType.ID)
                 }
             )
             DropdownMenuItem(
-                text = { Text("Por nombre") },
+                text = { Text(stringResource(R.string.text_name_order)) },
                 onClick = {
                     expanded = false
                     sortBy(GenericoViewModel.SortType.NAME)
                 }
             )
             DropdownMenuItem(
-                text = { Text("Por puntos") },
+                text = { Text(stringResource(R.string.text_points_order)) },
                 onClick = {
                     expanded = false
                     sortBy(GenericoViewModel.SortType.POINTS)

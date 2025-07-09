@@ -23,12 +23,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.data.generico.GenericoViewModel
 import com.rodalc.amarracos.data.mus.MusDefaultConfig
 import com.rodalc.amarracos.data.mus.MusViewModel
@@ -67,11 +69,16 @@ fun MainScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TitleTopBar(
-                title = "Amarracos",
+                title = stringResource(id = R.string.app_name),
                 actions = {
                     IconButton(
                         onClick = { navigate(Screens.SCREEN_CONFIG.name) }
-                    ) { Icon(Icons.Outlined.Settings, "Configuración") }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = stringResource(id = R.string.desc_config)
+                        )
+                    }
                 }
             )
         },
@@ -95,7 +102,7 @@ fun MainScreen(
                         },
                         text = {
                             Text(
-                                text = destination.label,
+                                text = stringResource(id = destination.title),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )

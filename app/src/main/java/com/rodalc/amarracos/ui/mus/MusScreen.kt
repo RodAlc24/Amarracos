@@ -23,8 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.data.mus.MusViewModel
 import com.rodalc.amarracos.storage.DataStoreManager
 import com.rodalc.amarracos.ui.elements.PopUp
@@ -124,7 +126,7 @@ fun MusScreen(
         modifier = modifier,
         topBar = {
             TitleTopBar(
-                title = "Mus",
+                title = stringResource(R.string.title_mus),
                 showUpButton = true,
                 onUpButtonClick = onUpButtonClick,
             )
@@ -168,7 +170,7 @@ fun MusScreen(
 
     if (ordago) {
         PopUp(
-            title = "Órdago",
+            title = stringResource(R.string.text_ordago),
             optionA = uiState.value.nombreBuenos,
             optionB = uiState.value.nombreMalos,
             onClickA = {

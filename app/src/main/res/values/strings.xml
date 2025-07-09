@@ -1,3 +1,71 @@
 <resources>
     <string name="app_name">Amarracos</string>
+
+    <!-- Note: strings that end in "_format" are strings that contains placeholders like "%s" -->
+
+    <!-- Strings used for titles in the app -->
+    <string name="title_mus">Mus</string>
+    <string name="title_pocha">Pocha</string>
+    <string name="title_generico">Genérico</string>
+    <string name="title_config">Ajustes</string>
+    <string name="title_results">Resultados</string>
+
+    <!-- Strings used for links in the settings screen -->
+    <string name="mail">weibull.apps@gmail.com</string>
+    <string name="google_play">market://details?id=com.rodalc.amarracos</string>
+    <string name="url_google_play">https://play.google.com/store/apps/details?id=com.rodalc.amarracos</string>
+    <string name="url_gh">https://github.com/RodAlc24/Amarracos</string>
+
+    <!-- Strings used for text displayed in the app -->
+    <string name="text_keep_screen_on">Mantener la pantalla encendida durante las partidas</string>
+    <string name="text_gh_repo">Repositorio de GitHub</string>
+    <string name="text_rate_app">Calificar Amarracos en Google Play</string>
+    <string name="text_version_format">Versión: %s</string>
+    <string name="text_contact_format">Contacto: %s</string>
+    <string name="text_show_results">Ver resultados</string>
+    <string name="text_undo">Deshacer</string>
+    <string name="text_id_order">Predeterminado</string>
+    <string name="text_name_order">Por nombre</string>
+    <string name="text_points_order">Por puntos</string>
+    <string name="text_start_new">Empezar nueva partida</string>
+    <string name="text_load_game">Cargar partida guardada</string>
+    <string name="text_players">Jugadores:</string>
+    <string name="text_points_to_win">Puntos para ganar:</string>
+    <string name="text_bets">Apuestas</string>
+    <string name="text_victories">Victorias</string>
+    <string name="text_double_points">"Duplicar puntuación: "</string>
+    <string name="text_ordago">Órdago</string>
+
+    <!-- Strings used for descriptions of icons -->
+    <string name="desc_config">Ir a ajustes</string>
+    <string name="desc_more_options">More options</string>
+    <string name="desc_undo">Deshacer</string>
+    <string name="desc_show_results">Ver resultados</string>
+    <string name="desc_sort">Ordenar jugadores</string>
+    <string name="desc_up_button">Volver a la pantalla anterior</string>
+    <string name="desc_remove_player">Quitar jugador</string>
+    <string name="desc_add_player">Añadir jugador</string>
+    <string name="desc_remove_point_format">Quitar 1 a %s</string>
+    <string name="desc_add_point_format">Añadir 1 a %s</string>
+    <string name="desc_remove_envite_format">Quitar 1 al envite a %s</string>
+    <string name="desc_add_envite_format">Añadir 1 al envite a %s</string>
+    <string name="desc_buenos_win_envite_format">Buenos ganan el envite a %s</string>
+    <string name="desc_malos_win_envite_format">Malos ganan el envite a %s</string>
+    <string name="desc_done">Hecho</string>
+
+    <!-- Strings used for toast notifications -->
+    <string name="toast_name_too_long">¡Pon un nombre más corto!</string>
+    <string name="toast_error_bets">Las apuestas no pueden coincidir con el número de rondas jugadas</string>
+
+    <!-- Strings used for default values-->
+    <string name="default_player_name_format">Jugador %d</string>
+    <string name="default_buenos">Buenos</string>
+    <string name="default_malos">Malos</string>
+    <string name="default_player_name">Jugador</string>
+
+    <!-- Other string -->
+    <string name="aux_grande">Grande</string>
+    <string name="aux_chica">Chica</string>
+    <string name="aux_pares">Pares</string>
+    <string name="aux_juego">Juego</string>
 </resources>

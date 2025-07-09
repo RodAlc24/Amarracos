@@ -57,10 +57,10 @@ fun SettingsScreen(
     navigateUp: () -> Unit = {},
 ) {
     val context = LocalContext.current
-    val gitHub = "https://github.com/RodAlc24/Amarracos"
-    val mail = "weibull.apps@gmail.com"
-    val googlePlay = "market://details?id=com.rodalc.amarracos"
-    val webGooglePlay = "https://play.google.com/store/apps/details?id=com.rodalc.amarracos"
+    val gitHub = stringResource(R.string.url_gh)
+    val mailTo = "mailto:" + stringResource(R.string.mail)
+    val googlePlay = stringResource(R.string.google_play)
+    val webGooglePlay = stringResource(R.string.url_google_play)
 
     val screenState by DataStoreManager.readDataStore(
         context,
@@ -74,7 +74,7 @@ fun SettingsScreen(
         modifier = modifier,
         topBar = {
             TitleTopBar(
-                title = "Ajustes",
+                title = stringResource(R.string.title_config),
                 showUpButton = true,
                 onUpButtonClick = navigateUp
             )
@@ -90,7 +90,7 @@ fun SettingsScreen(
             item {
                 SettingsElement(
                     icon = Icons.Outlined.Bolt,
-                    title = "Mantener la pantalla encendida durante las partidas",
+                    title = stringResource(R.string.text_keep_screen_on),
                     clickable = true,
                     onClick = {
                         coreutineScope.async {
@@ -120,7 +120,7 @@ fun SettingsScreen(
             item {
                 SettingsElement(
                     icon = Icons.Outlined.Link,
-                    title = "Repositorio de GitHub",
+                    title = stringResource(R.string.text_gh_repo),
                     clickable = true,
                     onClick = {
                         context.startActivity(
@@ -134,14 +134,14 @@ fun SettingsScreen(
                     Icon(
                         modifier = modifier.padding(start = 8.dp),
                         imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                        contentDescription = "Abrir en internet"
+                        contentDescription = null
                     )
                 }
             }
             item {
                 SettingsElement(
                     icon = Icons.Outlined.StarOutline,
-                    title = "Calificar Amarracos en Google Play",
+                    title = stringResource(R.string.text_rate_app),
                     clickable = true,
                     onClick = {
                         val uri: Uri = googlePlay.toUri()
@@ -155,7 +155,7 @@ fun SettingsScreen(
                         )
                         try {
                             context.startActivity(goToMarket)
-                        } catch (e: ActivityNotFoundException) {
+                        } catch (_: ActivityNotFoundException) {
                             context.startActivity(
                                 Intent(
                                     Intent.ACTION_VIEW,
@@ -168,20 +168,23 @@ fun SettingsScreen(
                     Icon(
                         modifier = modifier.padding(start = 8.dp),
                         imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                        contentDescription = "Abrir en internet"
+                        contentDescription = null
                     )
                 }
             }
             item {
                 SettingsElement(
                     icon = Icons.Outlined.Mail,
-                    title = "Contacto: $mail",
+                    title = stringResource(
+                        R.string.text_contact_format,
+                        stringResource(R.string.mail)
+                    ),
                     clickable = true,
                     onClick = {
                         context.startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                "mailto:$mail".toUri()
+                                mailTo.toUri()
                             )
                         )
                     }
@@ -189,14 +192,17 @@ fun SettingsScreen(
                     Icon(
                         modifier = modifier.padding(start = 8.dp),
                         imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                        contentDescription = "Abrir en el correo"
+                        contentDescription = null
                     )
                 }
             }
             item {
                 SettingsElement(
                     icon = Icons.Outlined.Info,
-                    title = "Versión: ${stringResource(R.string.versionCode)}"
+                    title = stringResource(
+                        R.string.text_version_format,
+                        stringResource(R.string.versionCode)
+                    )
                 )
             }
         }

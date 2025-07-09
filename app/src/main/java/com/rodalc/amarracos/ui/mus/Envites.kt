@@ -27,10 +27,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.data.mus.MusViewModel
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 import com.rodalc.amarracos.utils.repeatingClickable
@@ -53,11 +55,19 @@ import com.rodalc.amarracos.utils.repeatingClickable
 @Composable
 private fun Envite(
     value: Int,
+    type: MusViewModel.Envites,
     modifier: Modifier = Modifier,
     increment: (Int) -> Unit = {},
     updateEnvite: (MusViewModel.Teams) -> Unit = { _ -> },
     landscape: Boolean = true,
 ) {
+    val envite = when (type) {
+        MusViewModel.Envites.GRANDE -> stringResource(R.string.aux_grande)
+        MusViewModel.Envites.CHICA -> stringResource(R.string.aux_chica)
+        MusViewModel.Envites.PARES -> stringResource(R.string.aux_pares)
+        MusViewModel.Envites.JUEGO -> stringResource(R.string.aux_juego)
+    }
+
     val buttonRemove = @Composable {
         IconButton(
             onClick = { increment(-1) },
@@ -71,7 +81,10 @@ private fun Envite(
                 ),
             colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
         ) {
-            Icon(Icons.Rounded.Remove, contentDescription = "Incrementar envite")
+            Icon(
+                Icons.Rounded.Remove,
+                contentDescription = stringResource(R.string.desc_remove_envite_format, envite)
+            )
         }
     }
 
@@ -88,7 +101,10 @@ private fun Envite(
                 ),
             colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
         ) {
-            Icon(Icons.Rounded.Add, contentDescription = "Decrementar envite")
+            Icon(
+                Icons.Rounded.Add,
+                contentDescription = stringResource(R.string.desc_add_envite_format, envite)
+            )
         }
     }
 
@@ -99,7 +115,7 @@ private fun Envite(
         ) {
             Icon(
                 imageVector = if (landscape) Icons.AutoMirrored.Rounded.ArrowBack else Icons.Rounded.ArrowUpward,
-                contentDescription = "Buenos ganan el envite"
+                contentDescription = stringResource(R.string.desc_buenos_win_envite_format, envite)
             )
         }
     }
@@ -111,7 +127,7 @@ private fun Envite(
         ) {
             Icon(
                 imageVector = if (landscape) Icons.AutoMirrored.Rounded.ArrowForward else Icons.Rounded.ArrowDownward,
-                contentDescription = "Malos ganan el envite"
+                contentDescription = stringResource(R.string.desc_malos_win_envite_format, envite)
             )
         }
     }
@@ -191,6 +207,7 @@ fun Envites(
         listEnvites.forEach { item ->
             Envite(
                 value = item.first,
+                type = item.second,
                 landscape = landscape,
                 increment = {
                     viewModel.incrementEnvite(
@@ -231,66 +248,36 @@ fun Envites(
 }
 
 
-@Preview
+@Preview(apiLevel = 35, showBackground = true)
 @Composable
 fun EnviteRoWPreview() {
-    AmarracosTheme() {
-        Envite(landscape = true, value = 15)
+    AmarracosTheme {
+        Envite(landscape = true, value = 15, type = MusViewModel.Envites.GRANDE)
     }
 }
 
-@Preview
+@Preview(apiLevel = 35, showSystemUi = false, showBackground = true)
 @Composable
 fun EnviteColumnPreview() {
-    AmarracosTheme() {
-        Envite(15, landscape = false)
+    AmarracosTheme {
+        Envite(15, landscape = false, type = MusViewModel.Envites.GRANDE)
     }
 }
 
-@Preview
+@Preview(apiLevel = 35, showSystemUi = false, showBackground = true)
 @Composable
 fun EnvitesLandscapePreview() {
     val context = LocalContext.current
     val viewModel: MusViewModel = viewModel()
-    viewModel.incrementEnvite(
-        envite = MusViewModel.Envites.GRANDE,
-        increment = 1,
-        context = context
-    )
-    viewModel.incrementEnvite(
-        envite = MusViewModel.Envites.CHICA,
-        increment = 23,
-        context = context
-    )
-    viewModel.incrementEnvite(
-        envite = MusViewModel.Envites.JUEGO,
-        increment = 15,
-        context = context
-    )
     AmarracosTheme {
         Envites(landscape = true, viewModel = viewModel)
     }
 }
 
-@Preview
+@Preview(apiLevel = 35, showBackground = true)
 @Composable
 fun EnvitesPortraitPreview() {
     val viewModel: MusViewModel = viewModel()
-    viewModel.incrementEnvite(
-        envite = MusViewModel.Envites.GRANDE,
-        increment = 1,
-        context = LocalContext.current
-    )
-    viewModel.incrementEnvite(
-        envite = MusViewModel.Envites.CHICA,
-        increment = 23,
-        context = LocalContext.current
-    )
-    viewModel.incrementEnvite(
-        envite = MusViewModel.Envites.JUEGO,
-        increment = 15,
-        context = LocalContext.current
-    )
     AmarracosTheme {
         Envites(landscape = false, viewModel = viewModel)
     }

@@ -10,9 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.data.generico.JugadorGenericoUiState
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import kotlinx.coroutines.runBlocking
@@ -32,7 +34,7 @@ fun OverviewScreen(
     Scaffold(
         topBar = {
             TitleTopBar(
-                title = "Resultados",
+                title = stringResource(R.string.title_results),
                 showUpButton = true,
                 onUpButtonClick = onUpButtonClick,
             )

@@ -31,12 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 import com.rodalc.amarracos.utils.repeatingClickable
 
@@ -129,7 +131,7 @@ fun PlayerCard(
                 )
             } else { // Pocha
                 RowPoints(
-                    title = "Apuestas",
+                    title = stringResource(R.string.text_bets),
                     points = newPoints,
                     changePoints = { changePoints(it) },
                     playerName = name,
@@ -138,7 +140,7 @@ fun PlayerCard(
                     textColor = color
                 )
                 RowPoints(
-                    title = "Victorias",
+                    title = stringResource(R.string.text_victories),
                     points = extraPoints,
                     changePoints = { changePoints(it) },
                     playerName = name,
@@ -160,7 +162,7 @@ fun PlayerCard(
  * @param changePoints A lambda function to be called when the increment/decrement buttons are clicked.
  * It receives an integer representing the amount to increment/decrement by (e.g., 1 for increment, -1 for decrement).
  * @param modifier Optional [Modifier] for this composable.
- * @param playerName The name of the player, used in content descriptions for accessibility. Defaults to "Jugador".
+ * @param playerName The name of the player, used in content descriptions for accessibility.
  * @param removeEnabled A boolean indicating whether the remove button should be enabled. Defaults to true.
  * @param addEnabled A boolean indicating whether the add button should be enabled. Defaults to true.
  * @param textColor The color of the points text. Defaults to `MaterialTheme.colorScheme.onSurface`.
@@ -171,7 +173,7 @@ private fun RowPoints(
     points: Int,
     changePoints: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    playerName: String = "Jugador",
+    playerName: String = stringResource(R.string.default_player_name),
     removeEnabled: Boolean = true,
     addEnabled: Boolean = true,
     textColor: Color = MaterialTheme.colorScheme.onSurface
@@ -192,7 +194,12 @@ private fun RowPoints(
         TextButton(
             onClick = { changePoints(points - 1) },
             enabled = removeEnabled
-        ) { Icon(Icons.Rounded.Remove, contentDescription = "Quitar 1 a $playerName") }
+        ) {
+            Icon(
+                Icons.Rounded.Remove,
+                contentDescription = stringResource(R.string.desc_remove_point_format, playerName)
+            )
+        }
         Box(
             modifier = Modifier.width(40.dp),
             contentAlignment = Alignment.Center
@@ -200,7 +207,12 @@ private fun RowPoints(
         TextButton(
             onClick = { changePoints(points + 1) },
             enabled = addEnabled
-        ) { Icon(Icons.Rounded.Add, contentDescription = "Añadir uno a $playerName") }
+        ) {
+            Icon(
+                Icons.Rounded.Add,
+                contentDescription = stringResource(R.string.desc_add_point_format, playerName)
+            )
+        }
     }
 }
 
@@ -215,7 +227,7 @@ private fun RowPoints(
  * @param changePoints A lambda function to be called when the points are changed,
  * either via the text field or the increment/decrement buttons. It receives the new points value.
  * @param modifier Optional [Modifier] for this composable.
- * @param playerName The name of the player, used in content descriptions for accessibility. Defaults to "Jugador".
+ * @param playerName The name of the player, used in content descriptions for accessibility.
  * @param isLastPlayer A boolean indicating if this is the last player in a list. This influences the keyboard's IME action (Done vs Next). Defaults to false.
  * @param removeEnabled A boolean indicating whether the remove button should be enabled. Defaults to true.
  * @param addEnabled A boolean indicating whether the add button should be enabled. Defaults to true.
@@ -225,7 +237,7 @@ private fun RowPointsWithTextField(
     points: Int,
     changePoints: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    playerName: String = "Jugador",
+    playerName: String = stringResource(R.string.default_player_name),
     isLastPlayer: Boolean = false,
     removeEnabled: Boolean = true,
     addEnabled: Boolean = true,
@@ -245,7 +257,12 @@ private fun RowPointsWithTextField(
                 onClick = { changePoints(points - 1) },
                 enabled = removeEnabled
             )
-        ) { Icon(Icons.Rounded.Remove, contentDescription = "Quitar 1 a $playerName") }
+        ) {
+            Icon(
+                Icons.Rounded.Remove,
+                contentDescription = stringResource(R.string.desc_remove_point_format, playerName)
+            )
+        }
         OutlinedTextField(
             value = if (points == 0) "" else points.toString(),
             placeholder = { Text(text = points.toString()) },
@@ -274,7 +291,12 @@ private fun RowPointsWithTextField(
                 onClick = { changePoints(points + 1) },
                 enabled = addEnabled
             )
-        ) { Icon(Icons.Rounded.Add, contentDescription = "Añadir uno a $playerName") }
+        ) {
+            Icon(
+                Icons.Rounded.Add,
+                contentDescription = stringResource(R.string.desc_add_point_format, playerName)
+            )
+        }
     }
 
 }

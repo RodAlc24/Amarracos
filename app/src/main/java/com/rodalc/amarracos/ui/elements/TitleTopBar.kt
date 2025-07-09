@@ -11,8 +11,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 
 /**
@@ -44,7 +46,7 @@ fun TitleTopBar(
                 IconButton(onClick = { onUpButtonClick() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Navegar a la pantalla anterior",
+                        contentDescription = stringResource(R.string.desc_up_button),
                     )
                 }
             }

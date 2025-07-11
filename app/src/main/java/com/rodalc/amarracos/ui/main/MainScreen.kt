@@ -67,6 +67,7 @@ fun MainScreen(
     val context = LocalContext.current
     var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
     val tabViewmodel: TabViewModel = viewModel()
+    tabViewmodel.initialize(context)
 
     Scaffold(
         modifier = modifier.fillMaxSize(),

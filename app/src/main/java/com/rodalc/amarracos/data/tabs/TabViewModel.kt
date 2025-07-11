@@ -1,7 +1,9 @@
 package com.rodalc.amarracos.data.tabs
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.rodalc.amarracos.data.generico.JugadorGenericoUiState
+import com.rodalc.amarracos.data.mus.MusDefaultConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +19,24 @@ import kotlinx.coroutines.flow.update
 class TabViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(TabUiState())
     val uiState: StateFlow<TabUiState> = _uiState.asStateFlow()
+
+    /**
+     * Initializes the UI state with default values loaded from [MusDefaultConfig].
+     *
+     * This function loads the default settings for whether the game is played to 30 points,
+     * and the default names for the "good" and "bad" teams, and updates the UI state accordingly.
+     *
+     * @param context The application context, used to access shared preferences for loading default configurations.
+     */
+    fun initialize(context: Context) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                puntos30 = MusDefaultConfig.load(context = context).puntos30,
+                nombreBuenos = MusDefaultConfig.load(context = context).nameBuenos,
+                nombreMalos = MusDefaultConfig.load(context = context).nameMalos
+            )
+        }
+    }
 
     /**
      * Updates the UI state to reflect whether the Mus game is being played to 30 points.

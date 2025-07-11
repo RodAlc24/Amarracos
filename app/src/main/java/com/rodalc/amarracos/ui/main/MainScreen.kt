@@ -2,6 +2,7 @@
 
 package com.rodalc.amarracos.ui.main
 
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +35,7 @@ import com.rodalc.amarracos.R
 import com.rodalc.amarracos.data.generico.GenericoViewModel
 import com.rodalc.amarracos.data.mus.MusDefaultConfig
 import com.rodalc.amarracos.data.mus.MusViewModel
+import com.rodalc.amarracos.data.tabs.TabViewModel
 import com.rodalc.amarracos.ui.elements.TitleTopBar
 import com.rodalc.amarracos.ui.tabs.GenericoTabScreen
 import com.rodalc.amarracos.ui.tabs.MusTabScreen
@@ -64,6 +66,7 @@ fun MainScreen(
     val navController = rememberNavController()
     val context = LocalContext.current
     var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
+    val tabViewmodel: TabViewModel = viewModel()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -118,9 +121,7 @@ fun MainScreen(
                 composable(route = Tabs.TAB_MUS.name) {
                     MusTabScreen(
                         canLoad = musViewModel.canLoadState(context),
-                        labelBuenos = MusDefaultConfig.load(context).nameBuenos,
-                        labelMalos = MusDefaultConfig.load(context).nameMalos,
-                        puntos30 = MusDefaultConfig.load(context).puntos30,
+                        tabViewmodel = tabViewmodel,
                         onStartClick = { nombreBuenos, nombreMalos, puntos ->
                             MusDefaultConfig.save(
                                 context = context,
@@ -144,6 +145,7 @@ fun MainScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
+                            .animateEnterExit(enter = fadeIn())
                     )
                 }
                 composable(route = Tabs.TAB_POCHA.name) {
@@ -161,7 +163,9 @@ fun MainScreen(
                             pochaViewModel.loadState(context = context, isPocha = true)
                             navigate(Screens.SCREEN_POCHA.name)
                         },
-                        modifier = Modifier.fillMaxWidth(0.8f)
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .animateEnterExit(enter = fadeIn())
                     )
                 }
                 composable(route = Tabs.TAB_GENERICO.name) {
@@ -178,7 +182,9 @@ fun MainScreen(
                             genericoViewModel.loadState(context = context, isPocha = false)
                             navigate(Screens.SCREEN_GENERICO.name)
                         },
-                        modifier = Modifier.fillMaxWidth(0.8f)
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .animateEnterExit(enter = fadeIn())
                     )
                 }
             }

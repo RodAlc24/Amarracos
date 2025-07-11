@@ -60,7 +60,7 @@ class MusViewModel : ViewModel() {
      */
     fun startGame(nombreBuenos: String, nombreMalos: String, puntos30: Boolean, context: Context) {
         _uiState.update { currentState ->
-            currentState.copy(
+            MusUiState(
                 nombreBuenos = nombreBuenos,
                 nombreMalos = nombreMalos,
                 puntosParaGanar = if (puntos30) 30 else 40

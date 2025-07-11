@@ -63,7 +63,7 @@ class GenericoViewModel : ViewModel() {
             jugador.copy(nombre = jugador.nombre.ifBlank { "Jugador ${jugador.id}" })
         }
         _uiState.update { currentState ->
-            currentState.copy(
+            GenericoUiState(
                 jugadores = updatedJugadores,
                 isPocha = isPocha
             )

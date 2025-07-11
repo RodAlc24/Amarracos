@@ -1,6 +1,7 @@
 package com.rodalc.amarracos.data.tabs
 
 import androidx.lifecycle.ViewModel
+import com.rodalc.amarracos.data.generico.JugadorGenericoUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -52,6 +53,67 @@ class TabViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(
                 nombreMalos = nombreMalos
+            )
+        }
+    }
+
+    /**
+     * Removes the last player from the list of players for either the Pocha or Generico game.
+     *
+     * @param isPocha True if the player should be removed from the Pocha game, false for the Generico game.
+     */
+    fun removeLast(isPocha: Boolean) {
+        val jugadores =
+            if (isPocha) _uiState.value.jugadoresPocha else _uiState.value.jugadoresGenerico
+        val updatedJugadores = jugadores.dropLast(1)
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                jugadoresPocha = if (isPocha) updatedJugadores else currentState.jugadoresPocha,
+                jugadoresGenerico = if (!isPocha) updatedJugadores else currentState.jugadoresGenerico
+            )
+        }
+    }
+
+    /**
+     * Adds a new player to the game.
+     *
+     * @param isPocha True if the player should be added to the Pocha game, false for the generic game.
+     */
+    fun addPlayer(isPocha: Boolean) {
+        val jugadores =
+            if (isPocha) _uiState.value.jugadoresPocha else _uiState.value.jugadoresGenerico
+        val updatedJugadores = jugadores.plus(JugadorGenericoUiState(id = jugadores.size + 1))
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                jugadoresPocha = if (isPocha) updatedJugadores else currentState.jugadoresPocha,
+                jugadoresGenerico = if (!isPocha) updatedJugadores else currentState.jugadoresGenerico
+            )
+        }
+    }
+
+    /**
+     * Changes the name of a player in either the "Pocha" or "Generico" game.
+     *
+     * @param isPocha A boolean indicating whether the player is in the "Pocha" game (true) or "Generico" game (false).
+     * @param id The ID of the player whose name is to be changed.
+     * @param name The new name for the player.
+     */
+    fun changeName(isPocha: Boolean, id: Int, name: String) {
+        val jugadores =
+            if (isPocha) _uiState.value.jugadoresPocha else _uiState.value.jugadoresGenerico
+        val updatedJugadores = jugadores.map { jugador ->
+            if (jugador.id == id) {
+                jugador.copy(nombre = name)
+            } else {
+                jugador
+            }
+        }
+        _uiState.update { currentState ->
+            currentState.copy(
+                jugadoresPocha = if (isPocha) updatedJugadores else currentState.jugadoresPocha,
+                jugadoresGenerico = if (!isPocha) updatedJugadores else currentState.jugadoresGenerico
             )
         }
     }

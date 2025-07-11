@@ -151,6 +151,8 @@ fun MainScreen(
                 composable(route = Tabs.TAB_POCHA.name) {
                     GenericoTabScreen(
                         canLoad = pochaViewModel.canLoadState(context = context, isPocha = true),
+                        tabViewmodel = tabViewmodel,
+                        isPocha = true,
                         onStartClick = {
                             pochaViewModel.startGame(
                                 jugadores = it,
@@ -174,6 +176,8 @@ fun MainScreen(
                             context = context,
                             isPocha = false
                         ),
+                        tabViewmodel = tabViewmodel,
+                        isPocha = false,
                         onStartClick = {
                             genericoViewModel.startGame(jugadores = it, context = context)
                             navigate(Screens.SCREEN_GENERICO.name)

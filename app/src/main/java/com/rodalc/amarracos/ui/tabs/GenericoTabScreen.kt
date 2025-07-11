@@ -17,10 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,8 +26,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.rodalc.amarracos.R
 import com.rodalc.amarracos.data.generico.JugadorGenericoUiState
+import com.rodalc.amarracos.data.tabs.TabViewModel
 import com.rodalc.amarracos.ui.theme.AmarracosTheme
 import com.rodalc.amarracos.utils.ToastRateLimiter
 
@@ -44,14 +44,17 @@ import com.rodalc.amarracos.utils.ToastRateLimiter
  */
 @Composable
 fun GenericoTabScreen(
+    isPocha: Boolean,
     modifier: Modifier = Modifier,
     canLoad: Boolean = false,
+    tabViewmodel: TabViewModel = viewModel(),
     onStartClick: (List<JugadorGenericoUiState>) -> Unit = {},
     onLoadClick: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    val uiState by tabViewmodel.uiState.collectAsState()
 
-    var jugadores by rememberSaveable { mutableStateOf(listOf(Pair(1, ""), Pair(2, ""))) }
+    val jugadores = if (isPocha) uiState.jugadoresPocha else uiState.jugadoresGenerico
     val defaultPlayerName = stringResource(R.string.default_player_name_format)
 
     AbstractTabScreen(
@@ -59,10 +62,10 @@ fun GenericoTabScreen(
         canLoad = canLoad,
         onStartClick = {
             onStartClick(
-                jugadores.map {
+                jugadores.map { jugador ->
                     JugadorGenericoUiState(
-                        id = it.first,
-                        nombre = it.second.ifBlank { defaultPlayerName.format(it.first) }
+                        id = jugador.id,
+                        nombre = jugador.nombre.ifBlank { defaultPlayerName.format(jugador.id) }
                     )
                 }
             )
@@ -75,7 +78,7 @@ fun GenericoTabScreen(
             Text(text = stringResource(R.string.text_players))
             Spacer(Modifier.weight(1f))
             IconButton(
-                onClick = { jugadores = jugadores.dropLast(1) },
+                onClick = { tabViewmodel.removeLast(isPocha) },
                 enabled = jugadores.size > 2,
                 colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
             ) {
@@ -89,9 +92,7 @@ fun GenericoTabScreen(
                 contentAlignment = Alignment.Center
             ) { Text(text = jugadores.size.toString()) }
             IconButton(
-                onClick = {
-                    jugadores = jugadores + Pair(jugadores.size + 1, "")
-                },
+                onClick = { tabViewmodel.addPlayer(isPocha) },
                 enabled = jugadores.size < 100,
                 colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
             ) {
@@ -101,26 +102,23 @@ fun GenericoTabScreen(
                 )
             }
         }
-        for (index in jugadores.indices) {
-            var nombre by rememberSaveable { mutableStateOf(jugadores[index].second) }
+        for (jugador in jugadores) {
             OutlinedTextField(
                 modifier = Modifier
                     .padding(vertical = 8.dp)
                     .fillMaxWidth(0.9f),
-                value = nombre,
+                value = jugador.nombre,
                 onValueChange = {
                     if (it.length <= 10) {
-                        jugadores = jugadores.toMutableList()
-                            .apply { this[index] = this[index].copy(second = it) }
-                        nombre = it
+                        tabViewmodel.changeName(isPocha, jugador.id, it)
                     } else ToastRateLimiter.showToast(
                         context,
                         context.getString(R.string.toast_name_too_long)
                     )
                 },
                 maxLines = 1,
-                placeholder = { Text(text = defaultPlayerName.format(jugadores[index].first)) },
-                keyboardOptions = KeyboardOptions(imeAction = if (index == jugadores.size - 1) ImeAction.Done else ImeAction.Next),
+                placeholder = { Text(text = defaultPlayerName.format(jugador.id)) },
+                keyboardOptions = KeyboardOptions(imeAction = if (jugador.id == jugadores.size) ImeAction.Done else ImeAction.Next),
             )
         }
     }
@@ -130,6 +128,6 @@ fun GenericoTabScreen(
 @Composable
 fun PreviewPochaTabScreen() {
     AmarracosTheme(darkTheme = true) {
-        GenericoTabScreen()
+        GenericoTabScreen(isPocha = true)
     }
 }

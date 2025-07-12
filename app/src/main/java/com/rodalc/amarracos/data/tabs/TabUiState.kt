@@ -15,6 +15,8 @@ import com.rodalc.amarracos.data.generico.JugadorGenericoUiState
 data class TabUiState(
     val nombreBuenos: String = "",
     val nombreMalos: String = "",
+    val labelBuenos: String = "Buenos",
+    val labelMalos: String = "Malos",
     val puntos30: Boolean = true,
     val jugadoresPocha: List<JugadorGenericoUiState> = listOf(
         JugadorGenericoUiState(id = 1),

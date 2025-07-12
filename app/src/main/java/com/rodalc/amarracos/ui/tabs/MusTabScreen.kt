@@ -46,8 +46,6 @@ fun MusTabScreen(
     modifier: Modifier = Modifier,
     canLoad: Boolean = false,
     tabViewmodel: TabViewModel = viewModel(),
-    labelBuenos: String = stringResource(R.string.default_buenos),
-    labelMalos: String = stringResource(R.string.default_malos),
     onStartClick: (buenos: String, malos: String, puntos30: Boolean) -> Unit = { _, _, _ -> },
     onLoadClick: () -> Unit = {},
 ) {
@@ -61,8 +59,8 @@ fun MusTabScreen(
         canLoad = canLoad,
         onStartClick = {
             onStartClick(
-                if (uiState.value.nombreBuenos == "") labelBuenos else uiState.value.nombreBuenos,
-                if (uiState.value.nombreMalos == "") labelMalos else uiState.value.nombreMalos,
+                if (uiState.value.nombreBuenos == "") uiState.value.labelBuenos else uiState.value.nombreBuenos,
+                if (uiState.value.nombreMalos == "") uiState.value.labelMalos else uiState.value.nombreMalos,
                 uiState.value.puntos30
             )
         },
@@ -79,7 +77,7 @@ fun MusTabScreen(
                 } else ToastRateLimiter.showToast(context, nameTooLong)
             },
             maxLines = 1,
-            placeholder = { Text(text = labelBuenos) },
+            placeholder = { Text(text = uiState.value.labelBuenos) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         )
         OutlinedTextField(
@@ -92,7 +90,7 @@ fun MusTabScreen(
                 } else ToastRateLimiter.showToast(context, nameTooLong)
             },
             maxLines = 1,
-            placeholder = { Text(text = labelMalos) },
+            placeholder = { Text(text = uiState.value.labelMalos) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         )
         Spacer(Modifier.height(20.dp))

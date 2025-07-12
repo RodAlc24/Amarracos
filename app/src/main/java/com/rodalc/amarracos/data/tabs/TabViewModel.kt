@@ -32,8 +32,8 @@ class TabViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(
                 puntos30 = MusDefaultConfig.load(context = context).puntos30,
-                nombreBuenos = MusDefaultConfig.load(context = context).nameBuenos,
-                nombreMalos = MusDefaultConfig.load(context = context).nameMalos
+                labelBuenos = MusDefaultConfig.load(context = context).nameBuenos,
+                labelMalos = MusDefaultConfig.load(context = context).nameMalos
             )
         }
     }

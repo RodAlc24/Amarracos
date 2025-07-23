@@ -99,8 +99,15 @@ fun Pareja(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(10.dp))
+        if (landscape) {
+            Spacer(modifier = Modifier.weight(1f))
+        } else {
+            Spacer(modifier = Modifier.height(10.dp))
+        }
         extraContent()
+        if (landscape) {
+            Spacer(modifier = Modifier.weight(1f))
+        }
     }
 }
 

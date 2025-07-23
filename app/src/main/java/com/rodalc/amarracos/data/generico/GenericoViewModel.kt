@@ -2,6 +2,7 @@ package com.rodalc.amarracos.data.generico
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.rodalc.amarracos.R
 import com.rodalc.amarracos.data.generico.GenericoViewModel.PointType.APUESTA
 import com.rodalc.amarracos.data.generico.GenericoViewModel.PointType.INCREMENTO
 import com.rodalc.amarracos.data.generico.GenericoViewModel.PointType.TOTAL
@@ -44,6 +45,9 @@ class GenericoViewModel : ViewModel() {
     private val _apuestas = MutableStateFlow(0)
     val apuestas = _apuestas.asStateFlow()
 
+    private val _sortMethod = MutableStateFlow(ID)
+    val sortMethod = _sortMethod.asStateFlow()
+
     private val filenamePocha = "pocha2.json"
     private val filenameGenerico = "generico2.json"
 
@@ -72,6 +76,7 @@ class GenericoViewModel : ViewModel() {
             )
         }
         updateApuestas()
+        sortPlayers()
         saveState(context = context)
     }
 
@@ -120,6 +125,7 @@ class GenericoViewModel : ViewModel() {
                 currentState.copy(jugadores = updatedJugadores)
             }
             updateApuestas()
+            sortPlayers()
             saveState(context = context)
         }
     }
@@ -155,6 +161,7 @@ class GenericoViewModel : ViewModel() {
             )
         }
         updateApuestas()
+        sortPlayers()
         saveState(context = context)
     }
 
@@ -212,6 +219,7 @@ class GenericoViewModel : ViewModel() {
             currentState.copy(duplica = duplica)
         }
         updateApuestas()
+        sortPlayers()
         saveState(context = context)
     }
 
@@ -267,6 +275,7 @@ class GenericoViewModel : ViewModel() {
                 Json.decodeFromString(temp)
             }
             updateApuestas()
+            sortPlayers()
         }
     }
 
@@ -316,6 +325,7 @@ class GenericoViewModel : ViewModel() {
                 undoStack.removeAt(undoStack.lastIndex)
             }
             updateApuestas()
+            sortPlayers()
             saveState(context = context)
             _canUndo.update { undoStack.isNotEmpty() }
         }
@@ -328,43 +338,47 @@ class GenericoViewModel : ViewModel() {
      * - [POINTS]: Sorts players by their current points, typically in descending order.
      * - [ID]: Sorts players by their unique identifier, often used for maintaining a consistent order.
      */
-    enum class SortType {
-        NAME,
-        POINTS,
-        ID
+    enum class SortType(val stringId: Int) {
+        NAME(stringId = R.string.text_name_order),
+        POINTS(stringId = R.string.text_points_order),
+        ID(stringId = R.string.text_id_order)
     }
 
     /**
-     * Sorts the list of players based on the specified sort type.
+     * Sorts the list of players based on the current sort method.
      *
-     * This function sorts the players in the current UI state according to the provided `sortType`.
-     * The sorting can be done by player name, points, or ID. After sorting, the UI state
-     * is updated with the new sorted list of players.
-     *
-     * @param sortType The criteria by which to sort the players. This can be one of the
-     *                 values from the [SortType] enum: [SortType.NAME], [SortType.POINTS],
-     *                 or [SortType.ID].
-     * @param context The Android context required for saving the state.
+     * This function sorts the players in the current UI state according to the `sortMethod` value.
+     * The sorting can be done by player name, points, or ID.
+     * If sorting by points, the order is reversed (descending).
+     * After sorting, the UI state is updated with the new sorted list of players.
      */
-    fun sortPlayersBy(sortType: SortType, context: Context) {
-        var sortedJugadores = _uiState.value.jugadores.sortedWith(compareBy { jugador ->
-            when (sortType) {
-                NAME -> jugador.nombre
-                POINTS -> jugador.puntos
-                ID -> jugador.id
-            }
-        })
+    private fun sortPlayers() {
+        val sortedJugadores = when (sortMethod.value) {
+            NAME -> _uiState.value.jugadores.sortedBy { it.nombre }
+            POINTS -> _uiState.value.jugadores.sortedWith(
+                compareByDescending<JugadorGenericoUiState> { it.puntos }
+                    .thenBy { it.nombre }
+            )
 
-        if (sortType == POINTS) {
-            sortedJugadores = sortedJugadores.reversed()
+            ID -> _uiState.value.jugadores.sortedBy { it.id }
         }
 
-        //pushUndo()
         _uiState.update { currentState ->
             currentState.copy(jugadores = sortedJugadores)
         }
-        updateApuestas()
-        saveState(context = context)
+    }
+
+    /**
+     * Sets the sort method for the player list and re-sorts the players.
+     *
+     * This function updates the `_sortMethod` state with the provided `sortType`
+     * and then calls `sortPlayers()` to apply the new sorting order to the player list.
+     *
+     * @param sortType The [SortType] to be used for sorting the players (e.g., NAME, POINTS, ID).
+     */
+    fun setSortMethod(sortType: SortType) {
+        _sortMethod.update { sortType }
+        sortPlayers()
     }
 
     /**

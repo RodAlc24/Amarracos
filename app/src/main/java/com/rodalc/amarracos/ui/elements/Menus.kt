@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Undo
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.RadioButtonChecked
+import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.SsidChart
 import androidx.compose.material.icons.outlined.SwapVert
 import androidx.compose.material3.DropdownMenu
@@ -89,6 +91,7 @@ fun OptionsMenu(
 @Composable
 fun SortMenu(
     sortBy: (GenericoViewModel.SortType) -> Unit,
+    selected: GenericoViewModel.SortType,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -106,27 +109,21 @@ fun SortMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.text_id_order)) },
-                onClick = {
-                    expanded = false
-                    sortBy(GenericoViewModel.SortType.ID)
-                }
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.text_name_order)) },
-                onClick = {
-                    expanded = false
-                    sortBy(GenericoViewModel.SortType.NAME)
-                }
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.text_points_order)) },
-                onClick = {
-                    expanded = false
-                    sortBy(GenericoViewModel.SortType.POINTS)
-                }
-            )
+            GenericoViewModel.SortType.entries.forEach {
+                DropdownMenuItem(
+                    text = { Text(stringResource(it.stringId)) },
+                    onClick = {
+                        expanded = false
+                        sortBy(it)
+                    },
+                    leadingIcon = {
+                        Icon(
+                            if (it == selected) Icons.Outlined.RadioButtonChecked else Icons.Outlined.RadioButtonUnchecked,
+                            contentDescription = null
+                        )
+                    }
+                )
+            }
         }
     }
 }

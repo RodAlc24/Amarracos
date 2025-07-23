@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
@@ -63,6 +65,7 @@ fun PochaScreen(
     showResults: () -> Unit = {},
 ) {
     val uiState by pochaViewModel.uiState.collectAsState()
+    val apuestas by pochaViewModel.apuestas.collectAsState()
     val context = LocalContext.current
     val canUndo = pochaViewModel.canUndo.collectAsState()
 
@@ -129,14 +132,40 @@ fun PochaScreen(
             columns = GridCells.Adaptive(minSize = 350.dp)
         ) {
             if (isPocha) {
-                stickyHeader {
+                item(span = { GridItemSpan(maxLineSpan) }) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
                     ) {
                         Card(
                             modifier = Modifier
-//                        .fillMaxWidth(0.9f)
+                                .fillMaxWidth(1f)
+                                .padding(8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth()
+                            ) {
+                                Text(text = "${stringResource(R.string.text_bets)}: $apuestas")
+                            }
+                        }
+                    }
+                }
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth(1f)
                                 .padding(8.dp)
                                 .clickable(onClick = {
                                     pochaViewModel.setDuplica(
@@ -151,7 +180,10 @@ fun PochaScreen(
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(16.dp)
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth()
                             ) {
                                 Text(text = stringResource(R.string.text_double_points))
                                 Spacer(modifier = Modifier.width(10.dp))

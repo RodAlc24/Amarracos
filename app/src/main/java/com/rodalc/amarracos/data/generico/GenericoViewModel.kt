@@ -41,6 +41,9 @@ class GenericoViewModel : ViewModel() {
     private val _canUndo = MutableStateFlow(undoStack.isNotEmpty())
     val canUndo = _canUndo.asStateFlow()
 
+    private val _apuestas = MutableStateFlow(0)
+    val apuestas = _apuestas.asStateFlow()
+
     private val filenamePocha = "pocha2.json"
     private val filenameGenerico = "generico2.json"
 
@@ -68,6 +71,7 @@ class GenericoViewModel : ViewModel() {
                 isPocha = isPocha
             )
         }
+        updateApuestas()
         saveState(context = context)
     }
 
@@ -115,6 +119,7 @@ class GenericoViewModel : ViewModel() {
             _uiState.update { currentState ->
                 currentState.copy(jugadores = updatedJugadores)
             }
+            updateApuestas()
             saveState(context = context)
         }
     }
@@ -149,6 +154,7 @@ class GenericoViewModel : ViewModel() {
                 duplica = duplica
             )
         }
+        updateApuestas()
         saveState(context = context)
     }
 
@@ -205,6 +211,7 @@ class GenericoViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(duplica = duplica)
         }
+        updateApuestas()
         saveState(context = context)
     }
 
@@ -259,6 +266,7 @@ class GenericoViewModel : ViewModel() {
             _uiState.update {
                 Json.decodeFromString(temp)
             }
+            updateApuestas()
         }
     }
 
@@ -307,6 +315,7 @@ class GenericoViewModel : ViewModel() {
             _uiState.update {
                 undoStack.removeAt(undoStack.lastIndex)
             }
+            updateApuestas()
             saveState(context = context)
             _canUndo.update { undoStack.isNotEmpty() }
         }
@@ -354,6 +363,20 @@ class GenericoViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(jugadores = sortedJugadores)
         }
+        updateApuestas()
         saveState(context = context)
+    }
+
+    /**
+     * Updates the total sum of bets (_apuestas) from all players.
+     *
+     * This function calculates the sum of the 'apuesta' (bet) property for each player
+     * in the current UI state and updates the `_apuestas` MutableStateFlow with this sum.
+     * This is useful for displaying the total amount bet in the current round or game.
+     */
+    private fun updateApuestas() {
+        _apuestas.update {
+            _uiState.value.jugadores.sumOf { it.apuesta }
+        }
     }
 }

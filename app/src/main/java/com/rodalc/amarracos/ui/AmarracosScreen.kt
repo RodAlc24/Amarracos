@@ -80,6 +80,8 @@ fun AmarracosScreen() {
             OverviewScreen(
                 jugadores = pochaState.jugadores,
                 onUpButtonClick = { navController.navigateUp() },
+                potgName = pochaState.potgPlayer,
+                potgPoints = pochaState.playOfTheGame
             )
         }
         composable(Screens.SCREEN_RES_GEN.name) {
@@ -87,6 +89,8 @@ fun AmarracosScreen() {
             OverviewScreen(
                 jugadores = genericoState.jugadores,
                 onUpButtonClick = { navController.navigateUp() },
+                potgName = genericoState.potgPlayer,
+                potgPoints = genericoState.playOfTheGame
             )
         }
     }

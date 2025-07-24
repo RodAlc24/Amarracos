@@ -145,6 +145,7 @@ class GenericoViewModel : ViewModel() {
         var updatedJugadores = _uiState.value.jugadores
         var duplica = _uiState.value.duplica
 
+        pushUndo()
         if (!isPocha || !_uiState.value.rondaApuestas) {
             updatedJugadores = _uiState.value.jugadores.map { jugador ->
                 applyPoints(jugador = jugador, duplica = duplica, isPocha = isPocha)
@@ -152,7 +153,6 @@ class GenericoViewModel : ViewModel() {
             duplica = false
         }
 
-        pushUndo()
         _uiState.update { currentState ->
             currentState.copy(
                 rondaApuestas = rondaApuestas,
@@ -190,6 +190,15 @@ class GenericoViewModel : ViewModel() {
 
         if (duplica && isPocha)
             increment *= 2
+
+        if (increment > _uiState.value.playOfTheGame) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    playOfTheGame = increment,
+                    potgPlayer = jugador.nombre
+                )
+            }
+        }
 
         return jugador.copy(
             apuesta = 0,

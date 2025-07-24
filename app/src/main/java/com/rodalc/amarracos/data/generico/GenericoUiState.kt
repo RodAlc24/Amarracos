@@ -9,6 +9,8 @@ import kotlinx.serialization.Serializable
  * @property duplica A boolean indicating whether the "duplica" rule is active. Defaults to false.
  * @property rondaApuestas A boolean indicating whether it is currently the betting round. Defaults to true.
  * @property isPocha A boolean indicating whether the current game is a "Pocha" variant. Defaults to false.
+ * @property playOfTheGame The biggest increment of points in the game. Defaults to 0.
+ * @property potgPlayer The ID of the player with the biggest increment. Defaults to 0.
  */
 @Serializable
 data class GenericoUiState(
@@ -18,5 +20,7 @@ data class GenericoUiState(
     ),
     val duplica: Boolean = false,
     val rondaApuestas: Boolean = true,
-    val isPocha: Boolean = false
+    val isPocha: Boolean = false,
+    val playOfTheGame: Int = 0,
+    val potgPlayer: String = ""
 )

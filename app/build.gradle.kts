@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "com.rodalc.amarracos"
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 36
         versionCode = rootProject.extra["defaultVersionCode"] as Int
         versionName = rootProject.extra["defaultVersionName"] as String
 
